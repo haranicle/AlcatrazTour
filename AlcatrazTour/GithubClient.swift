@@ -11,24 +11,20 @@ import SwiftyJSON
 
 class GithubClient: NSObject {
     
-    let alcatrazPackagesUrlString = "https://raw.githubusercontent.com/supermarin/alcatraz-packages/master/packages.json"
+    let alcatrazPackagesUrl = "https://raw.githubusercontent.com/supermarin/alcatraz-packages/master/packages.json"
     
-    func requestPlugins() {
+    let githubEndpoint = "https://api.github.com"
+    
+    func requestPlugins(onSucceed:([Plugin]) -> (), onFailed:(NSError) -> ()) {
         Alamofire
-            .request(.GET, alcatrazPackagesUrlString)
+            .request(.GET, alcatrazPackagesUrl)
             .responseJSON {request, response, responseData, error in
                 
-                println("request = \(request)")
-                println("response = \(response)")
-                println("responseData = \(responseData)")
-                println("error = \(error)")
-                
                 if let aError = error {
-                    // onFailed(aError)
+                    onFailed(aError)
                 }
                 
                 if let aResponseData: AnyObject = responseData {
-                    println("Success")
                     
                     var plugins:[Plugin] = []
                     
@@ -37,14 +33,15 @@ class GithubClient: NSObject {
                     
                     if let count = jsonPlugins?.count {
                         for i in 0 ..< count {
-                            if let pluginParams = jsonPlugins?[i].dictionaryObject {
+                            if let pluginParams = jsonPlugins?[i].object as? NSDictionary {
                                 var plugin = Plugin()
-                                plugin.updateParams(pluginParams)
+                                plugin.setParams(pluginParams)
+                                plugins.append(plugin)
                             }
                         }
                     }
                     
-                    // onSucceed(plugins)
+                    onSucceed(plugins)
                 }
         }
     }

@@ -36,15 +36,15 @@ class GithubClientTests: XCTestCase {
     func test_requestPlugins_worksFine() {
         let client = GithubClient()
         
-        let onSucceed = { plugins in
-            println(plugins)
+        func onSucceed(plugins:[Plugin]) {
+            plugins.map{println("\($0.name)")}
         }
         
-        let onFailed = { error in
-            println(error)
+        func onFailed(error:NSError) {
+            println(error.description)
         }
         
-        client.requestPlugins()
+        client.requestPlugins(onSucceed, onFailed: onFailed)
     }
 
 }

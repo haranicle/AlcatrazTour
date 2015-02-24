@@ -13,7 +13,16 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         
         let client = GithubClient()
-        client.requestPlugins()
+        
+        func onSucceed(plugins:[Plugin]) {
+            plugins.map{println("\($0.name)")}
+        }
+        
+        func onFailed(error:NSError) {
+            println(error.description)
+        }
+
+        client.requestPlugins(onSucceed, onFailed: onFailed)
         // Do any additional setup after loading the view, typically from a nib.
     }
 

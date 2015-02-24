@@ -16,12 +16,18 @@ class Plugin: RLMObject {
     dynamic var note = ""
     dynamic var screenshot = ""
     
-    func updateParams(params:NSDictionary) {
-        name = params["name"] as String
-        url = params["url"] as String
-        note = params["description"] as String
-        if let aScreenshot = params["screenshot"] as String? {
-            self.screenshot = aScreenshot
+    func setParams(params:NSDictionary) {
+        if let p = params["name"] as? String {
+            self.name = p
+        }
+        if let p = params["url"] as? String {
+            self.url = p
+        }
+        if let p = params["description"] as? String {
+            self.note = p
+        }
+        if let p = params["screenshot"] as? String {
+            self.screenshot = p
         }
     }
    
