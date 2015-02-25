@@ -11,19 +11,10 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        let client = GithubClient()
-        
-        func onSucceed(plugins:[Plugin]) {
-            plugins.map{println("\($0.name)")}
-        }
-        
-        func onFailed(error:NSError) {
-            println(error.description)
-        }
 
-        client.requestPlugins(onSucceed, onFailed: onFailed)
+        // client.requestPlugins(onSucceed, onFailed: onFailed)
         // Do any additional setup after loading the view, typically from a nib.
+        
     }
 
     override func didReceiveMemoryWarning() {

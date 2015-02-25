@@ -16,18 +16,35 @@ class Plugin: RLMObject {
     dynamic var note = ""
     dynamic var screenshot = ""
     
+    // details
+    dynamic var avaterUrl = ""
+    dynamic var starGazersCount:Int = 0 // star
+    dynamic var updatedAt:NSDate = NSDate(timeIntervalSince1970: 0) // updated
+    
     func setParams(params:NSDictionary) {
         if let p = params["name"] as? String {
-            self.name = p
+            name = p
         }
         if let p = params["url"] as? String {
-            self.url = p
+            url = p
         }
         if let p = params["description"] as? String {
-            self.note = p
+            note = p
         }
         if let p = params["screenshot"] as? String {
-            self.screenshot = p
+            screenshot = p
+        }
+    }
+    
+    func setDetails(details:NSDictionary) {
+        if let d = details["owner"]?["avatar_url"] as? String {
+            avaterUrl = d
+        }
+        if let d = details["stargazers_count"] as? Int {
+            starGazersCount = d
+        }
+        if let d = details["updatedAt"] as? NSDate {
+            updatedAt = d
         }
     }
    

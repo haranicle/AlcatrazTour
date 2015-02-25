@@ -25,13 +25,26 @@ class GithubClientTests: XCTestCase {
         // This is an example of a functional test case.
         XCTAssert(true, "Pass")
     }
-
+    
     func testPerformanceExample() {
         // This is an example of a performance test case.
         self.measureBlock() {
             // Put the code you want to measure the time of here.
         }
     }
+    
+    // MARK: - Create URL
+    func test_createRepoDetailUrl_worksFine() {
+        let client = GithubClient()
+        let actual = client.createRepoDetailUrl("https://github.com/onevcat/VVDocumenter-Xcode")
+        XCTAssertEqual("https://api.github.com/repos/onevcat/VVDocumenter-Xcode", actual)
+        
+        XCTAssertEqual("aaa", "aaa")
+        XCTAssertEqual("", "")
+    }
+    
+    // MARK: - Request
+    
     
     func test_requestPlugins_worksFine() {
         let client = GithubClient()
@@ -40,11 +53,26 @@ class GithubClientTests: XCTestCase {
             plugins.map{println("\($0.name)")}
         }
         
-        func onFailed(error:NSError) {
-            println(error.description)
+        func onFailed(error:NSError?) {
+            println(error?.description)
         }
         
         client.requestPlugins(onSucceed, onFailed: onFailed)
+    }
+    
+    func test_requestRepoDetail_worksFine() {
+        let client = GithubClient()
+        
+        func onSucceed(pluginDetail:NSDictionary) {
+            println(pluginDetail)
+        }
+        
+        func onFailed(error:NSError?) {
+            println(error?.description)
+        }
+        
+        client.requestRepoDetail("https://github.com/onevcat/VVDocumenter-Xcode"
+, onSucceed: onSucceed, onFailed: onFailed)
     }
 
 }
