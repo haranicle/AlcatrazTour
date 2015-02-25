@@ -15,6 +15,9 @@ class ViewController: UIViewController {
         // client.requestPlugins(onSucceed, onFailed: onFailed)
         // Do any additional setup after loading the view, typically from a nib.
         
+        let client = GithubClient()
+        client.reloadAllPlugins()
+        
     }
 
     override func didReceiveMemoryWarning() {

@@ -21,6 +21,8 @@ class Plugin: RLMObject {
     dynamic var starGazersCount:Int = 0 // star
     dynamic var updatedAt:NSDate = NSDate(timeIntervalSince1970: 0) // updated
     
+    // MARK: - Params
+    
     func setParams(params:NSDictionary) {
         if let p = params["name"] as? String {
             name = p
@@ -45,6 +47,21 @@ class Plugin: RLMObject {
         }
         if let d = details["updatedAt"] as? NSDate {
             updatedAt = d
+        }
+    }
+    
+    // MARK: - Realm
+    func save() {
+        let realm = RLMRealm.defaultRealm()
+        realm.transactionWithBlock{
+            realm.addObject(self)
+        }
+    }
+    
+    class func deleteAll() {
+        let realm = RLMRealm.defaultRealm()
+        realm.transactionWithBlock{
+            realm.deleteAllObjects()
         }
     }
    

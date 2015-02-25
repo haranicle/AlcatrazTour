@@ -63,7 +63,10 @@ class GithubClientTests: XCTestCase {
     func test_requestRepoDetail_worksFine() {
         let client = GithubClient()
         
-        func onSucceed(pluginDetail:NSDictionary) {
+        var plugin = Plugin()
+        plugin.url = "https://github.com/onevcat/VVDocumenter-Xcode"
+        
+        func onSucceed(plugin:Plugin?, pluginDetail:NSDictionary) {
             println(pluginDetail)
         }
         
@@ -71,8 +74,13 @@ class GithubClientTests: XCTestCase {
             println(error?.description)
         }
         
-        client.requestRepoDetail("https://github.com/onevcat/VVDocumenter-Xcode"
+        client.requestRepoDetail(plugin
 , onSucceed: onSucceed, onFailed: onFailed)
+    }
+    
+    func test_reloadAllPlugins_worksFine() {
+        let client = GithubClient()
+        client.reloadAllPlugins()
     }
 
 }

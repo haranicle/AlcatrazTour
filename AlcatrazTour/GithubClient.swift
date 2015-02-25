@@ -8,13 +8,21 @@
 import UIKit
 import Alamofire
 import SwiftyJSON
+import Realm
 
 class GithubClient: NSObject {
+    
+    // MARK: - Const
     
     let alcatrazPackagesUrl = "https://raw.githubusercontent.com/supermarin/alcatraz-packages/master/packages.json"
     
     let githubRepoUrl = "https://github.com"
     let githubRepoApiUrl = "https://api.github.com/repos"
+    
+    // MARK: - Status
+    
+    var isLoading = false
+    var loadCompleteCount = 0
     
     // MARK: - Create URL
     
@@ -57,9 +65,9 @@ class GithubClient: NSObject {
         }
     }
     
-    func requestRepoDetail(url:String, onSucceed:NSDictionary -> Void, onFailed:NSError? -> Void) {
+    func requestRepoDetail(plugin:Plugin, onSucceed:(Plugin?, NSDictionary) -> Void, onFailed:NSError? -> Void) {
         Alamofire
-            .request(.GET, url)
+            .request(.GET, plugin.url)
             .responseJSON {request, response, responseData, error in
                 
                 if let aError = error {
@@ -69,14 +77,72 @@ class GithubClient: NSObject {
                 if let aResponseData: AnyObject = responseData {
                     let jsonData = JSON(aResponseData)
                     
+                    weak var weakPlugin = plugin
+                    
                     if let pluginDetail = jsonData.object as? NSDictionary {
-                        onSucceed(pluginDetail)
+                        onSucceed(weakPlugin, pluginDetail)
                     }
                 }
                 
                 onFailed(nil)
         }
         
+    }
+    
+    // MARK: - Processing Flow
+    
+    func reloadAllPlugins() {
+        
+        if(isLoading) {
+            println("NOW LOADING!!")
+            return
+        }
+        
+        isLoading = true
+        loadCompleteCount = 0
+        
+        Plugin.deleteAll()
+        
+        // loading plugin list
+        
+        func onSucceedRequestingPlugins(plugins:[Plugin]) {
+            
+            // loading plugin details
+            
+            func onSucceedRequestingRepoDetail(plugin:Plugin?, pluginDetail:NSDictionary) {
+                plugin?.setDetails(pluginDetail)
+                if let p = plugin {
+                    p.save()
+                }
+                inclementLoadCompleteCount(plugins.count)
+            }
+            
+            func onFailed(error:NSError?) {
+                println(error?.description)
+                inclementLoadCompleteCount(plugins.count)
+            }
+            
+            for plugin in plugins {
+                requestRepoDetail(plugin, onSucceed: onSucceedRequestingRepoDetail, onFailed: onFailed)
+            }
+            
+        }
+        
+        func onFailed(error:NSError?) {
+            println(error?.description)
+        }
+        
+        requestPlugins(onSucceedRequestingPlugins, onFailed: onFailed)
+    }
+    
+    func inclementLoadCompleteCount(pluginsCount:Int) {
+        loadCompleteCount++
+        if loadCompleteCount == pluginsCount {
+            // all done!!
+            println("all done!!")
+            isLoading = false
+            loadCompleteCount = 0
+        }
     }
     
     
