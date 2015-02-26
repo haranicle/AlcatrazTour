@@ -9,6 +9,7 @@ import UIKit
 import Alamofire
 import SwiftyJSON
 import Realm
+import OAuthSwift
 
 class GithubClient: NSObject {
     
@@ -28,6 +29,29 @@ class GithubClient: NSObject {
     
     func createRepoDetailUrl(repoUrl:String) -> String {
         return repoUrl.stringByReplacingOccurrencesOfString(githubRepoUrl, withString: githubRepoApiUrl, options: nil, range: nil)
+    }
+    
+    // MARK: - OAuth
+    let githubOauthTokenKey = "githubTokenKey"
+    
+    func oAuth(onSucceed:Void->Void, onFailed:NSError -> Void ){
+        let oauthswift = OAuth2Swift(
+            consumerKey:    GithubKey["consumerKey"]!,
+            consumerSecret: GithubKey["consumerSecret"]!,
+            authorizeUrl:   "https://github.com/login/oauth/authorize",
+            accessTokenUrl: "https://github.com/login/oauth/access_token",
+            responseType:   "code"
+        )
+        
+        func callOnSucceed(credential: OAuthSwiftCredential, response: NSURLResponse?) -> Void {
+            // save tokent to user default
+            println("AUTH COMPLETE!!")
+            
+            NSUserDefaults.standardUserDefaults().setObject(credential.oauth_token, forKey: githubOauthTokenKey)
+            onSucceed()
+        }
+        
+        oauthswift.authorizeWithCallbackURL( NSURL(string: "alcatraztour://oauth-callback/github")!, scope: "user,repo", state: "GITHUB", success:callOnSucceed, failure:onFailed)
     }
     
     // MARK: - Request
@@ -67,8 +91,15 @@ class GithubClient: NSObject {
     }
     
     func requestRepoDetail(plugin:Plugin, onSucceed:(Plugin?, NSDictionary) -> Void, onFailed:(NSURLRequest, NSHTTPURLResponse?, AnyObject?, NSError?) -> Void) {
+        
+        let token:String? = NSUserDefaults.standardUserDefaults().valueForKey(githubOauthTokenKey) as String?
+        if(token == nil) {
+            println("TOKEN NOT SAVED!")
+            return
+        }
+        
         Alamofire
-            .request(.GET, createRepoDetailUrl(plugin.url))
+            .request(Method.GET, createRepoDetailUrl(plugin.url), parameters: ["access_token": token!])
             .responseJSON {request, response, responseData, error in
                 
                 if let aError = error {

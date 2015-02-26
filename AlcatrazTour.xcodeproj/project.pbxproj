@@ -16,6 +16,8 @@
 		F62E96311A9AF6F600063445 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = F62E962F1A9AF6F600063445 /* LaunchScreen.xib */; };
 		F62E963D1A9AF6F600063445 /* AlcatrazTourTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F62E963C1A9AF6F600063445 /* AlcatrazTourTests.swift */; };
 		F62E96471A9B0FA500063445 /* GithubClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = F62E96461A9B0FA500063445 /* GithubClient.swift */; };
+		F6602A481A9EE116005DF8B9 /* SecretConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6602A471A9EE116005DF8B9 /* SecretConstants.swift */; };
+		F6602A491A9EEAB0005DF8B9 /* SecretConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6602A471A9EE116005DF8B9 /* SecretConstants.swift */; };
 		F66E663B1A9C7DAC00B7EC4A /* GithubClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = F62E96461A9B0FA500063445 /* GithubClient.swift */; };
 		F673E77C1A9C773800A20CB4 /* Plugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = F697C3C81A9C61FB001DF614 /* Plugin.swift */; };
 		F673E77E1A9C796A00A20CB4 /* RLMSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = F673E77D1A9C796A00A20CB4 /* RLMSupport.swift */; };
@@ -52,6 +54,7 @@
 		F62E963B1A9AF6F600063445 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F62E963C1A9AF6F600063445 /* AlcatrazTourTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlcatrazTourTests.swift; sourceTree = "<group>"; };
 		F62E96461A9B0FA500063445 /* GithubClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GithubClient.swift; sourceTree = "<group>"; };
+		F6602A471A9EE116005DF8B9 /* SecretConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SecretConstants.swift; path = ../SecretConstants.swift; sourceTree = "<group>"; };
 		F673E77D1A9C796A00A20CB4 /* RLMSupport.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RLMSupport.swift; sourceTree = "<group>"; };
 		F673E7801A9C7B5000A20CB4 /* AlcatrazTour-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AlcatrazTour-Bridging-Header.h"; sourceTree = SOURCE_ROOT; };
 		F697C3C81A9C61FB001DF614 /* Plugin.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Plugin.swift; sourceTree = "<group>"; };
@@ -126,6 +129,7 @@
 				F673E7801A9C7B5000A20CB4 /* AlcatrazTour-Bridging-Header.h */,
 				F673E77D1A9C796A00A20CB4 /* RLMSupport.swift */,
 				F62E96261A9AF6F600063445 /* AppDelegate.swift */,
+				F6602A471A9EE116005DF8B9 /* SecretConstants.swift */,
 				F62E96281A9AF6F600063445 /* ViewController.swift */,
 				F62E96461A9B0FA500063445 /* GithubClient.swift */,
 				F697C3C81A9C61FB001DF614 /* Plugin.swift */,
@@ -365,6 +369,7 @@
 				F62E96471A9B0FA500063445 /* GithubClient.swift in Sources */,
 				F62E96291A9AF6F600063445 /* ViewController.swift in Sources */,
 				F673E77E1A9C796A00A20CB4 /* RLMSupport.swift in Sources */,
+				F6602A481A9EE116005DF8B9 /* SecretConstants.swift in Sources */,
 				F697C3C91A9C61FB001DF614 /* Plugin.swift in Sources */,
 				F62E96271A9AF6F600063445 /* AppDelegate.swift in Sources */,
 			);
@@ -377,6 +382,7 @@
 				F62E963D1A9AF6F600063445 /* AlcatrazTourTests.swift in Sources */,
 				F673E77C1A9C773800A20CB4 /* Plugin.swift in Sources */,
 				F66E663B1A9C7DAC00B7EC4A /* GithubClient.swift in Sources */,
+				F6602A491A9EEAB0005DF8B9 /* SecretConstants.swift in Sources */,
 				F697C3CB1A9C72F9001DF614 /* GithubClientTests.swift in Sources */,
 				F673E77F1A9C797900A20CB4 /* RLMSupport.swift in Sources */,
 			);

@@ -7,6 +7,7 @@
 
 import UIKit
 import Realm
+import OAuthSwift
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -42,7 +43,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillTerminate(application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
-
-
+    
+    func application(application: UIApplication!, openURL url: NSURL!, sourceApplication: String!, annotation: AnyObject!) -> Bool {
+        println(url)
+        if (url.host == "oauth-callback") {
+            if url.path!.hasPrefix("/github") {
+                OAuth2Swift.handleOpenURL(url)
+            }
+        }
+        return true
+    }
+    
+    
 }
 
