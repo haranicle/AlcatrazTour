@@ -4,6 +4,7 @@ platform :ios, '8.0'
 pod 'Alamofire', '~> 1.1'
 pod 'SwiftyJSON', '~> 2.1.3'
 pod 'Realm', '~> 0.90.6'
+pod 'OAuthSwift', '~> 0.3.0'
 
 
 pod "Realm/Headers"
