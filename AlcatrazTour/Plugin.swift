@@ -19,7 +19,8 @@ class Plugin: RLMObject {
     // details
     dynamic var avaterUrl = ""
     dynamic var starGazersCount:Int = 0 // star
-    dynamic var updatedAt:NSDate = NSDate(timeIntervalSince1970: 0) // updated
+    dynamic var updatedAt:NSDate = NSDate(timeIntervalSince1970: 0)
+    dynamic var createdAt:NSDate = NSDate(timeIntervalSince1970: 0)
     
     // MARK: - Params
     
@@ -48,11 +49,14 @@ class Plugin: RLMObject {
         if let d = details["updated_at"] as? NSString {
             updatedAt = stringAsDate(d)
         }
+        if let d = details["created_at"] as? NSString {
+            createdAt = stringAsDate(d)
+        }
     }
     
     func stringAsDate(string:String) -> NSDate {
         var formatter = NSDateFormatter()
-        formatter.dateFormat = "yyyy-MM-ddTHH:mm:ssZ"
+        formatter.dateFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"
         return formatter.dateFromString(string) ?? NSDate(timeIntervalSince1970: 0)
     }
     

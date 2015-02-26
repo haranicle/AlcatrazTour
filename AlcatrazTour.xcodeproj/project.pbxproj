@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		E7D12409782D7E5CE93986BE /* Pods_AlcatrazTourTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B77CF89FE308A62DBDF25C5E /* Pods_AlcatrazTourTests.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		EAE8118B6DD8E9D17662928B /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C8B2213C770F9DE318596BD9 /* Pods.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		F60FC5471A9F084D00AAAC9B /* PluginTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F60FC5461A9F084D00AAAC9B /* PluginTests.swift */; };
 		F62E96271A9AF6F600063445 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F62E96261A9AF6F600063445 /* AppDelegate.swift */; };
 		F62E96291A9AF6F600063445 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F62E96281A9AF6F600063445 /* ViewController.swift */; };
 		F62E962C1A9AF6F600063445 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F62E962A1A9AF6F600063445 /* Main.storyboard */; };
@@ -43,6 +44,7 @@
 		BE99EB0688C3AED87F686086 /* Pods-AlcatrazTourTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AlcatrazTourTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AlcatrazTourTests/Pods-AlcatrazTourTests.debug.xcconfig"; sourceTree = "<group>"; };
 		C8B2213C770F9DE318596BD9 /* Pods.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D30EBB73D6B56941A653ACA1 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
+		F60FC5461A9F084D00AAAC9B /* PluginTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PluginTests.swift; sourceTree = "<group>"; };
 		F62E96211A9AF6F600063445 /* AlcatrazTour.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AlcatrazTour.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F62E96251A9AF6F600063445 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F62E96261A9AF6F600063445 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -154,6 +156,7 @@
 			children = (
 				F62E963C1A9AF6F600063445 /* AlcatrazTourTests.swift */,
 				F697C3CA1A9C72F9001DF614 /* GithubClientTests.swift */,
+				F60FC5461A9F084D00AAAC9B /* PluginTests.swift */,
 				F62E963A1A9AF6F600063445 /* Supporting Files */,
 			);
 			path = AlcatrazTourTests;
@@ -384,6 +387,7 @@
 				F66E663B1A9C7DAC00B7EC4A /* GithubClient.swift in Sources */,
 				F6602A491A9EEAB0005DF8B9 /* SecretConstants.swift in Sources */,
 				F697C3CB1A9C72F9001DF614 /* GithubClientTests.swift in Sources */,
+				F60FC5471A9F084D00AAAC9B /* PluginTests.swift in Sources */,
 				F673E77F1A9C797900A20CB4 /* RLMSupport.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -25,7 +25,7 @@ class ViewController: UIViewController {
     }
 
     @IBAction func onOAuth(sender: AnyObject) {
-        githubClient.oAuth({println("succeed")}, onFailed: {error in println("failed")})
+        githubClient.requestOAuth({println("succeed")}, onFailed: {error in println("failed")})
     }
     
     @IBAction func onLoad(sender: AnyObject) {

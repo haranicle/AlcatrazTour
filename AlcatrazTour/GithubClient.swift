@@ -34,7 +34,7 @@ class GithubClient: NSObject {
     // MARK: - OAuth
     let githubOauthTokenKey = "githubTokenKey"
     
-    func oAuth(onSucceed:Void->Void, onFailed:NSError -> Void ){
+    func requestOAuth(onSucceed:Void->Void, onFailed:NSError -> Void ){
         let oauthswift = OAuth2Swift(
             consumerKey:    GithubKey["consumerKey"]!,
             consumerSecret: GithubKey["consumerSecret"]!,
