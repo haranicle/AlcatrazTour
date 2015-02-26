@@ -17,7 +17,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
-        println(RLMRealm.defaultRealmPath())
+        println("RLMRealm.defaultRealmPath() = \(RLMRealm.defaultRealmPath())")
         
         return true
     }

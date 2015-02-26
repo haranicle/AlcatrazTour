@@ -34,6 +34,17 @@ class GithubClient: NSObject {
     // MARK: - OAuth
     let githubOauthTokenKey = "githubTokenKey"
     
+    func isLoggedIn()->Bool {
+        if let token = NSUserDefaults.standardUserDefaults().stringForKey(githubOauthTokenKey) {
+            return true
+        }
+        return false
+    }
+    
+    func logout() {
+        NSUserDefaults.standardUserDefaults().removeObjectForKey(githubOauthTokenKey)
+    }
+    
     func requestOAuth(onSucceed:Void->Void, onFailed:NSError -> Void ){
         let oauthswift = OAuth2Swift(
             consumerKey:    GithubKey["consumerKey"]!,
@@ -92,7 +103,7 @@ class GithubClient: NSObject {
     
     func requestRepoDetail(plugin:Plugin, onSucceed:(Plugin?, NSDictionary) -> Void, onFailed:(NSURLRequest, NSHTTPURLResponse?, AnyObject?, NSError?) -> Void) {
         
-        let token:String? = NSUserDefaults.standardUserDefaults().valueForKey(githubOauthTokenKey) as String?
+        let token = NSUserDefaults.standardUserDefaults().stringForKey(githubOauthTokenKey)
         if(token == nil) {
             println("TOKEN NOT SAVED!")
             return
