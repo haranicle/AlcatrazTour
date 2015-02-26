@@ -32,13 +32,14 @@ class GithubClient: NSObject {
     
     // MARK: - Request
     
-    func requestPlugins(onSucceed:[Plugin] -> Void, onFailed:NSError? -> Void) {
+    func requestPlugins(onSucceed:[Plugin] -> Void, onFailed:(NSURLRequest, NSHTTPURLResponse?, AnyObject?, NSError?) -> Void) {
         Alamofire
             .request(.GET, alcatrazPackagesUrl)
             .responseJSON {request, response, responseData, error in
                 
                 if let aError = error {
-                    onFailed(aError)
+                    onFailed(request, response, responseData, aError)
+                    return
                 }
                 
                 if let aResponseData: AnyObject = responseData {
@@ -59,19 +60,20 @@ class GithubClient: NSObject {
                     }
                     
                     onSucceed(plugins)
+                } else {
+                    onFailed(request, response, responseData, nil)
                 }
-                
-                onFailed(nil)
         }
     }
     
-    func requestRepoDetail(plugin:Plugin, onSucceed:(Plugin?, NSDictionary) -> Void, onFailed:NSError? -> Void) {
+    func requestRepoDetail(plugin:Plugin, onSucceed:(Plugin?, NSDictionary) -> Void, onFailed:(NSURLRequest, NSHTTPURLResponse?, AnyObject?, NSError?) -> Void) {
         Alamofire
-            .request(.GET, plugin.url)
+            .request(.GET, createRepoDetailUrl(plugin.url))
             .responseJSON {request, response, responseData, error in
                 
                 if let aError = error {
-                    onFailed(aError)
+                    onFailed(request, response, responseData, aError)
+                    return
                 }
                 
                 if let aResponseData: AnyObject = responseData {
@@ -82,9 +84,9 @@ class GithubClient: NSObject {
                     if let pluginDetail = jsonData.object as? NSDictionary {
                         onSucceed(weakPlugin, pluginDetail)
                     }
+                } else {
+                    onFailed(request, response, responseData, nil)
                 }
-                
-                onFailed(nil)
         }
         
     }
@@ -98,6 +100,8 @@ class GithubClient: NSObject {
             return
         }
         
+        println("START LOADING!!")
+        
         isLoading = true
         loadCompleteCount = 0
         
@@ -107,9 +111,14 @@ class GithubClient: NSObject {
         
         func onSucceedRequestingPlugins(plugins:[Plugin]) {
             
+            println("PLUGIN LIST LOAD COMPLETE!!")
+            
             // loading plugin details
             
             func onSucceedRequestingRepoDetail(plugin:Plugin?, pluginDetail:NSDictionary) {
+                
+                println("pluginDetail = \(pluginDetail)")
+                
                 plugin?.setDetails(pluginDetail)
                 if let p = plugin {
                     p.save()
@@ -117,8 +126,11 @@ class GithubClient: NSObject {
                 inclementLoadCompleteCount(plugins.count)
             }
             
-            func onFailed(error:NSError?) {
-                println(error?.description)
+            func onFailed(request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) {
+                println("request = \(request)")
+                println("response = \(response)")
+                println("responseData = \(responseData)")
+                println("error = \(error?.description)")
                 inclementLoadCompleteCount(plugins.count)
             }
             
@@ -128,8 +140,11 @@ class GithubClient: NSObject {
             
         }
         
-        func onFailed(error:NSError?) {
-            println(error?.description)
+        func onFailed(request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) {
+            println("request = \(request)")
+            println("response = \(response)")
+            println("responseData = \(responseData)")
+            println("error = \(error?.description)")
         }
         
         requestPlugins(onSucceedRequestingPlugins, onFailed: onFailed)
@@ -138,8 +153,7 @@ class GithubClient: NSObject {
     func inclementLoadCompleteCount(pluginsCount:Int) {
         loadCompleteCount++
         if loadCompleteCount == pluginsCount {
-            // all done!!
-            println("all done!!")
+            println("ALL DONE!!")
             isLoading = false
             loadCompleteCount = 0
         }

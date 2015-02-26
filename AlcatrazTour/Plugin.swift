@@ -45,9 +45,15 @@ class Plugin: RLMObject {
         if let d = details["stargazers_count"] as? Int {
             starGazersCount = d
         }
-        if let d = details["updatedAt"] as? NSDate {
-            updatedAt = d
+        if let d = details["updated_at"] as? NSString {
+            updatedAt = stringAsDate(d)
         }
+    }
+    
+    func stringAsDate(string:String) -> NSDate {
+        var formatter = NSDateFormatter()
+        formatter.dateFormat = "yyyy-MM-ddTHH:mm:ssZ"
+        return formatter.dateFromString(string) ?? NSDate(timeIntervalSince1970: 0)
     }
     
     // MARK: - Realm

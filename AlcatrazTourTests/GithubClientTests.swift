@@ -39,8 +39,8 @@ class GithubClientTests: XCTestCase {
         let actual = client.createRepoDetailUrl("https://github.com/onevcat/VVDocumenter-Xcode")
         XCTAssertEqual("https://api.github.com/repos/onevcat/VVDocumenter-Xcode", actual)
         
-        XCTAssertEqual("aaa", "aaa")
-        XCTAssertEqual("", "")
+        XCTAssertEqual("aaa", client.createRepoDetailUrl("aaa"))
+        XCTAssertEqual("", client.createRepoDetailUrl(""))
     }
     
     // MARK: - Request
@@ -53,8 +53,11 @@ class GithubClientTests: XCTestCase {
             plugins.map{println("\($0.name)")}
         }
         
-        func onFailed(error:NSError?) {
-            println(error?.description)
+        func onFailed(request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) {
+            println("request = \(request)")
+            println("response = \(response)")
+            println("responseData = \(responseData)")
+            println("error = \(error?.description)")
         }
         
         client.requestPlugins(onSucceed, onFailed: onFailed)
@@ -70,8 +73,11 @@ class GithubClientTests: XCTestCase {
             println(pluginDetail)
         }
         
-        func onFailed(error:NSError?) {
-            println(error?.description)
+        func onFailed(request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) {
+            println("request = \(request)")
+            println("response = \(response)")
+            println("responseData = \(responseData)")
+            println("error = \(error?.description)")
         }
         
         client.requestRepoDetail(plugin
