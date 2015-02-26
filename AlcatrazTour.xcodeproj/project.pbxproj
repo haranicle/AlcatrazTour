@@ -10,6 +10,7 @@
 		E7D12409782D7E5CE93986BE /* Pods_AlcatrazTourTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B77CF89FE308A62DBDF25C5E /* Pods_AlcatrazTourTests.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		EAE8118B6DD8E9D17662928B /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C8B2213C770F9DE318596BD9 /* Pods.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		F60FC5471A9F084D00AAAC9B /* PluginTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F60FC5461A9F084D00AAAC9B /* PluginTests.swift */; };
+		F60FC54D1A9F18B300AAAC9B /* PluginTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F60FC54C1A9F18B300AAAC9B /* PluginTableViewCell.swift */; };
 		F62E96271A9AF6F600063445 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F62E96261A9AF6F600063445 /* AppDelegate.swift */; };
 		F62E96291A9AF6F600063445 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F62E96281A9AF6F600063445 /* ViewController.swift */; };
 		F62E962C1A9AF6F600063445 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F62E962A1A9AF6F600063445 /* Main.storyboard */; };
@@ -45,6 +46,7 @@
 		C8B2213C770F9DE318596BD9 /* Pods.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D30EBB73D6B56941A653ACA1 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		F60FC5461A9F084D00AAAC9B /* PluginTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PluginTests.swift; sourceTree = "<group>"; };
+		F60FC54C1A9F18B300AAAC9B /* PluginTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PluginTableViewCell.swift; sourceTree = "<group>"; };
 		F62E96211A9AF6F600063445 /* AlcatrazTour.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AlcatrazTour.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F62E96251A9AF6F600063445 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F62E96261A9AF6F600063445 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -105,6 +107,38 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		F60FC5481A9F182500AAAC9B /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				F697C3C81A9C61FB001DF614 /* Plugin.swift */,
+			);
+			name = Model;
+			sourceTree = "<group>";
+		};
+		F60FC5491A9F185700AAAC9B /* Logic */ = {
+			isa = PBXGroup;
+			children = (
+				F62E96461A9B0FA500063445 /* GithubClient.swift */,
+			);
+			name = Logic;
+			sourceTree = "<group>";
+		};
+		F60FC54A1A9F186E00AAAC9B /* View */ = {
+			isa = PBXGroup;
+			children = (
+				F60FC54C1A9F18B300AAAC9B /* PluginTableViewCell.swift */,
+			);
+			name = View;
+			sourceTree = "<group>";
+		};
+		F60FC54B1A9F187900AAAC9B /* ViewController */ = {
+			isa = PBXGroup;
+			children = (
+				F62E96281A9AF6F600063445 /* ViewController.swift */,
+			);
+			name = ViewController;
+			sourceTree = "<group>";
+		};
 		F62E96181A9AF6F600063445 = {
 			isa = PBXGroup;
 			children = (
@@ -132,9 +166,10 @@
 				F673E77D1A9C796A00A20CB4 /* RLMSupport.swift */,
 				F62E96261A9AF6F600063445 /* AppDelegate.swift */,
 				F6602A471A9EE116005DF8B9 /* SecretConstants.swift */,
-				F62E96281A9AF6F600063445 /* ViewController.swift */,
-				F62E96461A9B0FA500063445 /* GithubClient.swift */,
-				F697C3C81A9C61FB001DF614 /* Plugin.swift */,
+				F60FC5481A9F182500AAAC9B /* Model */,
+				F60FC5491A9F185700AAAC9B /* Logic */,
+				F60FC54A1A9F186E00AAAC9B /* View */,
+				F60FC54B1A9F187900AAAC9B /* ViewController */,
 				F62E962A1A9AF6F600063445 /* Main.storyboard */,
 				F62E962D1A9AF6F600063445 /* Images.xcassets */,
 				F62E962F1A9AF6F600063445 /* LaunchScreen.xib */,
@@ -373,6 +408,7 @@
 				F62E96291A9AF6F600063445 /* ViewController.swift in Sources */,
 				F673E77E1A9C796A00A20CB4 /* RLMSupport.swift in Sources */,
 				F6602A481A9EE116005DF8B9 /* SecretConstants.swift in Sources */,
+				F60FC54D1A9F18B300AAAC9B /* PluginTableViewCell.swift in Sources */,
 				F697C3C91A9C61FB001DF614 /* Plugin.swift in Sources */,
 				F62E96271A9AF6F600063445 /* AppDelegate.swift in Sources */,
 			);

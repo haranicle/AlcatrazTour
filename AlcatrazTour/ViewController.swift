@@ -22,14 +22,19 @@ class ViewController: UIViewController {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
-
-    @IBAction func onOAuth(sender: AnyObject) {
-        githubClient.requestOAuth({println("succeed")}, onFailed: {error in println("failed")})
+    
+    // MARK: - UI Parts
+    
+    @IBOutlet weak var tableView: UITableView!
+    
+    // MARK: - Action
+    
+    @IBAction func onSegmentChanged(sender: UISegmentedControl) {
     }
     
-    @IBAction func onLoad(sender: AnyObject) {
-        githubClient.reloadAllPlugins()
+    @IBAction func onRefreshPushed(sender: AnyObject) {
     }
+
 
 }
 
