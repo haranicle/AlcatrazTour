@@ -76,6 +76,7 @@ class ViewController: UIViewController {
         cell.plugin = plugin
         cell.titleLabel.text = plugin.name
         cell.noteLabel.text = plugin.note
+        cell.avaterImageView.sd_setImageWithURL(NSURL(string: plugin.avaterUrl))
         
         var formatter = NSDateFormatter()
         formatter.dateFormat = "yy/MM/dd"
@@ -86,4 +87,3 @@ class ViewController: UIViewController {
     }
 
 }
-
