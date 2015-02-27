@@ -62,6 +62,8 @@ class ViewController: UIViewController {
     @IBAction func onRefreshPushed(sender: AnyObject) {
         githubClient.reloadAllPlugins({self.tableView.reloadData()})
     }
+    
+    // MARK: - Table View Data Source
 
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int
     {
@@ -84,6 +86,18 @@ class ViewController: UIViewController {
         cell.statusLabel.text = "⭐️\(plugin.starGazersCount) 🔄\(formatter.stringFromDate(plugin.updatedAt)) 👺\(formatter.stringFromDate(plugin.createdAt))"
         
         return cell
+    }
+    
+    // MARK: - Segue
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        let cell = sender as PluginTableViewCell
+        
+        if segue.identifier == "showPluginDetail" {
+            let pluginDetailViewController = segue.destinationViewController as PluginDetailViewController
+            pluginDetailViewController.url = cell.plugin!.url
+            pluginDetailViewController.title = cell.plugin!.name
+        }
     }
 
 }
