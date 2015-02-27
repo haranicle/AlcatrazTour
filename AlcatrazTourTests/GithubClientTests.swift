@@ -86,7 +86,7 @@ class GithubClientTests: XCTestCase {
     
     func test_reloadAllPlugins_worksFine() {
         let client = GithubClient()
-        client.reloadAllPlugins()
+        client.reloadAllPlugins({})
     }
 
 }

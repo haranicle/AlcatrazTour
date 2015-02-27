@@ -136,7 +136,7 @@ class GithubClient: NSObject {
     
     // MARK: - Processing Flow
     
-    func reloadAllPlugins() {
+    func reloadAllPlugins(onComplete:Void->Void) {
         
         if(isLoading) {
             println("NOW LOADING!!")

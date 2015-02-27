@@ -60,7 +60,7 @@ class ViewController: UIViewController {
     }
     
     @IBAction func onRefreshPushed(sender: AnyObject) {
-        githubClient.reloadAllPlugins()
+        githubClient.reloadAllPlugins({self.tableView.reloadData()})
     }
 
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int
