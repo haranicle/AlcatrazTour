@@ -5,7 +5,8 @@ pod 'Alamofire', '~> 1.1'
 pod 'SwiftyJSON', '~> 2.1.3'
 pod 'Realm', '~> 0.90.6'
 pod 'OAuthSwift', '~> 0.3.0'
-
+pod 'SDWebImage'
+pod 'SVProgressHUD'
 
 pod "Realm/Headers"
 
@@ -13,4 +14,6 @@ target 'AlcatrazTourTests' do
     pod 'Alamofire', '~> 1.1'
     pod 'SwiftyJSON', '~> 2.1.3'
     pod 'Realm/Headers'
+    pod 'SDWebImage'
+    pod 'SVProgressHUD'
 end

@@ -56,7 +56,7 @@ class ViewController: UIViewController {
     @IBAction func onSegmentChanged(sender: UISegmentedControl) {
         currentMode = Modes(rawValue: sender.selectedSegmentIndex)!
         tableView.reloadData()
-        tableView.scrollToRowAtIndexPath(NSIndexPath(forRow: 0, inSection: 0), atScrollPosition: UITableViewScrollPosition.Top, animated: true)
+        tableView.scrollToRowAtIndexPath(NSIndexPath(forRow: 0, inSection: 0), atScrollPosition: UITableViewScrollPosition.Top, animated: false)
     }
     
     @IBAction func onRefreshPushed(sender: AnyObject) {

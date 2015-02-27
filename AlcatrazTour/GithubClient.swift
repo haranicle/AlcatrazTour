@@ -10,6 +10,7 @@ import Alamofire
 import SwiftyJSON
 import Realm
 import OAuthSwift
+import SVProgressHUD
 
 class GithubClient: NSObject {
     
@@ -143,6 +144,8 @@ class GithubClient: NSObject {
         }
         
         println("START LOADING!!")
+        SVProgressHUD.showWithStatus("Loading list", maskType: SVProgressHUDMaskType.Black)
+        
         
         isLoading = true
         loadCompleteCount = 0
@@ -154,6 +157,8 @@ class GithubClient: NSObject {
         func onSucceedRequestingPlugins(plugins:[Plugin]) {
             
             println("PLUGIN LIST LOAD COMPLETE!!")
+            SVProgressHUD.dismiss()
+            SVProgressHUD.showProgress(0, status: "Loading data", maskType: SVProgressHUDMaskType.Black)
             
             // loading plugin details
             
@@ -187,6 +192,7 @@ class GithubClient: NSObject {
             println("response = \(response)")
             println("responseData = \(responseData)")
             println("error = \(error?.description)")
+            SVProgressHUD.showErrorWithStatus(error?.description)
         }
         
         requestPlugins(onSucceedRequestingPlugins, onFailed: onFailed)
@@ -194,8 +200,11 @@ class GithubClient: NSObject {
     
     func inclementLoadCompleteCount(pluginsCount:Int) {
         loadCompleteCount++
+        SVProgressHUD.showProgress(Float(loadCompleteCount) / Float(pluginsCount) , status: "Loading data", maskType: SVProgressHUDMaskType.Black)
+        
         if loadCompleteCount == pluginsCount {
             println("ALL DONE!!")
+            SVProgressHUD.dismiss()
             isLoading = false
             loadCompleteCount = 0
         }
