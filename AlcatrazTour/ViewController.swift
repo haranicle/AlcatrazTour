@@ -7,21 +7,51 @@
 
 import UIKit
 import Realm
+import FontAwesomeKit
 
 enum Modes:Int {
-    case Stars = 0
-    case Update = 1
-    case New = 2
-    case Popularity = 3
+    case Popularity = 0
+    case Stars = 1
+    case Update = 2
+    case New = 3
+    
+    func toIcon() -> String {
+        switch self {
+            case Modes.Popularity: return "\u{f004}"
+            case Modes.Stars: return "\u{f005}"
+            case Modes.Update: return "\u{f021}"
+            case Modes.New: return "\u{f135}"
+            default: return ""
+        }
+    }
+    
+    func toString() -> String {
+        switch self {
+        case Modes.Popularity: return "Popularity"
+        case Modes.Stars: return "Stars"
+        case Modes.Update: return "Update"
+        case Modes.New: return "New"
+        default: return ""
+        }
+    }
 }
 
 class ViewController: UIViewController {
     
     var githubClient = GithubClient()
     var currentMode = Modes.Stars
+    let segments = [Modes.Popularity, Modes.Stars, Modes.Update, Modes.New]
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        let attributes = [NSFontAttributeName:UIFont(name: "FontAwesome", size: 12)!]
+        segmentedControl.setTitleTextAttributes(attributes, forState: UIControlState.Normal)
+        
+        for i in 0 ..< segments.count {
+            let mode = segments[i]
+            segmentedControl.setTitle("\(mode.toIcon()) \(mode.toString())", forSegmentAtIndex: i)
+        }
         
         if !githubClient.isLoggedIn() {
             githubClient.requestOAuth({}, onFailed: {error in })
@@ -50,6 +80,7 @@ class ViewController: UIViewController {
     // MARK: - UI Parts
     
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var segmentedControl: UISegmentedControl!
     
     // MARK: - Action
     
@@ -81,9 +112,9 @@ class ViewController: UIViewController {
         cell.avaterImageView.sd_setImageWithURL(NSURL(string: plugin.avaterUrl))
         
         var formatter = NSDateFormatter()
-        formatter.dateFormat = "yy/MM/dd"
+        formatter.dateFormat = "MM/dd/yy"
         
-        cell.statusLabel.text = "⭐️\(plugin.starGazersCount) 🔄\(formatter.stringFromDate(plugin.updatedAt)) 👺\(formatter.stringFromDate(plugin.createdAt))"
+        cell.statusLabel.text = "\(Modes.Stars.toIcon()) \(plugin.starGazersCount) \(Modes.Update.toIcon()) \(formatter.stringFromDate(plugin.updatedAt)) \(Modes.New.toIcon()) \(formatter.stringFromDate(plugin.createdAt))"
         
         return cell
     }

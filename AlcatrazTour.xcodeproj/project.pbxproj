@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5F7C86771AA2F764008AB05E /* fontawesome-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5F7C86761AA2F764008AB05E /* fontawesome-webfont.ttf */; };
 		E7D12409782D7E5CE93986BE /* Pods_AlcatrazTourTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B77CF89FE308A62DBDF25C5E /* Pods_AlcatrazTourTests.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		EAE8118B6DD8E9D17662928B /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C8B2213C770F9DE318596BD9 /* Pods.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		F6051B201AA02F79006CA001 /* PluginDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6051B1F1AA02F79006CA001 /* PluginDetailViewController.swift */; };
@@ -40,6 +41,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		5F7C86761AA2F764008AB05E /* fontawesome-webfont.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "fontawesome-webfont.ttf"; sourceTree = "<group>"; };
 		876A289308A618BE1B5DDD8A /* Pods-AlcatrazTourTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AlcatrazTourTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-AlcatrazTourTests/Pods-AlcatrazTourTests.release.xcconfig"; sourceTree = "<group>"; };
 		B77CF89FE308A62DBDF25C5E /* Pods_AlcatrazTourTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AlcatrazTourTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BC6726427D1CF51E18A5A90A /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
@@ -184,6 +186,7 @@
 		F62E96241A9AF6F600063445 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				5F7C86761AA2F764008AB05E /* fontawesome-webfont.ttf */,
 				F62E96251A9AF6F600063445 /* Info.plist */,
 			);
 			name = "Supporting Files";
@@ -295,6 +298,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F62E962C1A9AF6F600063445 /* Main.storyboard in Resources */,
+				5F7C86771AA2F764008AB05E /* fontawesome-webfont.ttf in Resources */,
 				F62E96311A9AF6F600063445 /* LaunchScreen.xib in Resources */,
 				F62E962E1A9AF6F600063445 /* Images.xcassets in Resources */,
 			);

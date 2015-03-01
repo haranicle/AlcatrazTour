@@ -4,6 +4,11 @@
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
+    <customFonts key="customFonts">
+        <mutableArray key="fontawesome-webfont.ttf">
+            <string>FontAwesome</string>
+        </mutableArray>
+    </customFonts>
     <scenes>
         <!--View Controller-->
         <scene sceneID="tne-QT-ifu">
@@ -49,15 +54,15 @@
                                                     <color key="textColor" red="0.086274509803921567" green="0.40000000000000002" blue="0.96862745098039216" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Label" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QRx-JJ-7jB">
-                                                    <rect key="frame" x="88" y="31" width="504" height="41"/>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QRx-JJ-7jB">
+                                                    <rect key="frame" x="76" y="29" width="516" height="30.5"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tCh-Rb-tSo">
                                                     <rect key="frame" x="76" y="62" width="518" height="13"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                                    <fontDescription key="fontDescription" name="FontAwesome" family="FontAwesome" pointSize="12"/>
                                                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
@@ -114,13 +119,13 @@
                     <navigationItem key="navigationItem" id="Ywd-NA-iBD">
                         <nil key="title"/>
                         <segmentedControl key="titleView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="0" id="f4a-w7-npW">
-                            <rect key="frame" x="125" y="6.5" width="350" height="31"/>
+                            <rect key="frame" x="112.5" y="7" width="375" height="30"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <segments>
-                                <segment title="Stars"/>
-                                <segment title="Update"/>
-                                <segment title="New"/>
-                                <segment title="Popularity" enabled="NO"/>
+                                <segment title=""/>
+                                <segment title=""/>
+                                <segment title=""/>
+                                <segment title=""/>
                             </segments>
                             <connections>
                                 <action selector="onSegmentChanged:" destination="BYZ-38-t0r" eventType="valueChanged" id="Vtr-64-RgL"/>
@@ -133,6 +138,7 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="segmentedControl" destination="f4a-w7-npW" id="qaL-IE-fFg"/>
                         <outlet property="tableView" destination="WRX-07-h5X" id="Wie-l3-PaV"/>
                     </connections>
                 </viewController>
