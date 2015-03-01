@@ -60,7 +60,7 @@
 		F62E963B1A9AF6F600063445 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F62E963C1A9AF6F600063445 /* AlcatrazTourTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlcatrazTourTests.swift; sourceTree = "<group>"; };
 		F62E96461A9B0FA500063445 /* GithubClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GithubClient.swift; sourceTree = "<group>"; };
-		F6602A471A9EE116005DF8B9 /* SecretConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SecretConstants.swift; path = ../SecretConstants.swift; sourceTree = "<group>"; };
+		F6602A471A9EE116005DF8B9 /* SecretConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SecretConstants.swift; sourceTree = "<group>"; };
 		F673E77D1A9C796A00A20CB4 /* RLMSupport.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RLMSupport.swift; sourceTree = "<group>"; };
 		F673E7801A9C7B5000A20CB4 /* AlcatrazTour-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AlcatrazTour-Bridging-Header.h"; sourceTree = SOURCE_ROOT; };
 		F697C3C81A9C61FB001DF614 /* Plugin.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Plugin.swift; sourceTree = "<group>"; };
