@@ -39,7 +39,7 @@ enum Modes:Int {
 class ViewController: UIViewController {
     
     var githubClient = GithubClient()
-    var currentMode = Modes.Stars
+    var currentMode = Modes.Popularity
     let segments = [Modes.Popularity, Modes.Stars, Modes.Update, Modes.New]
 
     override func viewDidLoad() {
@@ -64,16 +64,17 @@ class ViewController: UIViewController {
     
     // MARK: - Realm
     
+    var popularityResults = Plugin.allObjects().sortedResultsUsingProperty("score", ascending: false)
     var starsResults = Plugin.allObjects().sortedResultsUsingProperty("starGazersCount", ascending: false)
     var updateResults = Plugin.allObjects().sortedResultsUsingProperty("updatedAt", ascending: false)
     var newResults = Plugin.allObjects().sortedResultsUsingProperty("createdAt", ascending: false)
     
     func currentResult()->RLMResults {
         switch currentMode {
+        case Modes.Popularity: return popularityResults
         case Modes.Stars: return starsResults
         case Modes.Update: return updateResults
         case Modes.New: return newResults
-        default: return starsResults
         }
     }
     
@@ -107,14 +108,14 @@ class ViewController: UIViewController {
         
         var cell = tableView.dequeueReusableCellWithIdentifier("Cell") as PluginTableViewCell
         cell.plugin = plugin
-        cell.titleLabel.text = plugin.name
+        cell.titleLabel.text = "\(indexPath.row + 1). \(plugin.name)"
         cell.noteLabel.text = plugin.note
         cell.avaterImageView.sd_setImageWithURL(NSURL(string: plugin.avaterUrl))
         
         var formatter = NSDateFormatter()
         formatter.dateFormat = "MM/dd/yy"
-        
-        cell.statusLabel.text = "\(Modes.Stars.toIcon()) \(plugin.starGazersCount) \(Modes.Update.toIcon()) \(formatter.stringFromDate(plugin.updatedAt)) \(Modes.New.toIcon()) \(formatter.stringFromDate(plugin.createdAt))"
+                
+        cell.statusLabel.text = "\(Modes.Popularity.toIcon()) \(plugin.scoreAsString()) \(Modes.Stars.toIcon()) \(plugin.starGazersCount) \(Modes.Update.toIcon()) \(formatter.stringFromDate(plugin.updatedAt)) \(Modes.New.toIcon()) \(formatter.stringFromDate(plugin.createdAt))"
         
         return cell
     }

@@ -21,6 +21,11 @@ class Plugin: RLMObject {
     dynamic var starGazersCount:Int = 0 // star
     dynamic var updatedAt:NSDate = NSDate(timeIntervalSince1970: 0)
     dynamic var createdAt:NSDate = NSDate(timeIntervalSince1970: 0)
+    dynamic var watchersCount:Int = 0
+    dynamic var forkCount:Int = 0
+    
+    // score
+    dynamic var score:Float = 0.0
     
     // MARK: - Params
     
@@ -52,6 +57,13 @@ class Plugin: RLMObject {
         if let d = details["created_at"] as? NSString {
             createdAt = stringAsDate(d)
         }
+        if let d = details["watchers_count"] as? Int {
+            watchersCount = d
+        }
+        if let d = details["forks"] as? Int {
+            forkCount = d
+        }
+        calcScore()
     }
     
     func stringAsDate(string:String) -> NSDate {
@@ -60,7 +72,12 @@ class Plugin: RLMObject {
         return formatter.dateFromString(string) ?? NSDate(timeIntervalSince1970: 0)
     }
     
+    func scoreAsString() -> String {
+        return NSString(format: "%0.2f", score)
+    }
+    
     // MARK: - Realm
+    
     func save() {
         let realm = RLMRealm.defaultRealm()
         realm.transactionWithBlock{
@@ -74,5 +91,18 @@ class Plugin: RLMObject {
             realm.deleteAllObjects()
         }
     }
+    
+    // MARK: - Score
+    
+    func calcScore() {
+        let githubScore = watchersCount + starGazersCount + forkCount
+        let ageFactor = calcAgeFactor(githubScore)
+        score = Float(githubScore) - ageFactor
+        println("score = \(score)")
+        println("ageFactor = \(ageFactor)")
+    }
    
+    func calcAgeFactor(githubScore:Int) -> Float {
+        return Float(githubScore) * Float(-updatedAt.timeIntervalSinceNow) / 86400.0 / 365
+    }
 }
