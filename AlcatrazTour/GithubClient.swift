@@ -29,7 +29,18 @@ class GithubClient: NSObject {
     // MARK: - Create URL
     
     func createRepoDetailUrl(repoUrl:String) -> String {
-        return repoUrl.stringByReplacingOccurrencesOfString(githubRepoUrl, withString: githubRepoApiUrl, options: nil, range: nil)
+        // create api url
+        var repoDetailUrl:String = repoUrl.stringByReplacingOccurrencesOfString(githubRepoUrl, withString: githubRepoApiUrl, options: nil, range: nil)
+        // remove last "/"
+        if repoDetailUrl.hasSuffix("/") {
+            repoDetailUrl = repoDetailUrl[repoDetailUrl.startIndex..<advance(repoDetailUrl.endIndex, -1)]
+        }
+        // remove last ".git"
+        if repoDetailUrl.hasSuffix(".git") {
+            repoDetailUrl = repoDetailUrl[repoDetailUrl.startIndex..<advance(repoDetailUrl.endIndex, -4)]
+        }
+        
+        return repoDetailUrl
     }
     
     // MARK: - OAuth
@@ -71,6 +82,7 @@ class GithubClient: NSObject {
     func requestPlugins(onSucceed:[Plugin] -> Void, onFailed:(NSURLRequest, NSHTTPURLResponse?, AnyObject?, NSError?) -> Void) {
         Alamofire
             .request(.GET, alcatrazPackagesUrl)
+            .validate(statusCode: 200..<400)
             .responseJSON {request, response, responseData, error in
                 
                 if let aError = error {
@@ -112,6 +124,7 @@ class GithubClient: NSObject {
         
         Alamofire
             .request(Method.GET, createRepoDetailUrl(plugin.url), parameters: ["access_token": token!])
+            .validate(statusCode: 200..<400)
             .responseJSON {request, response, responseData, error in
                 
                 if let aError = error {
@@ -122,10 +135,8 @@ class GithubClient: NSObject {
                 if let aResponseData: AnyObject = responseData {
                     let jsonData = JSON(aResponseData)
                     
-                    weak var weakPlugin = plugin
-                    
                     if let pluginDetail = jsonData.object as? NSDictionary {
-                        onSucceed(weakPlugin, pluginDetail)
+                        onSucceed(plugin, pluginDetail)
                     }
                 } else {
                     onFailed(request, response, responseData, nil)
@@ -164,13 +175,19 @@ class GithubClient: NSObject {
             
             func onSucceedRequestingRepoDetail(plugin:Plugin?, pluginDetail:NSDictionary) {
                 
+                println("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
+                println("plugin.name = \(plugin?.name)")
+                println("plugin.url = \(plugin?.url)")
+                println("plugin.repoUrl = \(createRepoDetailUrl(plugin!.url))")
                 println("pluginDetail = \(pluginDetail)")
                 
                 plugin?.setDetails(pluginDetail)
                 if let p = plugin {
                     p.save()
                 }
-                inclementLoadCompleteCount(plugins.count)
+                if inclementLoadCompleteCount(plugins.count) {
+                    onComplete()
+                }
             }
             
             func onFailed(request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) {
@@ -178,7 +195,9 @@ class GithubClient: NSObject {
                 println("response = \(response)")
                 println("responseData = \(responseData)")
                 println("error = \(error?.description)")
-                inclementLoadCompleteCount(plugins.count)
+                if inclementLoadCompleteCount(plugins.count) {
+                    onComplete()
+                }
             }
             
             for plugin in plugins {
@@ -193,12 +212,13 @@ class GithubClient: NSObject {
             println("responseData = \(responseData)")
             println("error = \(error?.description)")
             SVProgressHUD.showErrorWithStatus(error?.description)
+            onComplete()
         }
         
         requestPlugins(onSucceedRequestingPlugins, onFailed: onFailed)
     }
     
-    func inclementLoadCompleteCount(pluginsCount:Int) {
+    func inclementLoadCompleteCount(pluginsCount:Int)->Bool {
         loadCompleteCount++
         SVProgressHUD.showProgress(Float(loadCompleteCount) / Float(pluginsCount) , status: "Loading data", maskType: SVProgressHUDMaskType.Black)
         
@@ -207,7 +227,9 @@ class GithubClient: NSObject {
             SVProgressHUD.dismiss()
             isLoading = false
             loadCompleteCount = 0
+            return true
         }
+        return false
     }
     
     

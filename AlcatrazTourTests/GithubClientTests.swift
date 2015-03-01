@@ -34,10 +34,20 @@ class GithubClientTests: XCTestCase {
     }
     
     // MARK: - Create URL
+    
     func test_createRepoDetailUrl_worksFine() {
         let client = GithubClient()
-        let actual = client.createRepoDetailUrl("https://github.com/onevcat/VVDocumenter-Xcode")
-        XCTAssertEqual("https://api.github.com/repos/onevcat/VVDocumenter-Xcode", actual)
+        let actual1 = client.createRepoDetailUrl("https://github.com/onevcat/VVDocumenter-Xcode")
+        XCTAssertEqual("https://api.github.com/repos/onevcat/VVDocumenter-Xcode", actual1)
+        
+        let actual2 = client.createRepoDetailUrl("https://github.com/StefanLage/XQuit/")
+        XCTAssertEqual("https://api.github.com/repos/StefanLage/XQuit", actual2)
+        
+        let actual3 = client.createRepoDetailUrl("https://github.com/StefanLage/XQuit.git")
+        XCTAssertEqual("https://api.github.com/repos/StefanLage/XQuit", actual2)
+        
+        let actual4 = client.createRepoDetailUrl("https://github.com/StefanLage/XQuit.git/")
+        XCTAssertEqual("https://api.github.com/repos/StefanLage/XQuit", actual4)
         
         XCTAssertEqual("aaa", client.createRepoDetailUrl("aaa"))
         XCTAssertEqual("", client.createRepoDetailUrl(""))
@@ -45,12 +55,14 @@ class GithubClientTests: XCTestCase {
     
     // MARK: - Request
     
-    
     func test_requestPlugins_worksFine() {
+        let expectation:XCTestExpectation = self.expectationWithDescription(__FUNCTION__)
+        
         let client = GithubClient()
         
         func onSucceed(plugins:[Plugin]) {
             plugins.map{println("\($0.name)")}
+            expectation.fulfill()
         }
         
         func onFailed(request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) {
@@ -58,19 +70,25 @@ class GithubClientTests: XCTestCase {
             println("response = \(response)")
             println("responseData = \(responseData)")
             println("error = \(error?.description)")
+            expectation.fulfill()
         }
         
         client.requestPlugins(onSucceed, onFailed: onFailed)
+        
+        self.waitForExpectationsWithTimeout(3 , handler: nil)
     }
     
     func test_requestRepoDetail_worksFine() {
+        let expectation:XCTestExpectation = self.expectationWithDescription(__FUNCTION__)
+        
         let client = GithubClient()
         
         var plugin = Plugin()
-        plugin.url = "https://github.com/onevcat/VVDocumenter-Xcode"
+        plugin.url = "https://github.com/XVimProject/XVim"
         
         func onSucceed(plugin:Plugin?, pluginDetail:NSDictionary) {
-            println(pluginDetail)
+            NSLog("pluginDetail = \(pluginDetail)")
+            expectation.fulfill()
         }
         
         func onFailed(request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) {
@@ -78,15 +96,23 @@ class GithubClientTests: XCTestCase {
             println("response = \(response)")
             println("responseData = \(responseData)")
             println("error = \(error?.description)")
+            expectation.fulfill()
         }
         
         client.requestRepoDetail(plugin
 , onSucceed: onSucceed, onFailed: onFailed)
+        self.waitForExpectationsWithTimeout(5 , handler: nil)
     }
     
     func test_reloadAllPlugins_worksFine() {
+        let expectation:XCTestExpectation = self.expectationWithDescription(__FUNCTION__)
+        
         let client = GithubClient()
-        client.reloadAllPlugins({})
+        client.reloadAllPlugins({
+            expectation.fulfill()
+        })
+        
+        self.waitForExpectationsWithTimeout(30 , handler: nil)
     }
 
 }
