@@ -7,7 +7,6 @@
 
 import UIKit
 import Realm
-import FontAwesomeKit
 
 enum Modes:Int {
     case Popularity = 0
@@ -52,9 +51,11 @@ class ViewController: UIViewController {
             let mode = segments[i]
             segmentedControl.setTitle("\(mode.toIcon()) \(mode.toString())", forSegmentAtIndex: i)
         }
-        
-        if !githubClient.isLoggedIn() {
-            githubClient.requestOAuth({}, onFailed: {error in })
+    }
+    
+    override func viewDidAppear(animated: Bool) {
+        if !githubClient.isSignedIn() {
+            showSignInAlert()
         }
     }
 
@@ -118,6 +119,26 @@ class ViewController: UIViewController {
         cell.statusLabel.text = "\(Modes.Popularity.toIcon()) \(plugin.scoreAsString()) \(Modes.Stars.toIcon()) \(plugin.starGazersCount) \(Modes.Update.toIcon()) \(formatter.stringFromDate(plugin.updatedAt)) \(Modes.New.toIcon()) \(formatter.stringFromDate(plugin.createdAt))"
         
         return cell
+    }
+    
+    // MARK: - Sign in
+    
+    func showSignInAlert() {
+        // TODO: needs to modify here... (what to do when error occurs?)
+        var alert = UIAlertController(title: "Sign in", message: "Please, sign in to github with Safari.", preferredStyle: UIAlertControllerStyle.Alert)
+        alert.addAction(UIAlertAction(title: "Open Safari", style: UIAlertActionStyle.Default, handler: { (action:UIAlertAction!) -> Void in
+            self.signIn()
+        }))
+        presentViewController(alert, animated: true, completion: nil)
+    }
+    
+    func signIn() {
+        githubClient.requestOAuth({
+            self.githubClient.reloadAllPlugins({self.tableView.reloadData()})
+            }, onFailed: { error in
+                var errorAlert = UIAlertController(title: "Error", message: error.description, preferredStyle: UIAlertControllerStyle.Alert)
+                self.presentViewController(errorAlert, animated: true, completion: nil)
+        })
     }
     
     // MARK: - Segue

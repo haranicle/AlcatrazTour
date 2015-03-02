@@ -46,14 +46,14 @@ class GithubClient: NSObject {
     // MARK: - OAuth
     let githubOauthTokenKey = "githubTokenKey"
     
-    func isLoggedIn()->Bool {
+    func isSignedIn()->Bool {
         if let token = NSUserDefaults.standardUserDefaults().stringForKey(githubOauthTokenKey) {
             return true
         }
         return false
     }
     
-    func logout() {
+    func signOut() {
         NSUserDefaults.standardUserDefaults().removeObjectForKey(githubOauthTokenKey)
     }
     
