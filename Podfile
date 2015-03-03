@@ -7,8 +7,7 @@ pod 'Realm', '~> 0.90.6'
 pod 'OAuthSwift', '~> 0.3.0'
 pod 'SDWebImage'
 pod 'SVProgressHUD'
-
-pod "Realm/Headers"
+pod 'M2DWebViewController'
 
 target 'AlcatrazTourTests' do
     pod 'Alamofire', '~> 1.1'

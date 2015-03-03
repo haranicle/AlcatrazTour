@@ -1,5 +1,6 @@
 PODS:
   - Alamofire (1.1.4)
+  - M2DWebViewController (0.1.11)
   - OAuthSwift (0.3.2)
   - Realm (0.90.6):
     - Realm/Headers (= 0.90.6)
@@ -12,6 +13,7 @@ PODS:
 
 DEPENDENCIES:
   - Alamofire (~> 1.1)
+  - M2DWebViewController
   - OAuthSwift (~> 0.3.0)
   - Realm (~> 0.90.6)
   - Realm/Headers
@@ -21,6 +23,7 @@ DEPENDENCIES:
 
 SPEC CHECKSUMS:
   Alamofire: 524225da382071ee3e6d0badd0ee4b4dc36740de
+  M2DWebViewController: 4c252e5a70a2de0e6393cbf3d652fa3521ce693b
   OAuthSwift: 57c82d2a5b505cc4038b0be439ca2fc796b92ba6
   Realm: 6c3facc11964ab9f828f47de6d0e9bf9c4d9c818
   SDWebImage: 116e88633b5b416ea0ca4b334a4ac59cf72dd38d
