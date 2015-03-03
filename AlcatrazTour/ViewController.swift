@@ -7,7 +7,7 @@
 
 import UIKit
 import Realm
-import FontAwesomeKit
+import M2DWebViewController
 
 enum Modes:Int {
     case Popularity = 0
@@ -107,7 +107,6 @@ class ViewController: UIViewController {
         let plugin = currentResult()[UInt(indexPath.row)] as Plugin
         
         var cell = tableView.dequeueReusableCellWithIdentifier("Cell") as PluginTableViewCell
-        cell.plugin = plugin
         cell.titleLabel.text = "\(indexPath.row + 1). \(plugin.name)"
         cell.noteLabel.text = plugin.note
         cell.avaterImageView.sd_setImageWithURL(NSURL(string: plugin.avaterUrl))
@@ -120,16 +119,15 @@ class ViewController: UIViewController {
         return cell
     }
     
-    // MARK: - Segue
+    // MARK: - TableView Delegate
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        let cell = sender as PluginTableViewCell
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        tableView.deselectRowAtIndexPath(indexPath, animated: true)
         
-        if segue.identifier == "showPluginDetail" {
-            let pluginDetailViewController = segue.destinationViewController as PluginDetailViewController
-            pluginDetailViewController.url = cell.plugin!.url
-            pluginDetailViewController.title = cell.plugin!.name
-        }
+        let selectedPlugin = currentResult()[UInt(indexPath.row)] as Plugin
+        
+        var webViewController = M2DWebViewController(URL: NSURL(string: selectedPlugin.url), type: M2DWebViewType.AutoSelect)
+        navigationController?.pushViewController(webViewController, animated: true)
     }
 
 }

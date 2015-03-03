@@ -10,7 +10,6 @@
 		5F7C86771AA2F764008AB05E /* fontawesome-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5F7C86761AA2F764008AB05E /* fontawesome-webfont.ttf */; };
 		E7D12409782D7E5CE93986BE /* Pods_AlcatrazTourTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B77CF89FE308A62DBDF25C5E /* Pods_AlcatrazTourTests.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		EAE8118B6DD8E9D17662928B /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C8B2213C770F9DE318596BD9 /* Pods.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
-		F6051B201AA02F79006CA001 /* PluginDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6051B1F1AA02F79006CA001 /* PluginDetailViewController.swift */; };
 		F60FC5471A9F084D00AAAC9B /* PluginTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F60FC5461A9F084D00AAAC9B /* PluginTests.swift */; };
 		F60FC54D1A9F18B300AAAC9B /* PluginTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F60FC54C1A9F18B300AAAC9B /* PluginTableViewCell.swift */; };
 		F62E96271A9AF6F600063445 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F62E96261A9AF6F600063445 /* AppDelegate.swift */; };
@@ -48,7 +47,6 @@
 		BE99EB0688C3AED87F686086 /* Pods-AlcatrazTourTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AlcatrazTourTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AlcatrazTourTests/Pods-AlcatrazTourTests.debug.xcconfig"; sourceTree = "<group>"; };
 		C8B2213C770F9DE318596BD9 /* Pods.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D30EBB73D6B56941A653ACA1 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
-		F6051B1F1AA02F79006CA001 /* PluginDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PluginDetailViewController.swift; sourceTree = "<group>"; };
 		F60FC5461A9F084D00AAAC9B /* PluginTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PluginTests.swift; sourceTree = "<group>"; };
 		F60FC54C1A9F18B300AAAC9B /* PluginTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PluginTableViewCell.swift; sourceTree = "<group>"; };
 		F62E96211A9AF6F600063445 /* AlcatrazTour.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AlcatrazTour.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -139,7 +137,6 @@
 			isa = PBXGroup;
 			children = (
 				F62E96281A9AF6F600063445 /* ViewController.swift */,
-				F6051B1F1AA02F79006CA001 /* PluginDetailViewController.swift */,
 			);
 			name = ViewController;
 			sourceTree = "<group>";
@@ -411,7 +408,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F6051B201AA02F79006CA001 /* PluginDetailViewController.swift in Sources */,
 				F62E96471A9B0FA500063445 /* GithubClient.swift in Sources */,
 				F62E96291A9AF6F600063445 /* ViewController.swift in Sources */,
 				F673E77E1A9C796A00A20CB4 /* RLMSupport.swift in Sources */,
