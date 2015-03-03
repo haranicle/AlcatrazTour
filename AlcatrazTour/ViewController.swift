@@ -57,6 +57,10 @@ class ViewController: UIViewController {
             githubClient.requestOAuth({}, onFailed: {error in })
         }
     }
+    
+    override func viewWillAppear(animated: Bool) {
+        navigationController!.toolbarHidden = true
+    }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
