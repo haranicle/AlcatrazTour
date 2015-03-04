@@ -79,10 +79,7 @@ class Plugin: RLMObject {
     // MARK: - Realm
     
     func save() {
-        let realm = RLMRealm.defaultRealm()
-        realm.transactionWithBlock{
-            realm.addObject(self)
-        }
+        RLMRealm.defaultRealm().addObject(self)
     }
     
     class func deleteAll() {

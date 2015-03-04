@@ -161,13 +161,15 @@ class GithubClient: NSObject {
         isLoading = true
         loadCompleteCount = 0
         
-        Plugin.deleteAll()
-        
         // loading plugin list
         
         func onSucceedRequestingPlugins(plugins:[Plugin]) {
             
             println("PLUGIN LIST LOAD COMPLETE!!")
+            
+            RLMRealm.defaultRealm().beginWriteTransaction()
+            Plugin.deleteAll()
+            
             SVProgressHUD.dismiss()
             SVProgressHUD.showProgress(0, status: "Loading data", maskType: SVProgressHUDMaskType.Black)
             
@@ -185,9 +187,7 @@ class GithubClient: NSObject {
                 if let p = plugin {
                     p.save()
                 }
-                if inclementLoadCompleteCount(plugins.count) {
-                    onComplete()
-                }
+                inclementLoadCompleteCount(plugins.count, onComplete)
             }
             
             func onFailed(request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) {
@@ -195,9 +195,8 @@ class GithubClient: NSObject {
                 println("response = \(response)")
                 println("responseData = \(responseData)")
                 println("error = \(error?.description)")
-                if inclementLoadCompleteCount(plugins.count) {
-                    onComplete()
-                }
+                
+                inclementLoadCompleteCount(plugins.count, onComplete)
             }
             
             for plugin in plugins {
@@ -211,14 +210,18 @@ class GithubClient: NSObject {
             println("response = \(response)")
             println("responseData = \(responseData)")
             println("error = \(error?.description)")
-            SVProgressHUD.showErrorWithStatus(error?.description)
+            // SVProgressHUD.showErrorWithStatus(error?.description)
+            
+            // rollback
+            RLMRealm.defaultRealm().cancelWriteTransaction()
+            
             onComplete()
         }
         
         requestPlugins(onSucceedRequestingPlugins, onFailed: onFailed)
     }
     
-    func inclementLoadCompleteCount(pluginsCount:Int)->Bool {
+    func inclementLoadCompleteCount(pluginsCount:Int, onConplete:Void->Void)->Bool {
         loadCompleteCount++
         SVProgressHUD.showProgress(Float(loadCompleteCount) / Float(pluginsCount) , status: "Loading data", maskType: SVProgressHUDMaskType.Black)
         
@@ -227,6 +230,11 @@ class GithubClient: NSObject {
             SVProgressHUD.dismiss()
             isLoading = false
             loadCompleteCount = 0
+            
+            // commit
+            RLMRealm.defaultRealm().commitWriteTransaction()
+            
+            onConplete()
             return true
         }
         return false

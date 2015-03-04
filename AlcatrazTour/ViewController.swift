@@ -44,7 +44,7 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let attributes = [NSFontAttributeName:UIFont(name: "FontAwesome", size: 12)!]
+        let attributes = [NSFontAttributeName:UIFont(name: "FontAwesome", size: 10)!]
         segmentedControl.setTitleTextAttributes(attributes, forState: UIControlState.Normal)
         
         for i in 0 ..< segments.count {
