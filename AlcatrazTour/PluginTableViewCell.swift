@@ -10,6 +10,7 @@ import UIKit
 class PluginTableViewCell: UITableViewCell {
     
     @IBOutlet weak var avaterImageView: UIImageView!
+    @IBOutlet weak var rankingLabel: UILabel!
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var noteLabel: UILabel!
     @IBOutlet weak var statusLabel: UILabel!
