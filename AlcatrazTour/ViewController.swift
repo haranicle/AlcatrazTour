@@ -96,7 +96,10 @@ class ViewController: UIViewController {
     }
     
     @IBAction func onRefreshPushed(sender: AnyObject) {
-        githubClient.reloadAllPlugins({self.tableView.reloadData()})
+        if !tableView.decelerating {
+            githubClient.reloadAllPlugins({self.tableView.reloadData()})
+        }
+        
     }
     
     // MARK: - Table View Data Source
