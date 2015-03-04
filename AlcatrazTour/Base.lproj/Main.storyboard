@@ -66,9 +66,27 @@
                                                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="999" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="k6F-oB-c7w">
+                                                    <rect key="frame" x="4" y="4" width="30" height="30"/>
+                                                    <color key="backgroundColor" red="0.086274509799999996" green="0.40000000000000002" blue="0.96862745100000003" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="30" id="5Pw-ue-3Gz"/>
+                                                        <constraint firstAttribute="width" constant="30" id="fZf-LA-T5P"/>
+                                                    </constraints>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                    <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <nil key="highlightedColor"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                                            <integer key="value" value="15"/>
+                                                        </userDefinedRuntimeAttribute>
+                                                        <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                                                    </userDefinedRuntimeAttributes>
+                                                </label>
                                             </subviews>
                                             <constraints>
                                                 <constraint firstItem="VUS-Ud-eKy" firstAttribute="leading" secondItem="EqY-jL-Aky" secondAttribute="trailing" constant="8" id="EfJ-D4-TVz"/>
+                                                <constraint firstItem="k6F-oB-c7w" firstAttribute="top" secondItem="gIY-oO-cfH" secondAttribute="topMargin" constant="-4" id="H5V-Zk-VPX"/>
                                                 <constraint firstAttribute="bottomMargin" secondItem="tCh-Rb-tSo" secondAttribute="bottom" constant="-4" id="NwN-Hh-9Zx"/>
                                                 <constraint firstItem="EqY-jL-Aky" firstAttribute="top" secondItem="gIY-oO-cfH" secondAttribute="topMargin" constant="2" id="RLP-mi-NZX"/>
                                                 <constraint firstItem="tCh-Rb-tSo" firstAttribute="top" secondItem="VUS-Ud-eKy" secondAttribute="bottom" constant="33" id="RLc-Qp-1C1"/>
@@ -83,6 +101,7 @@
                                                 <constraint firstItem="VUS-Ud-eKy" firstAttribute="top" secondItem="gIY-oO-cfH" secondAttribute="topMargin" id="ljf-sR-B64"/>
                                                 <constraint firstItem="tCh-Rb-tSo" firstAttribute="leading" secondItem="EqY-jL-Aky" secondAttribute="trailing" constant="8" id="ppj-PC-Ni0"/>
                                                 <constraint firstItem="QRx-JJ-7jB" firstAttribute="leading" secondItem="EqY-jL-Aky" secondAttribute="trailing" constant="8" id="rUu-Ya-cdO"/>
+                                                <constraint firstItem="k6F-oB-c7w" firstAttribute="leading" secondItem="gIY-oO-cfH" secondAttribute="leadingMargin" constant="-4" id="w6L-Cb-N4z"/>
                                                 <constraint firstItem="QRx-JJ-7jB" firstAttribute="trailing" secondItem="gIY-oO-cfH" secondAttribute="trailingMargin" id="zM0-JX-nLJ"/>
                                             </constraints>
                                             <variation key="default">
@@ -96,6 +115,7 @@
                                         <connections>
                                             <outlet property="avaterImageView" destination="EqY-jL-Aky" id="hvg-dU-UiV"/>
                                             <outlet property="noteLabel" destination="QRx-JJ-7jB" id="iAH-u1-lrJ"/>
+                                            <outlet property="rankingLabel" destination="k6F-oB-c7w" id="uP4-Qh-LzR"/>
                                             <outlet property="statusLabel" destination="tCh-Rb-tSo" id="KUf-UQ-0Ck"/>
                                             <outlet property="titleLabel" destination="VUS-Ud-eKy" id="Qkf-FU-QwA"/>
                                         </connections>

@@ -111,7 +111,8 @@ class ViewController: UIViewController {
         let plugin = currentResult()[UInt(indexPath.row)] as Plugin
         
         var cell = tableView.dequeueReusableCellWithIdentifier("Cell") as PluginTableViewCell
-        cell.titleLabel.text = "\(indexPath.row + 1). \(plugin.name)"
+        cell.rankingLabel.text = "\(indexPath.row + 1)"
+        cell.titleLabel.text = plugin.name
         cell.noteLabel.text = plugin.note
         cell.avaterImageView.sd_setImageWithURL(NSURL(string: plugin.avaterUrl))
         
