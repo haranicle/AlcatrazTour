@@ -220,6 +220,7 @@ class GithubClient: NSObject {
                 RLMRealm.defaultRealm().commitWriteTransaction()
                 
                 println("successCount = \(successCount)")
+                println("plugins.count = \(plugins.count)")
                 
                 onComplete(nil)
             })
@@ -244,6 +245,5 @@ class GithubClient: NSObject {
         loadCompleteCount++
         SVProgressHUD.showProgress(Float(loadCompleteCount) / Float(pluginsCount) , status: "Loading data", maskType: SVProgressHUDMaskType.Black)
     }
-    
     
 }

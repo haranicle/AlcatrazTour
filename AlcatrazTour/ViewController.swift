@@ -44,6 +44,9 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // notification center 
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "onApplicationDidBecomeActive:", name: UIApplicationDidBecomeActiveNotification, object: nil)
+        
         let attributes = [NSFontAttributeName:UIFont(name: "FontAwesome", size: 10)!]
         segmentedControl.setTitleTextAttributes(attributes, forState: UIControlState.Normal)
         
@@ -53,14 +56,18 @@ class ViewController: UIViewController {
         }
     }
     
-    override func viewDidAppear(animated: Bool) {
-        if !githubClient.isSignedIn() {
-            showSignInAlert()
-        }
+    deinit{
+        NSNotificationCenter.defaultCenter().removeObserver(self)
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
+    }
+    
+    func onApplicationDidBecomeActive(notification:NSNotification) {
+        if !githubClient.isSignedIn() {
+            showSignInAlert()
+        }
     }
     
     // MARK: - Realm
@@ -93,7 +100,7 @@ class ViewController: UIViewController {
     }
     
     @IBAction func onRefreshPushed(sender: AnyObject) {
-        githubClient.reloadAllPlugins({error in self.tableView.reloadData()})
+        self.reloadAllPlugins()
     }
     
     // MARK: - Table View Data Source
@@ -126,7 +133,7 @@ class ViewController: UIViewController {
     func showSignInAlert() {
         // TODO: needs to modify here... (what to do when error occurs?)
         var alert = UIAlertController(title: "Sign in", message: "Please, sign in to github with Safari.", preferredStyle: UIAlertControllerStyle.Alert)
-        alert.addAction(UIAlertAction(title: "Open Safari", style: UIAlertActionStyle.Default, handler: { (action:UIAlertAction!) -> Void in
+        alert.addAction(UIAlertAction(title: "Open Safari", style: UIAlertActionStyle.Default, handler: { action in
             self.signIn()
         }))
         presentViewController(alert, animated: true, completion: nil)
@@ -134,10 +141,23 @@ class ViewController: UIViewController {
     
     func signIn() {
         githubClient.requestOAuth({
-            self.githubClient.reloadAllPlugins({error in self.tableView.reloadData()})
+            self.reloadAllPlugins()
             }, onFailed: { error in
+                // login failed. quit app.
                 var errorAlert = UIAlertController(title: "Error", message: error.description, preferredStyle: UIAlertControllerStyle.Alert)
+                errorAlert.addAction(UIAlertAction(title: "Quit app", style: UIAlertActionStyle.Default, handler:{action in exit(0)} ))
                 self.presentViewController(errorAlert, animated: true, completion: nil)
+        })
+    }
+    
+    // MARK: - Reload data
+    
+    func reloadAllPlugins() {
+        self.githubClient.reloadAllPlugins({(error:NSError?) in
+            if let err = error {
+                self.showErrorAlert(err)
+            }
+            self.tableView.reloadData()
         })
     }
     
@@ -151,6 +171,14 @@ class ViewController: UIViewController {
             pluginDetailViewController.url = cell.plugin!.url
             pluginDetailViewController.title = cell.plugin!.name
         }
+    }
+    
+    // MARK: - Error
+    
+    func showErrorAlert(error:NSError) {
+        var alert = UIAlertController(title: "Error", message: error.description, preferredStyle: UIAlertControllerStyle.Alert)
+        alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil))
+        self.presentViewController(alert, animated: true, completion: nil)
     }
 
 }
