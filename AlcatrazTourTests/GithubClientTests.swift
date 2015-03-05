@@ -108,7 +108,7 @@ class GithubClientTests: XCTestCase {
         let expectation:XCTestExpectation = self.expectationWithDescription(__FUNCTION__)
         
         let client = GithubClient()
-        client.reloadAllPlugins({
+        client.reloadAllPlugins({error in
             expectation.fulfill()
         })
         

@@ -93,7 +93,7 @@ class ViewController: UIViewController {
     }
     
     @IBAction func onRefreshPushed(sender: AnyObject) {
-        githubClient.reloadAllPlugins({self.tableView.reloadData()})
+        githubClient.reloadAllPlugins({error in self.tableView.reloadData()})
     }
     
     // MARK: - Table View Data Source
@@ -134,7 +134,7 @@ class ViewController: UIViewController {
     
     func signIn() {
         githubClient.requestOAuth({
-            self.githubClient.reloadAllPlugins({self.tableView.reloadData()})
+            self.githubClient.reloadAllPlugins({error in self.tableView.reloadData()})
             }, onFailed: { error in
                 var errorAlert = UIAlertController(title: "Error", message: error.description, preferredStyle: UIAlertControllerStyle.Alert)
                 self.presentViewController(errorAlert, animated: true, completion: nil)

@@ -18,7 +18,7 @@ class Plugin: RLMObject {
     
     // details
     dynamic var avaterUrl = ""
-    dynamic var starGazersCount:Int = 0 // star
+    dynamic var starGazersCount:Int = 0
     dynamic var updatedAt:NSDate = NSDate(timeIntervalSince1970: 0)
     dynamic var createdAt:NSDate = NSDate(timeIntervalSince1970: 0)
     dynamic var watchersCount:Int = 0
@@ -83,10 +83,7 @@ class Plugin: RLMObject {
     }
     
     class func deleteAll() {
-        let realm = RLMRealm.defaultRealm()
-        realm.transactionWithBlock{
-            realm.deleteAllObjects()
-        }
+        RLMRealm.defaultRealm().deleteAllObjects()
     }
     
     // MARK: - Score
