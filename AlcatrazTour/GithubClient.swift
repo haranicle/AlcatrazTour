@@ -24,7 +24,7 @@ class GithubClient: NSObject {
     // MARK: - Status
     
     var isLoading = false
-    var loadCompleteCount = 0
+    var loadCompleteCount:Int = 0
     
     // MARK: - Create URL
     
@@ -46,14 +46,14 @@ class GithubClient: NSObject {
     // MARK: - OAuth
     let githubOauthTokenKey = "githubTokenKey"
     
-    func isLoggedIn()->Bool {
+    func isSignedIn()->Bool {
         if let token = NSUserDefaults.standardUserDefaults().stringForKey(githubOauthTokenKey) {
             return true
         }
         return false
     }
     
-    func logout() {
+    func signOut() {
         NSUserDefaults.standardUserDefaults().removeObjectForKey(githubOauthTokenKey)
     }
     
@@ -147,7 +147,7 @@ class GithubClient: NSObject {
     
     // MARK: - Processing Flow
     
-    func reloadAllPlugins(onComplete:Void->Void) {
+    func reloadAllPlugins(onComplete:NSError?->Void) {
         
         if(isLoading) {
             println("NOW LOADING!!")
@@ -157,19 +157,21 @@ class GithubClient: NSObject {
         println("START LOADING!!")
         SVProgressHUD.showWithStatus("Loading list", maskType: SVProgressHUDMaskType.Black)
         
-        
         isLoading = true
         loadCompleteCount = 0
-        
-        Plugin.deleteAll()
         
         // loading plugin list
         
         func onSucceedRequestingPlugins(plugins:[Plugin]) {
             
             println("PLUGIN LIST LOAD COMPLETE!!")
+            
             SVProgressHUD.dismiss()
             SVProgressHUD.showProgress(0, status: "Loading data", maskType: SVProgressHUDMaskType.Black)
+            
+            // Dispatch Group
+            let group = dispatch_group_create()
+            var successCount = 0
             
             // loading plugin details
             
@@ -185,9 +187,9 @@ class GithubClient: NSObject {
                 if let p = plugin {
                     p.save()
                 }
-                if inclementLoadCompleteCount(plugins.count) {
-                    onComplete()
-                }
+                successCount++
+                updateProgress(plugins.count)
+                dispatch_group_leave(group)
             }
             
             func onFailed(request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) {
@@ -195,14 +197,33 @@ class GithubClient: NSObject {
                 println("response = \(response)")
                 println("responseData = \(responseData)")
                 println("error = \(error?.description)")
-                if inclementLoadCompleteCount(plugins.count) {
-                    onComplete()
-                }
+                
+                updateProgress(plugins.count)
+                dispatch_group_leave(group)
             }
             
+            // start writing
+            RLMRealm.defaultRealm().beginWriteTransaction()
+            Plugin.deleteAll()
+            
             for plugin in plugins {
-                requestRepoDetail(plugin, onSucceed: onSucceedRequestingRepoDetail, onFailed: onFailed)
+                dispatch_group_enter(group)
+                self.requestRepoDetail(plugin, onSucceed: onSucceedRequestingRepoDetail, onFailed: onFailed)
             }
+            
+            dispatch_group_notify(group, dispatch_get_main_queue(), {
+                // Yay!!! All done!!!
+                SVProgressHUD.dismiss()
+                self.isLoading = false
+                
+                // commit
+                RLMRealm.defaultRealm().commitWriteTransaction()
+                
+                println("successCount = \(successCount)")
+                println("plugins.count = \(plugins.count)")
+                
+                onComplete(nil)
+            })
             
         }
         
@@ -211,26 +232,18 @@ class GithubClient: NSObject {
             println("response = \(response)")
             println("responseData = \(responseData)")
             println("error = \(error?.description)")
-            SVProgressHUD.showErrorWithStatus(error?.description)
-            onComplete()
+            
+            isLoading = false
+            SVProgressHUD.dismiss()
+            onComplete(error)
         }
         
         requestPlugins(onSucceedRequestingPlugins, onFailed: onFailed)
     }
     
-    func inclementLoadCompleteCount(pluginsCount:Int)->Bool {
+    func updateProgress(pluginsCount:Int) {
         loadCompleteCount++
         SVProgressHUD.showProgress(Float(loadCompleteCount) / Float(pluginsCount) , status: "Loading data", maskType: SVProgressHUDMaskType.Black)
-        
-        if loadCompleteCount == pluginsCount {
-            println("ALL DONE!!")
-            SVProgressHUD.dismiss()
-            isLoading = false
-            loadCompleteCount = 0
-            return true
-        }
-        return false
     }
-    
     
 }

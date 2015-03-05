@@ -45,17 +45,20 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let attributes = [NSFontAttributeName:UIFont(name: "FontAwesome", size: 12)!]
+        // notification center 
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "onApplicationDidBecomeActive:", name: UIApplicationDidBecomeActiveNotification, object: nil)
+        
+        let attributes = [NSFontAttributeName:UIFont(name: "FontAwesome", size: 10)!]
         segmentedControl.setTitleTextAttributes(attributes, forState: UIControlState.Normal)
         
         for i in 0 ..< segments.count {
             let mode = segments[i]
             segmentedControl.setTitle("\(mode.toIcon()) \(mode.toString())", forSegmentAtIndex: i)
         }
-        
-        if !githubClient.isLoggedIn() {
-            githubClient.requestOAuth({}, onFailed: {error in })
-        }
+    }
+    
+    deinit{
+        NSNotificationCenter.defaultCenter().removeObserver(self)
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -64,6 +67,12 @@ class ViewController: UIViewController {
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
+    }
+    
+    func onApplicationDidBecomeActive(notification:NSNotification) {
+        if !githubClient.isSignedIn() {
+            showSignInAlert()
+        }
     }
     
     // MARK: - Realm
@@ -97,7 +106,7 @@ class ViewController: UIViewController {
     
     @IBAction func onRefreshPushed(sender: AnyObject) {
         if !tableView.decelerating {
-            githubClient.reloadAllPlugins({self.tableView.reloadData()})
+            self.reloadAllPlugins()
         }
         
     }
@@ -127,6 +136,41 @@ class ViewController: UIViewController {
         return cell
     }
     
+    // MARK: - Sign in
+    
+    var signInAlert = UIAlertController(title: "Sign in", message: "Please, sign in to github with Safari.", preferredStyle: UIAlertControllerStyle.Alert)
+    
+    func showSignInAlert() {
+        // TODO: needs to modify here... (what to do when error occurs?)
+        signInAlert.addAction(UIAlertAction(title: "Open Safari", style: UIAlertActionStyle.Default, handler: { action in
+            self.signIn()
+        }))
+        presentViewController(signInAlert, animated: true, completion: nil)
+    }
+    
+    func signIn() {
+        githubClient.requestOAuth({
+            self.signInAlert.dismissViewControllerAnimated(true, completion: nil)
+            self.reloadAllPlugins()
+            }, onFailed: { error in
+                // login failed. quit app.
+                var errorAlert = UIAlertController(title: "Error", message: error.description, preferredStyle: UIAlertControllerStyle.Alert)
+                errorAlert.addAction(UIAlertAction(title: "Quit app", style: UIAlertActionStyle.Default, handler:{action in exit(0)} ))
+                self.presentViewController(errorAlert, animated: true, completion: nil)
+        })
+    }
+    
+    // MARK: - Reload data
+    
+    func reloadAllPlugins() {
+        self.githubClient.reloadAllPlugins({(error:NSError?) in
+            if let err = error {
+                self.showErrorAlert(err)
+            }
+            self.tableView.reloadData()
+        })
+    }
+
     // MARK: - TableView Delegate
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
@@ -136,6 +180,14 @@ class ViewController: UIViewController {
         
         var webViewController = M2DWebViewController(URL: NSURL(string: selectedPlugin.url), type: M2DWebViewType.AutoSelect)
         navigationController?.pushViewController(webViewController, animated: true)
+    }
+    
+    // MARK: - Error
+    
+    func showErrorAlert(error:NSError) {
+        var alert = UIAlertController(title: "Error", message: error.description, preferredStyle: UIAlertControllerStyle.Alert)
+        alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil))
+        self.presentViewController(alert, animated: true, completion: nil)
     }
 
 }
