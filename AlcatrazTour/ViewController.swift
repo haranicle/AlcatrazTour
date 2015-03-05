@@ -138,17 +138,19 @@ class ViewController: UIViewController {
     
     // MARK: - Sign in
     
+    var signInAlert = UIAlertController(title: "Sign in", message: "Please, sign in to github with Safari.", preferredStyle: UIAlertControllerStyle.Alert)
+    
     func showSignInAlert() {
         // TODO: needs to modify here... (what to do when error occurs?)
-        var alert = UIAlertController(title: "Sign in", message: "Please, sign in to github with Safari.", preferredStyle: UIAlertControllerStyle.Alert)
-        alert.addAction(UIAlertAction(title: "Open Safari", style: UIAlertActionStyle.Default, handler: { action in
+        signInAlert.addAction(UIAlertAction(title: "Open Safari", style: UIAlertActionStyle.Default, handler: { action in
             self.signIn()
         }))
-        presentViewController(alert, animated: true, completion: nil)
+        presentViewController(signInAlert, animated: true, completion: nil)
     }
     
     func signIn() {
         githubClient.requestOAuth({
+            self.signInAlert.dismissViewControllerAnimated(true, completion: nil)
             self.reloadAllPlugins()
             }, onFailed: { error in
                 // login failed. quit app.
