@@ -142,35 +142,40 @@ class ViewController: UIViewController {
     
     func showSignInAlert() {
         signInAlert =  UIAlertController(title: "Sign in", message: "Please, sign in to github with Safari.", preferredStyle: UIAlertControllerStyle.Alert)
+        weak var weakSelf = self
         signInAlert!.addAction(UIAlertAction(title: "Open Safari", style: UIAlertActionStyle.Default, handler: { action in
-            self.signIn()
+            weakSelf!.signIn()
         }))
         presentViewController(signInAlert!, animated: true, completion: nil)
     }
     
     func signIn() {
+        weak var weakSelf = self
         githubClient.requestOAuth({
-            if let alert = self.signInAlert {
+            if let alert = weakSelf!.signInAlert {
                 alert.dismissViewControllerAnimated(true, completion: nil)
             }
-            self.reloadAllPlugins()
+            weakSelf!.reloadAllPlugins()
             }, onFailed: { error in
                 // login failed. quit app.
                 var errorAlert = UIAlertController(title: "Error", message: error.description, preferredStyle: UIAlertControllerStyle.Alert)
                 errorAlert.addAction(UIAlertAction(title: "Quit app", style: UIAlertActionStyle.Default, handler:{action in exit(0)} ))
-                self.presentViewController(errorAlert, animated: true, completion: nil)
+                weakSelf!.presentViewController(errorAlert, animated: true, completion: nil)
         })
     }
     
     // MARK: - Reload data
     
     func reloadAllPlugins() {
-        self.githubClient.reloadAllPlugins({(error:NSError?) in
-            if let err = error {
-                self.showErrorAlert(err)
-            }
-            self.tableView.reloadData()
-        })
+        autoreleasepool{
+            weak var weakSelf = self
+            self.githubClient.reloadAllPlugins({(error:NSError?) in
+                if let err = error {
+                    weakSelf!.showErrorAlert(err)
+                }
+                weakSelf!.tableView.reloadData()
+            })
+        }
     }
 
     // MARK: - TableView Delegate
