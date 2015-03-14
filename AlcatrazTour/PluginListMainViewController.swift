@@ -8,7 +8,7 @@
 import UIKit
 import Realm
 
-class PluginListMainViewController: PluginListBaseViewController {
+class PluginListMainViewController: PluginListBaseViewController, UISearchResultsUpdating {
     
     var githubClient = GithubClient()
     var currentMode = Modes.Popularity
@@ -20,8 +20,13 @@ class PluginListMainViewController: PluginListBaseViewController {
         // notification center
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "onApplicationDidBecomeActive:", name: UIApplicationDidBecomeActiveNotification, object: nil)
         
+        // segmented control
         let attributes = [NSFontAttributeName:UIFont(name: "FontAwesome", size: 10)!]
         segmentedControl.setTitleTextAttributes(attributes, forState: UIControlState.Normal)
+        
+        // search controller
+        searchController = UISearchController(searchResultsController: pluginListSearchResultController)
+        configureSearchController()
         
         for i in 0 ..< segments.count {
             let mode = segments[i]
@@ -39,6 +44,26 @@ class PluginListMainViewController: PluginListBaseViewController {
         }
     }
     
+    // MARK: - Search Controller
+    var searchResults:RLMResults?
+    let pluginListSearchResultController = PluginListSearchResultViewController()
+    var searchController:UISearchController?
+    
+    func configureSearchController() {
+        searchController!.searchResultsUpdater = self
+        searchController!.searchBar.sizeToFit()
+        tableView.tableHeaderView = searchController!.searchBar
+    }
+    
+    // MARK: - UISearchResultsUpdating
+    
+    func updateSearchResultsForSearchController(searchController: UISearchController) {
+        
+        let searchText = searchController.searchBar.text
+        searchResults = Plugin.objectsWhere("name contains[c] '\(searchText)' OR note contains[c] '\(searchText)'")
+        
+    }
+    
     // MARK: - Realm
     
     var popularityResults = Plugin.allObjects().sortedResultsUsingProperty("score", ascending: false)
@@ -47,6 +72,10 @@ class PluginListMainViewController: PluginListBaseViewController {
     var newResults = Plugin.allObjects().sortedResultsUsingProperty("createdAt", ascending: false)
     
     func currentResult()->RLMResults {
+        if searchController!.active {
+            return searchResults!
+        }
+        
         switch currentMode {
         case Modes.Popularity: return popularityResults
         case Modes.Stars: return starsResults

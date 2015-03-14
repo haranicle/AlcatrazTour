@@ -48,7 +48,7 @@ class PluginListBaseViewController: UITableViewController {
     }
 
     override func viewWillAppear(animated: Bool) {
-        navigationController!.toolbarHidden = true
+        navigationController?.toolbarHidden = true
     }
     
     func configureCell(cell:PluginTableViewCell, plugin:Plugin, indexPath:NSIndexPath) {
@@ -67,6 +67,8 @@ class PluginListBaseViewController: UITableViewController {
         var webViewController = M2DWebViewController(URL: NSURL(string: url), type: M2DWebViewType.AutoSelect)
         navigationController?.pushViewController(webViewController, animated: true)
     }
+    
+    // MARK: - TableView Delegate
     
     override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
         return 80
