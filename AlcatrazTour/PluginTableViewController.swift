@@ -7,7 +7,6 @@
 
 import UIKit
 import Realm
-import M2DWebViewController
 
 let PluginCellReuseIdentifier = "Cell"
 
@@ -228,7 +227,7 @@ class PluginTableViewController: UITableViewController, UISearchResultsUpdating,
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
         
         let selectedPlugin = currentResult()[UInt(indexPath.row)] as Plugin
-        var webViewController = M2DWebViewController(URL: NSURL(string: selectedPlugin.url), type: M2DWebViewType.AutoSelect)
+        var webViewController = PluginDetailWebViewController(plugin: selectedPlugin)
         navigationController?.pushViewController(webViewController, animated: true)
     }
     
@@ -251,10 +250,7 @@ class PluginTableViewController: UITableViewController, UISearchResultsUpdating,
         cell.noteLabel.text = plugin.note
         cell.avaterImageView.sd_setImageWithURL(NSURL(string: plugin.avaterUrl))
         
-        var formatter = NSDateFormatter()
-        formatter.dateFormat = "MM/dd/yy"
-        
-        cell.statusLabel.text = "\(Modes.Popularity.toIcon()) \(plugin.scoreAsString()) \(Modes.Stars.toIcon()) \(plugin.starGazersCount) \(Modes.Update.toIcon()) \(formatter.stringFromDate(plugin.updatedAt)) \(Modes.New.toIcon()) \(formatter.stringFromDate(plugin.createdAt))"
+        cell.statusLabel.text = "\(Modes.Popularity.toIcon()) \(plugin.scoreAsString()) \(Modes.Stars.toIcon()) \(plugin.starGazersCount) \(Modes.Update.toIcon()) \(plugin.updatedAtAsString()) \(Modes.New.toIcon()) \(plugin.createdAtAsString())"
     }
     
     func registerTableViewCellNib(tableView:UITableView) {
