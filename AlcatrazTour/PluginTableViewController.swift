@@ -9,7 +9,46 @@ import UIKit
 import Realm
 import M2DWebViewController
 
-class PluginListMainViewController: PluginListBaseViewController, UISearchResultsUpdating {
+let PluginCellReuseIdentifier = "Cell"
+
+enum Modes:Int {
+    case Popularity = 0
+    case Stars = 1
+    case Update = 2
+    case New = 3
+    
+    func toIcon() -> String {
+        switch self {
+        case Modes.Popularity: return "\u{f004}"
+        case Modes.Stars: return "\u{f005}"
+        case Modes.Update: return "\u{f021}"
+        case Modes.New: return "\u{f135}"
+        default: return ""
+        }
+    }
+    
+    func toString() -> String {
+        switch self {
+        case Modes.Popularity: return "Popularity"
+        case Modes.Stars: return "Stars"
+        case Modes.Update: return "Update"
+        case Modes.New: return "New"
+        default: return ""
+        }
+    }
+    
+    func propertyName() -> String {
+        switch self {
+        case Modes.Popularity: return "score"
+        case Modes.Stars: return "starGazersCount"
+        case Modes.Update: return "updatedAt"
+        case Modes.New: return "updatedAt"
+        default: return ""
+        }
+    }
+}
+
+class PluginTableViewController: UITableViewController, UISearchResultsUpdating, UISearchControllerDelegate {
     
     var githubClient = GithubClient()
     var currentMode = Modes.Popularity
@@ -17,6 +56,7 @@ class PluginListMainViewController: PluginListBaseViewController, UISearchResult
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        registerTableViewCellNib(self.tableView)
         
         // notification center
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "onApplicationDidBecomeActive:", name: UIApplicationDidBecomeActiveNotification, object: nil)
@@ -28,14 +68,21 @@ class PluginListMainViewController: PluginListBaseViewController, UISearchResult
         // search controller
         configureSearchController()
         
+        // hide search bar
+        tableView.scrollToRowAtIndexPath(NSIndexPath(forRow: 0, inSection: 0), atScrollPosition: UITableViewScrollPosition.Top, animated: false)
+        
         for i in 0 ..< segments.count {
             let mode = segments[i]
             segmentedControl.setTitle("\(mode.toIcon()) \(mode.toString())", forSegmentAtIndex: i)
         }
     }
     
-    deinit{
+    deinit {
         NSNotificationCenter.defaultCenter().removeObserver(self)
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        navigationController?.toolbarHidden = true
     }
     
     func onApplicationDidBecomeActive(notification:NSNotification) {
@@ -45,17 +92,25 @@ class PluginListMainViewController: PluginListBaseViewController, UISearchResult
     }
     
     // MARK: - Search Controller
-    let pluginListSearchResultController = PluginListSearchResultViewController()
+    let searchResultTableViewController = UITableViewController()
     var searchController:UISearchController?
     
     func configureSearchController() {
-        searchController = UISearchController(searchResultsController: pluginListSearchResultController)
+        searchController = UISearchController(searchResultsController: searchResultTableViewController)
         searchController!.searchResultsUpdater = self
-        tableView.tableHeaderView = searchController!.searchBar
+        searchController!.delegate = self
         searchController!.searchBar.sizeToFit()
+        tableView.tableHeaderView = searchController!.searchBar
+        searchResultTableViewController.tableView.delegate = self
+        searchResultTableViewController.tableView.dataSource = self
+        registerTableViewCellNib(searchResultTableViewController.tableView)
+        searchResultTableViewController.tableView.tableHeaderView = nil
         
-        pluginListSearchResultController.tableView.delegate = self
-        pluginListSearchResultController.tableView.dataSource = self
+        // https://developer.apple.com/library/ios/samplecode/TableSearch_UISearchController/Introduction/Intro.html
+        // Search is now just presenting a view controller. As such, normal view controller
+        // presentation semantics apply. Namely that presentation will walk up the view controller
+        // hierarchy until it finds the root view controller or one that defines a presentation context.
+        definesPresentationContext = true // know where you want UISearchController to be displayed
     }
     
     // MARK: - UISearchResultsUpdating
@@ -63,16 +118,17 @@ class PluginListMainViewController: PluginListBaseViewController, UISearchResult
     func updateSearchResultsForSearchController(searchController: UISearchController) {
         
         let searchText = searchController.searchBar.text
-        searchResults = Plugin.objectsWhere("name contains[c] '\(searchText)' OR note contains[c] '\(searchText)'")
-        pluginListSearchResultController.tableView.reloadData()
+        // TODO: Must be tested here!!
+        searchResults = Plugin.objectsWhere("name contains[c] '\(searchText)' OR note contains[c] '\(searchText)'").sortedResultsUsingProperty(currentMode.propertyName(), ascending: false)
+        searchResultTableViewController.tableView.reloadData()
     }
     
     // MARK: - Realm
     var searchResults:RLMResults?
-    var popularityResults = Plugin.allObjects().sortedResultsUsingProperty("score", ascending: false)
-    var starsResults = Plugin.allObjects().sortedResultsUsingProperty("starGazersCount", ascending: false)
-    var updateResults = Plugin.allObjects().sortedResultsUsingProperty("updatedAt", ascending: false)
-    var newResults = Plugin.allObjects().sortedResultsUsingProperty("createdAt", ascending: false)
+    var popularityResults = Plugin.allObjects().sortedResultsUsingProperty(Modes.Popularity.propertyName(), ascending: false)
+    var starsResults = Plugin.allObjects().sortedResultsUsingProperty(Modes.Stars.propertyName(), ascending: false)
+    var updateResults = Plugin.allObjects().sortedResultsUsingProperty(Modes.Update.propertyName(), ascending: false)
+    var newResults = Plugin.allObjects().sortedResultsUsingProperty(Modes.New.propertyName(), ascending: false)
     
     func currentResult()->RLMResults {
         if searchController!.active {
@@ -171,12 +227,37 @@ class PluginListMainViewController: PluginListBaseViewController, UISearchResult
         
         let selectedPlugin = currentResult()[UInt(indexPath.row)] as Plugin
         var webViewController = M2DWebViewController(URL: NSURL(string: selectedPlugin.url), type: M2DWebViewType.AutoSelect)
-        
-        if searchController!.active {
-            pluginListSearchResultController.navigationController?.pushViewController(webViewController, animated: true)
-            return
-        }
         navigationController?.pushViewController(webViewController, animated: true)
+    }
+    
+    override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+        return 80
+    }
+    
+    // MARK: - UISearchControllerDelegate
+    
+
+    func didDismissSearchController(searchController: UISearchController) {
+        tableView.reloadData()
+    }
+    
+    // MARK: - Cell
+    
+    func configureCell(cell:PluginTableViewCell, plugin:Plugin, indexPath:NSIndexPath) {
+        cell.rankingLabel.text = "\(indexPath.row + 1)"
+        cell.titleLabel.text = plugin.name
+        cell.noteLabel.text = plugin.note
+        cell.avaterImageView.sd_setImageWithURL(NSURL(string: plugin.avaterUrl))
+        
+        var formatter = NSDateFormatter()
+        formatter.dateFormat = "MM/dd/yy"
+        
+        cell.statusLabel.text = "\(Modes.Popularity.toIcon()) \(plugin.scoreAsString()) \(Modes.Stars.toIcon()) \(plugin.starGazersCount) \(Modes.Update.toIcon()) \(formatter.stringFromDate(plugin.updatedAt)) \(Modes.New.toIcon()) \(formatter.stringFromDate(plugin.createdAt))"
+    }
+    
+    func registerTableViewCellNib(tableView:UITableView) {
+        let nib = UINib(nibName: "PluginTableViewCell", bundle: nil)
+        tableView.registerNib(nib, forCellReuseIdentifier: PluginCellReuseIdentifier)
     }
     
     // MARK: - Error

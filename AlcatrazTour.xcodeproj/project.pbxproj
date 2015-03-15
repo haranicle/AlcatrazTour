@@ -7,12 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		5F69F97A1AB46A9600276CCA /* PluginListBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F69F9791AB46A9600276CCA /* PluginListBaseViewController.swift */; };
+		5F26E7D21AB577E400636136 /* PluginTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F26E7D11AB577E400636136 /* PluginTableViewController.swift */; };
 		5F7C86771AA2F764008AB05E /* fontawesome-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5F7C86761AA2F764008AB05E /* fontawesome-webfont.ttf */; };
-		5FC1920B1AB47B3C00D0BD9A /* PluginListMainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FC1920A1AB47B3C00D0BD9A /* PluginListMainViewController.swift */; };
 		5FC1920E1AB47BBD00D0BD9A /* PluginTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FC1920C1AB47BBD00D0BD9A /* PluginTableViewCell.swift */; };
 		5FC1920F1AB47BBD00D0BD9A /* PluginTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5FC1920D1AB47BBD00D0BD9A /* PluginTableViewCell.xib */; };
-		5FC192111AB49D3500D0BD9A /* PluginListSearchResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FC192101AB49D3500D0BD9A /* PluginListSearchResultViewController.swift */; };
 		E7D12409782D7E5CE93986BE /* Pods_AlcatrazTourTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B77CF89FE308A62DBDF25C5E /* Pods_AlcatrazTourTests.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		EAE8118B6DD8E9D17662928B /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C8B2213C770F9DE318596BD9 /* Pods.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		F60FC5471A9F084D00AAAC9B /* PluginTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F60FC5461A9F084D00AAAC9B /* PluginTests.swift */; };
@@ -43,12 +41,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		5F69F9791AB46A9600276CCA /* PluginListBaseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PluginListBaseViewController.swift; sourceTree = "<group>"; };
+		5F26E7D11AB577E400636136 /* PluginTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PluginTableViewController.swift; sourceTree = "<group>"; };
 		5F7C86761AA2F764008AB05E /* fontawesome-webfont.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "fontawesome-webfont.ttf"; sourceTree = "<group>"; };
-		5FC1920A1AB47B3C00D0BD9A /* PluginListMainViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PluginListMainViewController.swift; sourceTree = "<group>"; };
 		5FC1920C1AB47BBD00D0BD9A /* PluginTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PluginTableViewCell.swift; sourceTree = "<group>"; };
 		5FC1920D1AB47BBD00D0BD9A /* PluginTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PluginTableViewCell.xib; sourceTree = "<group>"; };
-		5FC192101AB49D3500D0BD9A /* PluginListSearchResultViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PluginListSearchResultViewController.swift; sourceTree = "<group>"; };
 		876A289308A618BE1B5DDD8A /* Pods-AlcatrazTourTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AlcatrazTourTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-AlcatrazTourTests/Pods-AlcatrazTourTests.release.xcconfig"; sourceTree = "<group>"; };
 		B77CF89FE308A62DBDF25C5E /* Pods_AlcatrazTourTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AlcatrazTourTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BC6726427D1CF51E18A5A90A /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
@@ -143,9 +139,7 @@
 		F60FC54B1A9F187900AAAC9B /* ViewController */ = {
 			isa = PBXGroup;
 			children = (
-				5F69F9791AB46A9600276CCA /* PluginListBaseViewController.swift */,
-				5FC1920A1AB47B3C00D0BD9A /* PluginListMainViewController.swift */,
-				5FC192101AB49D3500D0BD9A /* PluginListSearchResultViewController.swift */,
+				5F26E7D11AB577E400636136 /* PluginTableViewController.swift */,
 			);
 			name = ViewController;
 			sourceTree = "<group>";
@@ -420,13 +414,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5FC192111AB49D3500D0BD9A /* PluginListSearchResultViewController.swift in Sources */,
+				5F26E7D21AB577E400636136 /* PluginTableViewController.swift in Sources */,
 				F62E96471A9B0FA500063445 /* GithubClient.swift in Sources */,
 				5FC1920E1AB47BBD00D0BD9A /* PluginTableViewCell.swift in Sources */,
-				5F69F97A1AB46A9600276CCA /* PluginListBaseViewController.swift in Sources */,
 				F673E77E1A9C796A00A20CB4 /* RLMSupport.swift in Sources */,
 				F6602A481A9EE116005DF8B9 /* SecretConstants.swift in Sources */,
-				5FC1920B1AB47B3C00D0BD9A /* PluginListMainViewController.swift in Sources */,
 				F697C3C91A9C61FB001DF614 /* Plugin.swift in Sources */,
 				F62E96271A9AF6F600063445 /* AppDelegate.swift in Sources */,
 			);
