@@ -76,6 +76,21 @@ class Plugin: RLMObject {
         return NSString(format: "%0.2f", score)
     }
     
+    // TODO: must be tested!!
+    func formatDate(date:NSDate) -> String {
+        var formatter = NSDateFormatter()
+        formatter.dateFormat = "MM/dd/yy"
+        return formatter.stringFromDate(date)
+    }
+    
+    func updatedAtAsString() -> String {
+        return formatDate(updatedAt)
+    }
+    
+    func createdAtAsString() -> String {
+        return formatDate(createdAt)
+    }
+    
     // MARK: - Realm
     
     func save() {
