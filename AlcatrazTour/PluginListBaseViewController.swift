@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import M2DWebViewController
 
 let PluginCellReuseIdentifier = "Cell"
 
@@ -61,11 +60,6 @@ class PluginListBaseViewController: UITableViewController {
         formatter.dateFormat = "MM/dd/yy"
         
         cell.statusLabel.text = "\(Modes.Popularity.toIcon()) \(plugin.scoreAsString()) \(Modes.Stars.toIcon()) \(plugin.starGazersCount) \(Modes.Update.toIcon()) \(formatter.stringFromDate(plugin.updatedAt)) \(Modes.New.toIcon()) \(formatter.stringFromDate(plugin.createdAt))"
-    }
-    
-    func pushWebViewController(url:String) {
-        var webViewController = M2DWebViewController(URL: NSURL(string: url), type: M2DWebViewType.AutoSelect)
-        navigationController?.pushViewController(webViewController, animated: true)
     }
     
     // MARK: - TableView Delegate

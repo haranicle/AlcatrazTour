@@ -7,6 +7,7 @@
 
 import UIKit
 import Realm
+import M2DWebViewController
 
 class PluginListMainViewController: PluginListBaseViewController, UISearchResultsUpdating {
     
@@ -25,7 +26,6 @@ class PluginListMainViewController: PluginListBaseViewController, UISearchResult
         segmentedControl.setTitleTextAttributes(attributes, forState: UIControlState.Normal)
         
         // search controller
-        searchController = UISearchController(searchResultsController: pluginListSearchResultController)
         configureSearchController()
         
         for i in 0 ..< segments.count {
@@ -45,14 +45,17 @@ class PluginListMainViewController: PluginListBaseViewController, UISearchResult
     }
     
     // MARK: - Search Controller
-    var searchResults:RLMResults?
     let pluginListSearchResultController = PluginListSearchResultViewController()
     var searchController:UISearchController?
     
     func configureSearchController() {
+        searchController = UISearchController(searchResultsController: pluginListSearchResultController)
         searchController!.searchResultsUpdater = self
-        searchController!.searchBar.sizeToFit()
         tableView.tableHeaderView = searchController!.searchBar
+        searchController!.searchBar.sizeToFit()
+        
+        pluginListSearchResultController.tableView.delegate = self
+        pluginListSearchResultController.tableView.dataSource = self
     }
     
     // MARK: - UISearchResultsUpdating
@@ -61,11 +64,11 @@ class PluginListMainViewController: PluginListBaseViewController, UISearchResult
         
         let searchText = searchController.searchBar.text
         searchResults = Plugin.objectsWhere("name contains[c] '\(searchText)' OR note contains[c] '\(searchText)'")
-        
+        pluginListSearchResultController.tableView.reloadData()
     }
     
     // MARK: - Realm
-    
+    var searchResults:RLMResults?
     var popularityResults = Plugin.allObjects().sortedResultsUsingProperty("score", ascending: false)
     var starsResults = Plugin.allObjects().sortedResultsUsingProperty("starGazersCount", ascending: false)
     var updateResults = Plugin.allObjects().sortedResultsUsingProperty("updatedAt", ascending: false)
@@ -167,7 +170,13 @@ class PluginListMainViewController: PluginListBaseViewController, UISearchResult
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
         
         let selectedPlugin = currentResult()[UInt(indexPath.row)] as Plugin
-        pushWebViewController(selectedPlugin.url)
+        var webViewController = M2DWebViewController(URL: NSURL(string: selectedPlugin.url), type: M2DWebViewType.AutoSelect)
+        
+        if searchController!.active {
+            pluginListSearchResultController.navigationController?.pushViewController(webViewController, animated: true)
+            return
+        }
+        navigationController?.pushViewController(webViewController, animated: true)
     }
     
     // MARK: - Error
