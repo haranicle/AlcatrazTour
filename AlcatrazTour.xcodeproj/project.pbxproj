@@ -7,13 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5F26E7D21AB577E400636136 /* PluginTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F26E7D11AB577E400636136 /* PluginTableViewController.swift */; };
 		5F7C86771AA2F764008AB05E /* fontawesome-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5F7C86761AA2F764008AB05E /* fontawesome-webfont.ttf */; };
+		5FC1920E1AB47BBD00D0BD9A /* PluginTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FC1920C1AB47BBD00D0BD9A /* PluginTableViewCell.swift */; };
+		5FC1920F1AB47BBD00D0BD9A /* PluginTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5FC1920D1AB47BBD00D0BD9A /* PluginTableViewCell.xib */; };
 		E7D12409782D7E5CE93986BE /* Pods_AlcatrazTourTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B77CF89FE308A62DBDF25C5E /* Pods_AlcatrazTourTests.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		EAE8118B6DD8E9D17662928B /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C8B2213C770F9DE318596BD9 /* Pods.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		F60FC5471A9F084D00AAAC9B /* PluginTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F60FC5461A9F084D00AAAC9B /* PluginTests.swift */; };
-		F60FC54D1A9F18B300AAAC9B /* PluginTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F60FC54C1A9F18B300AAAC9B /* PluginTableViewCell.swift */; };
 		F62E96271A9AF6F600063445 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F62E96261A9AF6F600063445 /* AppDelegate.swift */; };
-		F62E96291A9AF6F600063445 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F62E96281A9AF6F600063445 /* ViewController.swift */; };
 		F62E962C1A9AF6F600063445 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F62E962A1A9AF6F600063445 /* Main.storyboard */; };
 		F62E962E1A9AF6F600063445 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F62E962D1A9AF6F600063445 /* Images.xcassets */; };
 		F62E96311A9AF6F600063445 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = F62E962F1A9AF6F600063445 /* LaunchScreen.xib */; };
@@ -40,7 +41,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		5F26E7D11AB577E400636136 /* PluginTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PluginTableViewController.swift; sourceTree = "<group>"; };
 		5F7C86761AA2F764008AB05E /* fontawesome-webfont.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "fontawesome-webfont.ttf"; sourceTree = "<group>"; };
+		5FC1920C1AB47BBD00D0BD9A /* PluginTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PluginTableViewCell.swift; sourceTree = "<group>"; };
+		5FC1920D1AB47BBD00D0BD9A /* PluginTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PluginTableViewCell.xib; sourceTree = "<group>"; };
 		876A289308A618BE1B5DDD8A /* Pods-AlcatrazTourTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AlcatrazTourTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-AlcatrazTourTests/Pods-AlcatrazTourTests.release.xcconfig"; sourceTree = "<group>"; };
 		B77CF89FE308A62DBDF25C5E /* Pods_AlcatrazTourTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AlcatrazTourTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BC6726427D1CF51E18A5A90A /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
@@ -48,11 +52,9 @@
 		C8B2213C770F9DE318596BD9 /* Pods.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D30EBB73D6B56941A653ACA1 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		F60FC5461A9F084D00AAAC9B /* PluginTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PluginTests.swift; sourceTree = "<group>"; };
-		F60FC54C1A9F18B300AAAC9B /* PluginTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PluginTableViewCell.swift; sourceTree = "<group>"; };
 		F62E96211A9AF6F600063445 /* AlcatrazTour.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AlcatrazTour.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F62E96251A9AF6F600063445 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F62E96261A9AF6F600063445 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		F62E96281A9AF6F600063445 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		F62E962B1A9AF6F600063445 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		F62E962D1A9AF6F600063445 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		F62E96301A9AF6F600063445 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
@@ -128,7 +130,8 @@
 		F60FC54A1A9F186E00AAAC9B /* View */ = {
 			isa = PBXGroup;
 			children = (
-				F60FC54C1A9F18B300AAAC9B /* PluginTableViewCell.swift */,
+				5FC1920C1AB47BBD00D0BD9A /* PluginTableViewCell.swift */,
+				5FC1920D1AB47BBD00D0BD9A /* PluginTableViewCell.xib */,
 			);
 			name = View;
 			sourceTree = "<group>";
@@ -136,7 +139,7 @@
 		F60FC54B1A9F187900AAAC9B /* ViewController */ = {
 			isa = PBXGroup;
 			children = (
-				F62E96281A9AF6F600063445 /* ViewController.swift */,
+				5F26E7D11AB577E400636136 /* PluginTableViewController.swift */,
 			);
 			name = ViewController;
 			sourceTree = "<group>";
@@ -297,6 +300,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F62E962C1A9AF6F600063445 /* Main.storyboard in Resources */,
+				5FC1920F1AB47BBD00D0BD9A /* PluginTableViewCell.xib in Resources */,
 				5F7C86771AA2F764008AB05E /* fontawesome-webfont.ttf in Resources */,
 				F62E96311A9AF6F600063445 /* LaunchScreen.xib in Resources */,
 				F62E962E1A9AF6F600063445 /* Images.xcassets in Resources */,
@@ -410,11 +414,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5F26E7D21AB577E400636136 /* PluginTableViewController.swift in Sources */,
 				F62E96471A9B0FA500063445 /* GithubClient.swift in Sources */,
-				F62E96291A9AF6F600063445 /* ViewController.swift in Sources */,
+				5FC1920E1AB47BBD00D0BD9A /* PluginTableViewCell.swift in Sources */,
 				F673E77E1A9C796A00A20CB4 /* RLMSupport.swift in Sources */,
 				F6602A481A9EE116005DF8B9 /* SecretConstants.swift in Sources */,
-				F60FC54D1A9F18B300AAAC9B /* PluginTableViewCell.swift in Sources */,
 				F697C3C91A9C61FB001DF614 /* Plugin.swift in Sources */,
 				F62E96271A9AF6F600063445 /* AppDelegate.swift in Sources */,
 			);
