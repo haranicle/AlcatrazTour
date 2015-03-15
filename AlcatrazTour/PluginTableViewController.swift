@@ -69,7 +69,9 @@ class PluginTableViewController: UITableViewController, UISearchResultsUpdating,
         configureSearchController()
         
         // hide search bar
-        tableView.scrollToRowAtIndexPath(NSIndexPath(forRow: 0, inSection: 0), atScrollPosition: UITableViewScrollPosition.Top, animated: false)
+        if githubClient.isSignedIn() {
+            tableView.scrollToRowAtIndexPath(NSIndexPath(forRow: 0, inSection: 0), atScrollPosition: UITableViewScrollPosition.Top, animated: false)
+        }
         
         for i in 0 ..< segments.count {
             let mode = segments[i]

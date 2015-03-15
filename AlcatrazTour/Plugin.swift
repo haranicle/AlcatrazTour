@@ -92,8 +92,6 @@ class Plugin: RLMObject {
         let githubScore = watchersCount + starGazersCount + forkCount
         let ageFactor = calcAgeFactor(githubScore)
         score = Float(githubScore) - ageFactor
-        println("score = \(score)")
-        println("ageFactor = \(ageFactor)")
     }
    
     func calcAgeFactor(githubScore:Int) -> Float {
