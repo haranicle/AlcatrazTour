@@ -11,10 +11,15 @@ import Realm
 class Plugin: RLMObject {
     
     dynamic var uuid = NSUUID().UUIDString
+    override class func primaryKey() -> String {
+        return "uuid"
+    }
+    
     dynamic var name = ""
     dynamic var url = ""
     dynamic var note = ""
     dynamic var screenshot = ""
+    dynamic var type = 0
     
     // details
     dynamic var avaterUrl = ""
@@ -51,13 +56,13 @@ class Plugin: RLMObject {
         if let d = details["stargazers_count"] as? Int {
             starGazersCount = d
         }
-        if let d = details["updated_at"] as? NSString {
+        if let d = details["pushed_at"] as? NSString {
             updatedAt = stringAsDate(d)
         }
         if let d = details["created_at"] as? NSString {
             createdAt = stringAsDate(d)
         }
-        if let d = details["watchers_count"] as? Int {
+        if let d = details["subscribers_count"] as? Int {
             watchersCount = d
         }
         if let d = details["forks"] as? Int {
@@ -105,11 +110,10 @@ class Plugin: RLMObject {
     
     func calcScore() {
         let githubScore = watchersCount + starGazersCount + forkCount
-        let ageFactor = calcAgeFactor(githubScore)
-        score = Float(githubScore) - ageFactor
+        score = 100 * Float(githubScore) / intervalFromCreated()
     }
    
-    func calcAgeFactor(githubScore:Int) -> Float {
-        return Float(githubScore) * Float(-updatedAt.timeIntervalSinceNow) / 86400.0 / 365
+    func intervalFromCreated() -> Float {
+        return Float(-createdAt.timeIntervalSinceNow) / 86400.0
     }
 }

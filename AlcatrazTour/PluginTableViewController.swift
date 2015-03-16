@@ -41,7 +41,7 @@ enum Modes:Int {
         case Modes.Popularity: return "score"
         case Modes.Stars: return "starGazersCount"
         case Modes.Update: return "updatedAt"
-        case Modes.New: return "updatedAt"
+        case Modes.New: return "createdAt"
         default: return ""
         }
     }

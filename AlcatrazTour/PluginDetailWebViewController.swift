@@ -38,7 +38,7 @@ class PluginDetailWebViewController: M2DWebViewController {
     }
     
     func onShareButtonPushed(sender:AnyObject) {
-        let items = ["[\(plugin.name)]\n❤️:\(plugin.score) ⭐️:\(plugin.starGazersCount) 🔄:\(plugin.updatedAtAsString()) 🚀:\(plugin.createdAtAsString()) ", plugin.url, " #AlcatrazTour"]
+        let items = ["I love this Xcode plugin!\n[\(plugin.name)] ❤️:\(plugin.score) ⭐️:\(plugin.starGazersCount) 🔄:\(plugin.updatedAtAsString()) 🚀:\(plugin.createdAtAsString()) ", plugin.url, " #AlcatrazTour"]
         
         let activityViewController = UIActivityViewController(activityItems: items, applicationActivities: nil)
         presentViewController(activityViewController, animated: true, completion: nil)

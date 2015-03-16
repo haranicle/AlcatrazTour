@@ -273,7 +273,7 @@
 					};
 					F62E96351A9AF6F600063445 = {
 						CreatedOnToolsVersion = 6.1.1;
-						DevelopmentTeam = 7X3Y7BM2HZ;
+						DevelopmentTeam = DD6325WAAZ;
 						TestTargetID = F62E96201A9AF6F600063445;
 					};
 				};
