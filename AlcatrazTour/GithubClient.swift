@@ -58,13 +58,14 @@ class GithubClient: NSObject {
     }
     
     func requestOAuth(onSucceed:Void->Void, onFailed:NSError -> Void ){
-        let oauthswift = OAuth2Swift(
+        var oauthswift = OAuth2Swift(
             consumerKey:    GithubKey["consumerKey"]!,
             consumerSecret: GithubKey["consumerSecret"]!,
             authorizeUrl:   "https://github.com/login/oauth/authorize",
             accessTokenUrl: "https://github.com/login/oauth/access_token",
             responseType:   "code"
         )
+        oauthswift.webViewController = LoginWebViewController(nibName: "LoginWebViewController", bundle: nil)
         
         func callOnSucceed(credential: OAuthSwiftCredential, response: NSURLResponse?) -> Void {
             // save tokent to user default
