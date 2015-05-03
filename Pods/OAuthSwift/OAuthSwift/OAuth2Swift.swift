@@ -13,7 +13,8 @@ public class OAuth2Swift: NSObject {
 
     public var client: OAuthSwiftClient
 
-    public var webViewController: OAuthWebViewController?
+    public var webViewController: UIViewController?
+
 
     var consumer_key: String
     var consumer_secret: String
@@ -33,7 +34,6 @@ public class OAuth2Swift: NSObject {
         self.authorize_url = authorizeUrl
         self.response_type = responseType
         self.client = OAuthSwiftClient(consumerKey: consumerKey, consumerSecret: consumerSecret)
-        self.client.credential = OAuthSwiftCredential()
     }
     
     struct CallbackNotification {
@@ -54,7 +54,7 @@ public class OAuth2Swift: NSObject {
         self.observer = NSNotificationCenter.defaultCenter().addObserverForName(CallbackNotification.notificationName, object: nil, queue: NSOperationQueue.mainQueue(), usingBlock:{
             notification in
             NSNotificationCenter.defaultCenter().removeObserver(self.observer!)
-            let url = notification.userInfo![CallbackNotification.optionsURLKey] as NSURL
+            let url = notification.userInfo![CallbackNotification.optionsURLKey] as! NSURL
             var parameters: Dictionary<String, String> = Dictionary()
             if ((url.query) != nil){
                 parameters = url.query!.parametersFromQueryString()
@@ -67,7 +67,7 @@ public class OAuth2Swift: NSObject {
                 success(credential: self.client.credential, response: nil)
             }
             if (parameters["code"] != nil){
-                self.postOAuthAccessTokenWithRequestTokenByCode(parameters["code"]!,
+                self.postOAuthAccessTokenWithRequestTokenByCode(parameters["code"]!.stringByRemovingPercentEncoding!,
                     callbackURL:callbackURL,
                     success: { credential, response in
                         success(credential: credential, response: response)
@@ -78,7 +78,7 @@ public class OAuth2Swift: NSObject {
         //let authorizeURL = NSURL(string: )
         var urlString = String()
         urlString += self.authorize_url
-        urlString += "?client_id=\(self.consumer_key)"
+        urlString += (self.authorize_url.has("?") ? "&" : "?") + "client_id=\(self.consumer_key)"
         urlString += "&redirect_uri=\(callbackURL.absoluteString!)"
         urlString += "&response_type=\(self.response_type)"
         if (scope != "") {
@@ -94,9 +94,11 @@ public class OAuth2Swift: NSObject {
 
         let queryURL = NSURL(string: urlString)
         if ( self.webViewController != nil ) {
-            self.webViewController!.setUrl(queryURL!)
-            UIApplication.sharedApplication().keyWindow?.rootViewController?.presentViewController(
-                self.webViewController!, animated: true, completion: nil)
+            if let webView = self.webViewController as? WebViewProtocol {
+                webView.setUrl(queryURL!)
+                UIApplication.sharedApplication().keyWindow?.rootViewController?.presentViewController(
+                    self.webViewController!, animated: true, completion: nil)
+            }
         } else {
             UIApplication.sharedApplication().openURL(queryURL!)
         }
@@ -115,13 +117,14 @@ public class OAuth2Swift: NSObject {
             var responseJSON: AnyObject? = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: nil)
             var accessToken = ""
             if let parameters:NSDictionary = responseJSON as? NSDictionary{
-                accessToken = parameters["access_token"] as String
+                accessToken = parameters["access_token"] as! String
             } else {
-                let responseString = NSString(data: data, encoding: NSUTF8StringEncoding) as String
+                let responseString = NSString(data: data, encoding: NSUTF8StringEncoding) as! String
                 let parameters = responseString.parametersFromQueryString()
                 accessToken = parameters["access_token"]!
             }
             self.client.credential.oauth_token = accessToken
+            self.client.credential.oauth2 = true
             success(credential: self.client.credential, response: response)
         }, failure: failure)
     }

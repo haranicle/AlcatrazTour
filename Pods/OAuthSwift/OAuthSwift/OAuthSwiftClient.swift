@@ -20,35 +20,34 @@ public class OAuthSwiftClient {
     
     var credential: OAuthSwiftCredential
     
-    init(consumerKey: String, consumerSecret: String) {
+    public init(consumerKey: String, consumerSecret: String) {
         self.credential = OAuthSwiftCredential(consumer_key: consumerKey, consumer_secret: consumerSecret)
     }
     
-    init(consumerKey: String, consumerSecret: String, accessToken: String, accessTokenSecret: String) {
+    public init(consumerKey: String, consumerSecret: String, accessToken: String, accessTokenSecret: String) {
         self.credential = OAuthSwiftCredential(oauth_token: accessToken, oauth_token_secret: accessTokenSecret)
         self.credential.consumer_key = consumerKey
         self.credential.consumer_secret = consumerSecret
-        
     }
     
     public func get(urlString: String, parameters: Dictionary<String, AnyObject>, success: OAuthSwiftHTTPRequest.SuccessHandler?, failure: OAuthSwiftHTTPRequest.FailureHandler?) {
-        self.request(urlString, method: "GET", parameters: parameters, success, failure)
+        self.request(urlString, method: "GET", parameters: parameters, success: success, failure: failure)
     }
     
     public func post(urlString: String, parameters: Dictionary<String, AnyObject>, success: OAuthSwiftHTTPRequest.SuccessHandler?, failure: OAuthSwiftHTTPRequest.FailureHandler?) {
-        self.request(urlString, method: "POST", parameters: parameters, success, failure)
+        self.request(urlString, method: "POST", parameters: parameters, success: success, failure: failure)
     }
 
     public func put(urlString: String, parameters: Dictionary<String, AnyObject>, success: OAuthSwiftHTTPRequest.SuccessHandler?, failure: OAuthSwiftHTTPRequest.FailureHandler?) {
-        self.request(urlString, method: "PUT", parameters: parameters, success, failure)
+        self.request(urlString, method: "PUT", parameters: parameters, success: success, failure: failure)
     }
 
     public func delete(urlString: String, parameters: Dictionary<String, AnyObject>, success: OAuthSwiftHTTPRequest.SuccessHandler?, failure: OAuthSwiftHTTPRequest.FailureHandler?) {
-        self.request(urlString, method: "DELETE", parameters: parameters, success, failure)
+        self.request(urlString, method: "DELETE", parameters: parameters, success: success, failure: failure)
     }
 
     public func patch(urlString: String, parameters: Dictionary<String, AnyObject>, success: OAuthSwiftHTTPRequest.SuccessHandler?, failure: OAuthSwiftHTTPRequest.FailureHandler?) {
-        self.request(urlString, method: "PATCH", parameters: parameters, success, failure)
+        self.request(urlString, method: "PATCH", parameters: parameters, success: success, failure: failure)
     }
 
     func request(url: String, method: String, parameters: Dictionary<String, AnyObject>, success: OAuthSwiftHTTPRequest.SuccessHandler?, failure: OAuthSwiftHTTPRequest.FailureHandler?) {
@@ -56,7 +55,11 @@ public class OAuthSwiftClient {
         let url = NSURL(string: url)
         
         let request = OAuthSwiftHTTPRequest(URL: url!, method: method, parameters: parameters)
-        request.headers = ["Authorization": OAuthSwiftClient.authorizationHeaderForMethod(method, url: url!, parameters: parameters, credential: self.credential)]
+        if self.credential.oauth2 {
+            request.headers = ["Authorization": "Bearer \(self.credential.oauth_token)"]
+        } else {
+            request.headers = ["Authorization": OAuthSwiftClient.authorizationHeaderForMethod(method, url: url!, parameters: parameters, credential: self.credential)]
+        }
         
         request.successHandler = success
         request.failureHandler = failure
@@ -65,8 +68,81 @@ public class OAuthSwiftClient {
         request.start()
 
     }
+    
+    public func postImage(urlString: String, parameters: Dictionary<String, AnyObject>, image: NSData, success: OAuthSwiftHTTPRequest.SuccessHandler?, failure: OAuthSwiftHTTPRequest.FailureHandler?) {
+        self.multiPartRequest(urlString, method: "POST", parameters: parameters, image: image, success: success, failure: failure)
+    }
+    
+    func multiPartRequest(url: String, method: String, parameters: Dictionary<String, AnyObject>, image: NSData, success: OAuthSwiftHTTPRequest.SuccessHandler?, failure: OAuthSwiftHTTPRequest.FailureHandler?) {
+        
+        
+        let url = NSURL(string: url)
+        
+        var request = OAuthSwiftHTTPRequest(URL: url!, method: method, parameters: parameters)
+        if self.credential.oauth2 {
+            request.headers = ["Authorization": "Bearer \(self.credential.oauth_token)"]
+        } else {
+            request.headers = ["Authorization": OAuthSwiftClient.authorizationHeaderForMethod(method, url: url!, parameters: parameters, credential: self.credential)]
+        }
+        request.successHandler = success
+        request.failureHandler = failure
+        request.dataEncoding = dataEncoding
+        request.encodeParameters = true
+        
+        
+        var parmaImage = [String: AnyObject]()
+        parmaImage["media"] = image
+        let boundary = "AS-boundary-\(arc4random())-\(arc4random())"
+        var type = "multipart/form-data; boundary=\(boundary)"
+        var body = self.multiPartBodyFromParams(parmaImage, boundary: boundary)
+        
+        request.HTTPBodyMultipart = body
+        request.contentTypeMultipart = type
+        request.start()
+        
+    }
+    
+    public func multiPartBodyFromParams(parameters: [String: AnyObject], boundary: String) -> NSData {
+        var data = NSMutableData()
+        
+        let prefixData = "--\(boundary)\r\n".dataUsingEncoding(NSUTF8StringEncoding)
+        let seperData = "\r\n".dataUsingEncoding(NSUTF8StringEncoding)
+        
+        for (key, value) in parameters {
+            var sectionData: NSData?
+            var sectionType: String?
+            var sectionFilename = ""
+            
+            if key == "media" {
+                let multiData = value as! NSData
+                sectionData = multiData
+                sectionType = "image/jpeg"
+                sectionFilename = " filename=\"file\""
+            } else {
+                sectionData = "\(value)".dataUsingEncoding(NSUTF8StringEncoding)
+            }
+            
+            data.appendData(prefixData!)
+            
+            let sectionDisposition = "Content-Disposition: form-data; name=\"media\";\(sectionFilename)\r\n".dataUsingEncoding(NSUTF8StringEncoding)
+            data.appendData(sectionDisposition!)
+            
+            if let type = sectionType {
+                let contentType = "Content-Type: \(type)\r\n".dataUsingEncoding(NSUTF8StringEncoding)
+                data.appendData(contentType!)
+            }
+            
+            // append data
+            data.appendData(seperData!)
+            data.appendData(sectionData!)
+            data.appendData(seperData!)
+        }
+        
+        data.appendData("--\(boundary)--\r\n".dataUsingEncoding(NSUTF8StringEncoding)!)
+        return data
+    }
 
-    class func authorizationHeaderForMethod(method: String, url: NSURL, parameters: Dictionary<String, AnyObject>, credential: OAuthSwiftCredential) -> String {
+    public class func authorizationHeaderForMethod(method: String, url: NSURL, parameters: Dictionary<String, AnyObject>, credential: OAuthSwiftCredential) -> String {
         var authorizationParameters = Dictionary<String, AnyObject>()
         authorizationParameters["oauth_version"] = OAuth.version
         authorizationParameters["oauth_signature_method"] =  OAuth.signatureMethod
@@ -104,7 +180,7 @@ public class OAuthSwiftClient {
         return "OAuth " + ", ".join(headerComponents)
     }
     
-    class func signatureForMethod(method: String, url: NSURL, parameters: Dictionary<String, AnyObject>, credential: OAuthSwiftCredential) -> String {
+    public class func signatureForMethod(method: String, url: NSURL, parameters: Dictionary<String, AnyObject>, credential: OAuthSwiftCredential) -> String {
         var tokenSecret: NSString = ""
         tokenSecret = credential.oauth_token_secret.urlEncodedStringWithEncoding(dataEncoding)
         

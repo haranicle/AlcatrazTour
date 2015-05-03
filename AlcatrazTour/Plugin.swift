@@ -57,10 +57,10 @@ class Plugin: RLMObject {
             starGazersCount = d
         }
         if let d = details["pushed_at"] as? NSString {
-            updatedAt = stringAsDate(d)
+            updatedAt = stringAsDate(d as String)
         }
         if let d = details["created_at"] as? NSString {
-            createdAt = stringAsDate(d)
+            createdAt = stringAsDate(d as String)
         }
         if let d = details["subscribers_count"] as? Int {
             watchersCount = d
@@ -78,7 +78,7 @@ class Plugin: RLMObject {
     }
     
     func scoreAsString() -> String {
-        return NSString(format: "%0.2f", score)
+        return NSString(format: "%0.2f", score) as String
     }
     
     // TODO: must be tested!!
