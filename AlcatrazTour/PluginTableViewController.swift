@@ -213,9 +213,9 @@ class PluginTableViewController: UITableViewController, UISearchResultsUpdating,
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell
     {
-        let plugin = currentResult()[UInt(indexPath.row)] as Plugin
+        let plugin = currentResult()[UInt(indexPath.row)] as! Plugin
         
-        var cell = tableView.dequeueReusableCellWithIdentifier(PluginCellReuseIdentifier) as PluginTableViewCell
+        var cell = tableView.dequeueReusableCellWithIdentifier(PluginCellReuseIdentifier) as! PluginTableViewCell
         configureCell(cell, plugin: plugin, indexPath: indexPath)
         
         return cell
@@ -226,7 +226,7 @@ class PluginTableViewController: UITableViewController, UISearchResultsUpdating,
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
         
-        let selectedPlugin = currentResult()[UInt(indexPath.row)] as Plugin
+        let selectedPlugin = currentResult()[UInt(indexPath.row)] as! Plugin
         var webViewController = PluginDetailWebViewController(plugin: selectedPlugin)
         navigationController?.pushViewController(webViewController, animated: true)
     }

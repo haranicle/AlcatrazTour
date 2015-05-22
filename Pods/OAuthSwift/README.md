@@ -8,7 +8,7 @@ Swift based OAuth library for iOS
 
 ### Support OAuth1.0, OAuth2.0
 
-Twitter, Flickr, Github, Instagram, Foursquare. Fitbit, Withings, Linkedin, Dropbox, Dribbble etc
+Twitter, Flickr, Github, Instagram, Foursquare. Fitbit, Withings, Linkedin, Dropbox, Dribbble, Salesforce, BitBucket, GoogleDrive, Smugmug, Intuit etc
 
 ### Installation
 
@@ -24,7 +24,7 @@ OAuthSwift is packaged as a Swift framework. Currently this is the simplest way 
 * Install Carthage (https://github.com/Carthage/Carthage)
 * Create Cartfile file
 ```
-github "dongri/OAuthSwift" ~> 0.3.0
+github "dongri/OAuthSwift" ~> 0.3.3
 ```
 * Run `carthage update`.
 * On your application targets’ “General” settings tab, in the “Embedded Binaries” section, drag and drop OAuthSwift.framework from the Carthage/Build/iOS folder on disk.
@@ -33,8 +33,10 @@ github "dongri/OAuthSwift" ~> 0.3.0
 
 * Podfile
 ```
-platform :ios, '7.0'
-pod "OAuthSwift", "~> 0.3.0"
+platform :ios, '8.0'
+use_frameworks!
+
+pod "OAuthSwift", "~> 0.3.3"
 ```
 
 ### Setting URL Schemes
@@ -97,7 +99,11 @@ oauthswift.authorizeWithCallbackURL( NSURL(string: "oauth-swift://oauth-callback
 * [Linkedin](https://developer.linkedin.com/documents/authentication)  
 * [Dropbox](https://www.dropbox.com/developers/core/docs)  
 * [Dribbble](http://developer.dribbble.com/v1/oauth/)
-
+* [Salesforce](https://www.salesforce.com/us/developer/docs/api_rest/)
+* [BitBucket](https://confluence.atlassian.com/display/BITBUCKET/OAuth+on+Bitbucket)
+* [GoogleDrive](https://developers.google.com/drive/v2/reference/)
+* [Smugmug](https://smugmug.atlassian.net/wiki/display/API/OAuth)
+* [Intuit](https://developer.intuit.com/docs/0100_accounting/0060_authentication_and_authorization/oauth_management_api)
 
 ### Images
 
