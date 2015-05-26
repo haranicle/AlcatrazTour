@@ -8,23 +8,37 @@
 import UIKit
 import OAuthSwift
 
-class LoginWebViewController: OAuthWebViewController {
+class LoginWebViewController: OAuthWebViewController, UIWebViewDelegate {
     
     @IBOutlet weak var webView: UIWebView!
-    var url:NSURL?
+    @IBOutlet weak var indicatorView: UIActivityIndicatorView!
+    var aUrl:NSURL?
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: NSBundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
     }
+
+    required init(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func setUrl(url: NSURL) {
-        self.url = url
+        self.aUrl = url
     }
     
     override func viewDidLoad() {
-        if let aUrl = url {
-            webView.loadRequest(NSURLRequest(URL: aUrl))
+        if let theUrl = aUrl {
+            webView.loadRequest(NSURLRequest(URL: theUrl))
         }
-        
+    }
+    
+    func webViewDidFinishLoad(webView: UIWebView) {
+        indicatorView.stopAnimating()
+        indicatorView.hidden = true
+    }
+    
+    func webView(webView: UIWebView, didFailLoadWithError error: NSError) {
+        indicatorView.stopAnimating()
+        indicatorView.hidden = true
     }
 }
