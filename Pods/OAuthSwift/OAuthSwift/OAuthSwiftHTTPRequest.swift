@@ -8,8 +8,6 @@
 
 import Foundation
 
-import UIKit
-
 public class OAuthSwiftHTTPRequest: NSObject, NSURLConnectionDataDelegate {
     
     public typealias SuccessHandler = (data: NSData, response: NSHTTPURLResponse) -> Void
@@ -194,7 +192,7 @@ public class OAuthSwiftHTTPRequest: NSObject, NSURLConnectionDataDelegate {
             encoding = CFStringConvertEncodingToNSStringEncoding(CFStringConvertIANACharSetNameToEncoding(encodingNameString))
             
             if encoding == UInt(kCFStringEncodingInvalidId) {
-                encoding = NSUTF8StringEncoding; // by default
+                encoding = NSUTF8StringEncoding // by default
             }
         }
         
