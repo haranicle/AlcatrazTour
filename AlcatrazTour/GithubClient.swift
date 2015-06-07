@@ -58,24 +58,33 @@ class GithubClient: NSObject {
     }
     
     func requestOAuth(onSucceed:Void->Void, onFailed:NSError -> Void ){
-        var oauthswift = OAuth2Swift(
+        
+        let oauthswift = OAuth2Swift(
             consumerKey:    GithubKey["consumerKey"]!,
             consumerSecret: GithubKey["consumerSecret"]!,
             authorizeUrl:   "https://github.com/login/oauth/authorize",
             accessTokenUrl: "https://github.com/login/oauth/access_token",
             responseType:   "code"
         )
-        oauthswift.webViewController = LoginWebViewController(nibName: "LoginWebViewController", bundle: nil)
-        
-        func callOnSucceed(credential: OAuthSwiftCredential, response: NSURLResponse?) -> Void {
-            // save tokent to user default
-            println("AUTH COMPLETE!!")
+        let state: String = "GITHUB"
+        oauthswift.authorizeWithCallbackURL( NSURL(string: "oauth-swift://oauth-callback/github")!, scope: "user,repo", state: state, success: {
+            credential, response, parameters in
             
-            NSUserDefaults.standardUserDefaults().setObject(credential.oauth_token, forKey: githubOauthTokenKey)
-            onSucceed()
-        }
+            
+            
+            }, failure: {(error:NSError!) -> Void in
+                println(error.localizedDescription)
+        })
+        oauthswift.authorize_url_handler = OAuthWebViewController()
         
-        oauthswift.authorizeWithCallbackURL( NSURL(string: "alcatraztour://oauth-callback/github")!, scope: "user,repo", state: "GITHUB", success:callOnSucceed, failure:onFailed)
+        
+//        func callOnSucceed(credential: OAuthSwiftCredential, response: NSURLResponse?, parameters: NSDictionary) -> Void {
+//            // save tokent to user default
+//            println("AUTH COMPLETE!!")
+//            
+//            NSUserDefaults.standardUserDefaults().setObject(credential.oauth_token, forKey: githubOauthTokenKey)
+//            onSucceed()
+//        }
     }
     
     // MARK: - Request

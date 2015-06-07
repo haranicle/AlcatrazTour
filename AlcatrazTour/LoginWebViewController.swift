@@ -22,10 +22,6 @@ class LoginWebViewController: OAuthWebViewController, UIWebViewDelegate {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func setUrl(url: NSURL) {
-        self.aUrl = url
-    }
-    
     override func viewDidLoad() {
         if let theUrl = aUrl {
             webView.loadRequest(NSURLRequest(URL: theUrl))
