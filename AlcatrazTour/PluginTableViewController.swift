@@ -169,7 +169,7 @@ class PluginTableViewController: UITableViewController, UISearchResultsUpdating,
     func showSignInAlert() {
         signInAlert =  UIAlertController(title: "Sign in", message: "Please, sign in to github with Safari.", preferredStyle: UIAlertControllerStyle.Alert)
         weak var weakSelf = self
-        signInAlert!.addAction(UIAlertAction(title: "Open Safari", style: UIAlertActionStyle.Default, handler: { action in
+        signInAlert!.addAction(UIAlertAction(title: "Sign in", style: UIAlertActionStyle.Default, handler: { action in
             weakSelf!.signIn()
         }))
         presentViewController(signInAlert!, animated: true, completion: nil)

@@ -4,11 +4,11 @@
 
 ## OAuthSwift
 
-Swift based OAuth library for iOS
+Swift based OAuth library for iOS and OSX.
 
 ### Support OAuth1.0, OAuth2.0
 
-Twitter, Flickr, Github, Instagram, Foursquare. Fitbit, Withings, Linkedin, Dropbox, Dribbble, Salesforce, BitBucket, GoogleDrive, Smugmug, Intuit etc
+Twitter, Flickr, Github, Instagram, Foursquare. Fitbit, Withings, Linkedin, Dropbox, Dribbble, Salesforce, BitBucket, GoogleDrive, Smugmug, Intuit, Zaim etc
 
 ### Installation
 
@@ -24,7 +24,7 @@ OAuthSwift is packaged as a Swift framework. Currently this is the simplest way 
 * Install Carthage (https://github.com/Carthage/Carthage)
 * Create Cartfile file
 ```
-github "dongri/OAuthSwift" ~> 0.3.3
+github "dongri/OAuthSwift" ~> 0.3.4
 ```
 * Run `carthage update`.
 * On your application targets’ “General” settings tab, in the “Embedded Binaries” section, drag and drop OAuthSwift.framework from the Carthage/Build/iOS folder on disk.
@@ -36,7 +36,7 @@ github "dongri/OAuthSwift" ~> 0.3.3
 platform :ios, '8.0'
 use_frameworks!
 
-pod "OAuthSwift", "~> 0.3.3"
+pod "OAuthSwift", "~> 0.3.4"
 ```
 
 ### Setting URL Schemes
@@ -104,6 +104,7 @@ oauthswift.authorizeWithCallbackURL( NSURL(string: "oauth-swift://oauth-callback
 * [GoogleDrive](https://developers.google.com/drive/v2/reference/)
 * [Smugmug](https://smugmug.atlassian.net/wiki/display/API/OAuth)
 * [Intuit](https://developer.intuit.com/docs/0100_accounting/0060_authentication_and_authorization/oauth_management_api)
+* [Zaim](https://dev.zaim.net/home/api/authorize)
 
 ### Images
 
