@@ -10,31 +10,28 @@ import OAuthSwift
 
 class LoginWebViewController: OAuthWebViewController, UIWebViewDelegate {
     
-    @IBOutlet weak var webView: UIWebView!
-    @IBOutlet weak var indicatorView: UIActivityIndicatorView!
-    var aUrl:NSURL?
-    
-    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: NSBundle?) {
-        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
-    }
-
-    required init(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    var targetURL : NSURL = NSURL()
+    let webView : UIWebView = UIWebView()
     
     override func viewDidLoad() {
-        if let theUrl = aUrl {
-            webView.loadRequest(NSURLRequest(URL: theUrl))
+        super.viewDidLoad()
+        self.webView.frame = UIScreen.mainScreen().applicationFrame
+        self.webView.scalesPageToFit = true
+        self.webView.delegate = self
+        self.view.addSubview(self.webView)
+        let req = NSURLRequest(URL: targetURL)
+        self.webView.loadRequest(req)
+    }
+    
+    override func handle(url: NSURL) {
+        targetURL = url
+        super.handle(url)
+    }
+    
+    func webView(webView: UIWebView, shouldStartLoadWithRequest request: NSURLRequest, navigationType: UIWebViewNavigationType) -> Bool {
+        if let url = request.URL where (url.scheme == "oauth-swift"){
+            self.dismissWebViewController()
         }
-    }
-    
-    func webViewDidFinishLoad(webView: UIWebView) {
-        indicatorView.stopAnimating()
-        indicatorView.hidden = true
-    }
-    
-    func webView(webView: UIWebView, didFailLoadWithError error: NSError) {
-        indicatorView.stopAnimating()
-        indicatorView.hidden = true
+        return true
     }
 }

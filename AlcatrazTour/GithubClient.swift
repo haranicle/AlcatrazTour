@@ -66,8 +66,8 @@ class GithubClient: NSObject {
             accessTokenUrl: "https://github.com/login/oauth/access_token",
             responseType:   "code"
         )
-        let state: String = "GITHUB"
-        oauthswift.authorizeWithCallbackURL( NSURL(string: "oauth-swift://oauth-callback/github")!, scope: "user,repo", state: state, success: {
+        oauthswift.authorize_url_handler = LoginWebViewController()
+        oauthswift.authorizeWithCallbackURL( NSURL(string: "oauth-swift://oauth-callback/github")!, scope: "user,repo", state: "GITHUB", success: {
             credential, response, parameters in
             
             
@@ -75,16 +75,7 @@ class GithubClient: NSObject {
             }, failure: {(error:NSError!) -> Void in
                 println(error.localizedDescription)
         })
-        oauthswift.authorize_url_handler = OAuthWebViewController()
         
-        
-//        func callOnSucceed(credential: OAuthSwiftCredential, response: NSURLResponse?, parameters: NSDictionary) -> Void {
-//            // save tokent to user default
-//            println("AUTH COMPLETE!!")
-//            
-//            NSUserDefaults.standardUserDefaults().setObject(credential.oauth_token, forKey: githubOauthTokenKey)
-//            onSucceed()
-//        }
     }
     
     // MARK: - Request

@@ -30,8 +30,6 @@
 		F697C3C91A9C61FB001DF614 /* Plugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = F697C3C81A9C61FB001DF614 /* Plugin.swift */; };
 		F697C3CB1A9C72F9001DF614 /* GithubClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F697C3CA1A9C72F9001DF614 /* GithubClientTests.swift */; };
 		F6FCEED61AC1658D00EF3909 /* LoginWebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6FCEED41AC1658D00EF3909 /* LoginWebViewController.swift */; };
-		F6FCEED71AC1658D00EF3909 /* LoginWebViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F6FCEED51AC1658D00EF3909 /* LoginWebViewController.xib */; };
-		F6FCEED81AC1659C00EF3909 /* LoginWebViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F6FCEED51AC1658D00EF3909 /* LoginWebViewController.xib */; };
 		F6FCEED91AC165A200EF3909 /* LoginWebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6FCEED41AC1658D00EF3909 /* LoginWebViewController.swift */; };
 /* End PBXBuildFile section */
 
@@ -75,7 +73,6 @@
 		F697C3CA1A9C72F9001DF614 /* GithubClientTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GithubClientTests.swift; sourceTree = "<group>"; };
 		F697C3CD1A9C7497001DF614 /* Pods.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Pods.framework; path = "Pods/build/Debug-iphoneos/Pods.framework"; sourceTree = "<group>"; };
 		F6FCEED41AC1658D00EF3909 /* LoginWebViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginWebViewController.swift; sourceTree = "<group>"; };
-		F6FCEED51AC1658D00EF3909 /* LoginWebViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LoginWebViewController.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -150,7 +147,6 @@
 				5F26E7D11AB577E400636136 /* PluginTableViewController.swift */,
 				5FE2E4701AB5A2B5005DE41F /* PluginDetailWebViewController.swift */,
 				F6FCEED41AC1658D00EF3909 /* LoginWebViewController.swift */,
-				F6FCEED51AC1658D00EF3909 /* LoginWebViewController.xib */,
 			);
 			name = ViewController;
 			sourceTree = "<group>";
@@ -311,7 +307,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F62E962C1A9AF6F600063445 /* Main.storyboard in Resources */,
-				F6FCEED71AC1658D00EF3909 /* LoginWebViewController.xib in Resources */,
 				5FC1920F1AB47BBD00D0BD9A /* PluginTableViewCell.xib in Resources */,
 				5F7C86771AA2F764008AB05E /* fontawesome-webfont.ttf in Resources */,
 				F62E96311A9AF6F600063445 /* LaunchScreen.xib in Resources */,
@@ -323,7 +318,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F6FCEED81AC1659C00EF3909 /* LoginWebViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
