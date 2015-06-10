@@ -29,7 +29,7 @@ class LoginWebViewController: OAuthWebViewController, UIWebViewDelegate {
     }
     
     func webView(webView: UIWebView, shouldStartLoadWithRequest request: NSURLRequest, navigationType: UIWebViewNavigationType) -> Bool {
-        if let url = request.URL where (url.scheme == "oauth-swift"){
+        if let url = request.URL where (url.scheme == "alcatraztour"){
             self.dismissWebViewController()
         }
         return true

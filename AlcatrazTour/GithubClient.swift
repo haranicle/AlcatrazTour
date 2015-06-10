@@ -20,6 +20,7 @@ class GithubClient: NSObject {
     
     let githubRepoUrl = "https://github.com"
     let githubRepoApiUrl = "https://api.github.com/repos"
+    let appScheme = "alcatraztour:"
     
     // MARK: - Status
     
@@ -66,8 +67,9 @@ class GithubClient: NSObject {
             accessTokenUrl: "https://github.com/login/oauth/access_token",
             responseType:   "code"
         )
+        
         oauthswift.authorize_url_handler = LoginWebViewController()
-        oauthswift.authorizeWithCallbackURL( NSURL(string: "oauth-swift://oauth-callback/github")!, scope: "user,repo", state: "GITHUB", success: {
+        oauthswift.authorizeWithCallbackURL( NSURL(string: "\(appScheme)//oauth-callback/github")!, scope: "user,repo", state: "GITHUB", success: {
             credential, response, parameters in
             
             
