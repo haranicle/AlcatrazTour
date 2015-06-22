@@ -5,7 +5,7 @@ use_frameworks!
 pod 'Alamofire', '~> 1.2'
 pod 'SwiftyJSON', '~> 2.2'
 pod 'Realm', '~> 0.90.6'
-pod 'OAuthSwift', '~> 0.3.4'
+pod 'OAuthSwift', '~> 0.3.6'
 pod 'SDWebImage'
 pod 'SVProgressHUD'
 pod 'M2DWebViewController'

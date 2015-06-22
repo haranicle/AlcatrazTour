@@ -20,6 +20,7 @@ class GithubClient: NSObject {
     
     let githubRepoUrl = "https://github.com"
     let githubRepoApiUrl = "https://api.github.com/repos"
+    let appScheme = "alcatraztour:"
     
     // MARK: - Status
     
@@ -58,6 +59,7 @@ class GithubClient: NSObject {
     }
     
     func requestOAuth(onSucceed:Void->Void, onFailed:NSError -> Void ){
+        
         let oauthswift = OAuth2Swift(
             consumerKey:    GithubKey["consumerKey"]!,
             consumerSecret: GithubKey["consumerSecret"]!,
@@ -66,15 +68,18 @@ class GithubClient: NSObject {
             responseType:   "code"
         )
         
-        func callOnSucceed(credential: OAuthSwiftCredential, response: NSURLResponse?) -> Void {
-            // save tokent to user default
-            println("AUTH COMPLETE!!")
+        let oAuthTokenKey = githubOauthTokenKey
+        oauthswift.authorize_url_handler = LoginWebViewController()
+        oauthswift.authorizeWithCallbackURL( NSURL(string: "\(appScheme)//oauth-callback/github")!, scope: "user,repo", state: "GITHUB", success: {
+            credential, response, parameters in
             
-            NSUserDefaults.standardUserDefaults().setObject(credential.oauth_token, forKey: githubOauthTokenKey)
+            NSUserDefaults.standardUserDefaults().setObject(credential.oauth_token, forKey:oAuthTokenKey)
             onSucceed()
-        }
+            
+            }, failure: {(error:NSError!) -> Void in
+                println(error.localizedDescription)
+        })
         
-        oauthswift.authorizeWithCallbackURL( NSURL(string: "alcatraztour://oauth-callback/github")!, scope: "user,repo", state: "GITHUB", success:callOnSucceed, failure:onFailed)
     }
     
     // MARK: - Request
