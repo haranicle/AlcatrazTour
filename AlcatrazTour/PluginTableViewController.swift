@@ -49,6 +49,8 @@ enum Modes:Int {
 
 class PluginTableViewController: UITableViewController, UISearchResultsUpdating, UISearchControllerDelegate {
     
+    @IBOutlet weak var settingsButton: UIBarButtonItem!
+    
     var githubClient = GithubClient()
     var currentMode = Modes.Popularity
     let segments = [Modes.Popularity, Modes.Stars, Modes.Update, Modes.New]
@@ -56,6 +58,11 @@ class PluginTableViewController: UITableViewController, UISearchResultsUpdating,
     override func viewDidLoad() {
         super.viewDidLoad()
         registerTableViewCellNib(self.tableView)
+        
+        // settings button
+        let settingsAttributes = [NSFontAttributeName:UIFont(name: "FontAwesome", size: 24)!]
+        settingsButton.setTitleTextAttributes(settingsAttributes, forState: UIControlState.Normal)
+        settingsButton.title = "\u{f013}"
         
         // notification center
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "onApplicationDidBecomeActive:", name: UIApplicationDidBecomeActiveNotification, object: nil)

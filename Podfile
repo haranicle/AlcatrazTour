@@ -17,3 +17,8 @@ target 'AlcatrazTourTests' do
     pod 'SDWebImage'
     pod 'SVProgressHUD'
 end
+
+post_install do | installer |
+    require 'fileutils'
+    FileUtils.cp_r('Pods/Target Support Files/Pods/Pods-acknowledgements.plist', 'AlcatrazTour/Settings.bundle/Acknowledgements.plist', :remove_destination => true)
+end
