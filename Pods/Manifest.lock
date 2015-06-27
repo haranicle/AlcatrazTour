@@ -1,5 +1,6 @@
 PODS:
   - Alamofire (1.2.1)
+  - JDStatusBarNotification (1.5.2)
   - M2DWebViewController (0.1.11)
   - OAuthSwift (0.3.6)
   - Realm (0.90.6):
@@ -13,6 +14,7 @@ PODS:
 
 DEPENDENCIES:
   - Alamofire (~> 1.2)
+  - JDStatusBarNotification
   - M2DWebViewController
   - OAuthSwift (~> 0.3.6)
   - Realm (~> 0.90.6)
@@ -23,6 +25,7 @@ DEPENDENCIES:
 
 SPEC CHECKSUMS:
   Alamofire: 1acfdf179aff68b41a48dff70c1ac7fa263e2bcb
+  JDStatusBarNotification: a36d09ccbb047217572b074a61e7ca10dddc5f0a
   M2DWebViewController: ccdbbe41b792a4111672b8ad7e85b04500e6df30
   OAuthSwift: 3517e94380923085dfa7f23421bc3d4a61ce48c0
   Realm: a4b2766a29006293693a0f26664ecb5a84a54455

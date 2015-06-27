@@ -1,7 +1,6 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    CFPropertyList (2.3.1)
     activesupport (4.2.3)
       i18n (~> 0.7)
       json (~> 1.7, >= 1.7.7)
@@ -22,10 +21,6 @@ GEM
       molinillo (~> 0.2.3)
       nap (~> 0.8)
       xcodeproj (~> 0.24.2)
-    cocoapods-ack_filter (0.2.0)
-      CFPropertyList (>= 2.2)
-      cocoapods (~> 0.34)
-      libxml-ruby (>= 2.6)
     cocoapods-core (0.37.2)
       activesupport (>= 3.2.15)
       fuzzy_match (~> 2.0.4)
@@ -42,7 +37,6 @@ GEM
     fuzzy_match (2.0.4)
     i18n (0.7.0)
     json (1.8.3)
-    libxml-ruby (2.8.0)
     minitest (5.7.0)
     molinillo (0.2.3)
     nap (0.8.0)
@@ -59,7 +53,6 @@ PLATFORMS
 
 DEPENDENCIES
   cocoapods (= 0.37.2)
-  cocoapods-ack_filter
 
 BUNDLED WITH
-   1.10.3
+   1.10.4

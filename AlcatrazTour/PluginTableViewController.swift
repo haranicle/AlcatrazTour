@@ -164,6 +164,11 @@ class PluginTableViewController: UITableViewController, UISearchResultsUpdating,
     }
     
     @IBAction func onRefreshPushed(sender: AnyObject) {
+        if !githubClient.isSignedIn() {
+            showSignInAlert()
+            return
+        }
+        
         if !tableView.decelerating {
             self.reloadAllPlugins()
         }
@@ -271,6 +276,16 @@ class PluginTableViewController: UITableViewController, UISearchResultsUpdating,
         var alert = UIAlertController(title: "Error", message: error.description, preferredStyle: UIAlertControllerStyle.Alert)
         alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil))
         self.presentViewController(alert, animated: true, completion: nil)
+    }
+    
+    // MARK: - Segue
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.identifier == "settings" {
+            let settingsNavigationController = segue.destinationViewController as! UINavigationController
+            let settingTableViewController = settingsNavigationController.childViewControllers[0] as! SettingsTableViewController
+            settingTableViewController.githubClient = githubClient
+        }
     }
     
 }

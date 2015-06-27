@@ -9,6 +9,7 @@ pod 'OAuthSwift', '~> 0.3.6'
 pod 'SDWebImage'
 pod 'SVProgressHUD'
 pod 'M2DWebViewController'
+pod 'JDStatusBarNotification'
 
 target 'AlcatrazTourTests' do
     pod 'Alamofire', '~> 1.2'
@@ -16,6 +17,7 @@ target 'AlcatrazTourTests' do
     pod 'Realm/Headers'
     pod 'SDWebImage'
     pod 'SVProgressHUD'
+    pod 'JDStatusBarNotification'
 end
 
 post_install do | installer |

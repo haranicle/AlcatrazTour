@@ -12,6 +12,12 @@
 #define COCOAPODS_VERSION_MINOR_Alamofire 2
 #define COCOAPODS_VERSION_PATCH_Alamofire 1
 
+// JDStatusBarNotification
+#define COCOAPODS_POD_AVAILABLE_JDStatusBarNotification
+#define COCOAPODS_VERSION_MAJOR_JDStatusBarNotification 1
+#define COCOAPODS_VERSION_MINOR_JDStatusBarNotification 5
+#define COCOAPODS_VERSION_PATCH_JDStatusBarNotification 2
+
 // M2DWebViewController
 #define COCOAPODS_POD_AVAILABLE_M2DWebViewController
 #define COCOAPODS_VERSION_MAJOR_M2DWebViewController 0

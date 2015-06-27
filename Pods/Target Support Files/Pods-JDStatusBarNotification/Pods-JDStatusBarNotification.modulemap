@@ -1,0 +1,6 @@
+framework module JDStatusBarNotification {
+  umbrella header "Pods-JDStatusBarNotification-umbrella.h"
+
+  export *
+  module * { export * }
+}

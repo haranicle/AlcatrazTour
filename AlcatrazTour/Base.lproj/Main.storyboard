@@ -19,9 +19,9 @@
                     </tableView>
                     <navigationItem key="navigationItem" id="BS8-R4-cc0">
                         <nil key="title"/>
-                        <barButtonItem key="leftBarButtonItem" title="Settings" id="83S-du-wiK">
+                        <barButtonItem key="leftBarButtonItem" id="83S-du-wiK">
                             <connections>
-                                <segue destination="XPc-Zp-zGB" kind="presentation" id="CFp-xC-8nG"/>
+                                <segue destination="XPc-Zp-zGB" kind="presentation" identifier="settings" id="CFp-xC-8nG"/>
                             </connections>
                         </barButtonItem>
                         <segmentedControl key="titleView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="0" id="7ay-kT-tnB">
@@ -55,7 +55,7 @@
         <!--Settings-->
         <scene sceneID="uXA-XR-J02">
             <objects>
-                <tableViewController id="ct4-SG-dcq" sceneMemberID="viewController">
+                <tableViewController id="ct4-SG-dcq" customClass="SettingsTableViewController" customModule="AlcatrazTour" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="Hkk-tf-BnX">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -110,7 +110,11 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="Settings" id="SNZ-c6-XXx">
-                        <barButtonItem key="rightBarButtonItem" systemItem="done" id="NmI-1J-fzs"/>
+                        <barButtonItem key="rightBarButtonItem" systemItem="done" id="NmI-1J-fzs">
+                            <connections>
+                                <action selector="onDonePushed:" destination="ct4-SG-dcq" id="U3r-Vp-yZT"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Aut-jA-4gE" userLabel="First Responder" sceneMemberID="firstResponder"/>
