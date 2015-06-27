@@ -20,6 +20,7 @@ class GithubClient: NSObject {
     
     let githubRepoUrl = "https://github.com"
     let githubRepoApiUrl = "https://api.github.com/repos"
+    let githubStarApiUrl = "https://api.github.com/user/starred/"
     let appScheme = "alcatraztour:"
     
     // MARK: - Status
@@ -70,7 +71,7 @@ class GithubClient: NSObject {
         
         let oAuthTokenKey = githubOauthTokenKey
         oauthswift.authorize_url_handler = LoginWebViewController()
-        oauthswift.authorizeWithCallbackURL( NSURL(string: "\(appScheme)//oauth-callback/github")!, scope: "user,repo", state: "GITHUB", success: {
+        oauthswift.authorizeWithCallbackURL( NSURL(string: "\(appScheme)//oauth-callback/github")!, scope: "user,repo,public_repo", state: "GITHUB", success: {
             credential, response, parameters in
             
             NSUserDefaults.standardUserDefaults().setObject(credential.oauth_token, forKey:oAuthTokenKey)
@@ -238,6 +239,58 @@ class GithubClient: NSObject {
     func updateProgress(weakSelf:GithubClient?, pluginsCount:Int) {
         weakSelf!.loadCompleteCount++
         SVProgressHUD.showProgress(Float(weakSelf!.loadCompleteCount) / Float(pluginsCount) , status: "Loading data", maskType: SVProgressHUDMaskType.Black)
+    }
+    
+    // MARK: Staring
+    
+    func checkIfStarredRepository(owner:String, repositoryName:String, onSucceed:(AnyObject) -> Void, onFailed:(NSURLRequest, NSHTTPURLResponse?, AnyObject?, NSError?) -> Void) {
+        let apiUrl = githubStarApiUrl + owner + "/" + repositoryName
+        
+        Alamofire
+            .request(Method.GET, apiUrl, parameters: nil)
+            .validate(statusCode: 200..<400)
+            .responseString {request, response, responseData, error in
+                if let aError = error {
+                    onFailed(request, response, responseData, aError)
+                    return
+                }
+                
+                if let aResponseData: AnyObject = responseData {
+                    onSucceed(aResponseData)
+                } else {
+                    onFailed(request, response, responseData, nil)
+                }
+                
+        }
+    }
+    
+    func starRepository(isStarring:Bool, owner:String, repositoryName:String, onSucceed:(AnyObject) -> Void, onFailed:(NSURLRequest, NSHTTPURLResponse?, AnyObject?, NSError?) -> Void) {
+        
+        let apiUrl = githubStarApiUrl + owner + "/" + repositoryName
+        let method = isStarring ? Method.PUT : Method.DELETE
+        
+        let token = NSUserDefaults.standardUserDefaults().stringForKey(githubOauthTokenKey)
+        if(token == nil) {
+            println("TOKEN NOT SAVED!")
+            return
+        }
+        
+        Alamofire
+            .request(method, apiUrl, parameters: ["access_token": token!])
+            .validate(statusCode: 200..<400)
+            .responseString {request, response, responseData, error in
+                if let aError = error {
+                    onFailed(request, response, responseData, aError)
+                    return
+                }
+                
+                if let aResponseData: AnyObject = responseData {
+                    onSucceed(aResponseData)
+                } else {
+                    onFailed(request, response, responseData, nil)
+                }
+ 
+        }
     }
     
 }

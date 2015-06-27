@@ -28,17 +28,19 @@ class SettingsTableViewController: UITableViewController {
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
         switch indexPath.section {
-        case 0:
+        case 0: // Github
             switch indexPath.row {
             case 0:
                 signOut()
             default:
                 fatalError("I don't have such a cell!")
             }
-        case 1:
+        case 1: // About
             switch indexPath.row {
             case 0:
-                1+1
+                showSourceCodeOfThisApp()
+            case 1:
+                starThisAppOnGithub()
             default:
                 fatalError("I don't have such a cell!")
             }
@@ -56,5 +58,27 @@ class SettingsTableViewController: UITableViewController {
             JDStatusBarNotification.showWithStatus("Already signed out.", dismissAfter: 3, styleName: JDStatusBarStyleError)
         }
     }
+    
+    func showSourceCodeOfThisApp() {
+        UIApplication.sharedApplication().openURL(NSURL(string: "https://github.com/haranicle/AlcatrazTour")!)
+    }
+    
+    func starThisAppOnGithub() {
+        func onSucceed(responseData:AnyObject) {
+            NSLog("responseData = \(responseData)")
+        }
+        
+        func onFailed(request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) {
+            println("request = \(request)")
+            println("response = \(response)")
+            println("responseData = \(responseData)")
+            println("error = \(error?.description)")
+        }
+        
+        
+        githubClient!.checkIfStarredRepository("haranicle", repositoryName: "sandbox", onSucceed: onSucceed, onFailed: onFailed);
+    }
+    
+    
 
 }
