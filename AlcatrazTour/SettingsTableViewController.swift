@@ -75,8 +75,7 @@ class SettingsTableViewController: UITableViewController {
             println("error = \(error?.description)")
         }
         
-        
-        githubClient!.checkIfStarredRepository("haranicle", repositoryName: "sandbox", onSucceed: onSucceed, onFailed: onFailed);
+        githubClient!.starRepository(true ,owner:"haranicle", repositoryName: "sandbox", onSucceed: onSucceed, onFailed: onFailed);
     }
     
     

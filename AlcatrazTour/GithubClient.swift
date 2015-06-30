@@ -246,8 +246,14 @@ class GithubClient: NSObject {
     func checkIfStarredRepository(owner:String, repositoryName:String, onSucceed:(AnyObject) -> Void, onFailed:(NSURLRequest, NSHTTPURLResponse?, AnyObject?, NSError?) -> Void) {
         let apiUrl = githubStarApiUrl + owner + "/" + repositoryName
         
+        let token = NSUserDefaults.standardUserDefaults().stringForKey(githubOauthTokenKey)
+        if(token == nil) {
+            println("TOKEN NOT SAVED!")
+            return
+        }
+        
         Alamofire
-            .request(Method.GET, apiUrl, parameters: nil)
+            .request(Method.GET, apiUrl, parameters: ["access_token": token!])
             .validate(statusCode: 200..<400)
             .responseString {request, response, responseData, error in
                 if let aError = error {
@@ -274,6 +280,11 @@ class GithubClient: NSObject {
             println("TOKEN NOT SAVED!")
             return
         }
+        
+        Manager.sharedInstance.session.configuration.HTTPAdditionalHeaders = [
+            "Content-Length" : "0",
+            "token" : "\(token!)"
+        ]
         
         Alamofire
             .request(method, apiUrl, parameters: ["access_token": token!])
