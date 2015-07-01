@@ -64,20 +64,29 @@ class SettingsTableViewController: UITableViewController {
     }
     
     func starThisAppOnGithub() {
-        func onSucceed(responseData:AnyObject) {
-            NSLog("responseData = \(responseData)")
-        }
         
         func onFailed(request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) {
             println("request = \(request)")
             println("response = \(response)")
             println("responseData = \(responseData)")
             println("error = \(error?.description)")
+            JDStatusBarNotification.showWithStatus("Cannot connect to GitHub.", dismissAfter: 3, styleName: JDStatusBarStyleError)
         }
         
-        githubClient!.starRepository(true ,owner:"haranicle", repositoryName: "sandbox", onSucceed: onSucceed, onFailed: onFailed);
+        let owner = "haranicle"
+        let repositoryName = "sandbox"
+        
+        githubClient!.checkIfStarredRepository(owner, repositoryName: repositoryName,
+            onSucceed:{ (starred) -> Void in
+                println("starred = \(starred)")
+                if starred {
+                    JDStatusBarNotification.showWithStatus("Already starred.", dismissAfter: 3, styleName: JDStatusBarStyleWarning)
+                    return
+                }
+                self.githubClient!.starRepository(true, owner: owner, repositoryName: repositoryName, onSucceed: { (responseObject) -> Void in
+                    JDStatusBarNotification.showWithStatus("Thank you!!", dismissAfter: 3, styleName: JDStatusBarStyleSuccess)
+                    }, onFailed: onFailed)
+                
+            }, onFailed: onFailed)
     }
-    
-    
-
 }

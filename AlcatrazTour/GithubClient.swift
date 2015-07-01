@@ -243,7 +243,7 @@ class GithubClient: NSObject {
     
     // MARK: Staring
     
-    func checkIfStarredRepository(owner:String, repositoryName:String, onSucceed:(AnyObject) -> Void, onFailed:(NSURLRequest, NSHTTPURLResponse?, AnyObject?, NSError?) -> Void) {
+    func checkIfStarredRepository(owner:String, repositoryName:String, onSucceed:(Bool) -> Void, onFailed:(NSURLRequest, NSHTTPURLResponse?, AnyObject?, NSError?) -> Void) {
         let apiUrl = githubStarApiUrl + owner + "/" + repositoryName
         
         let token = NSUserDefaults.standardUserDefaults().stringForKey(githubOauthTokenKey)
@@ -254,19 +254,22 @@ class GithubClient: NSObject {
         
         Alamofire
             .request(Method.GET, apiUrl, parameters: ["access_token": token!])
-            .validate(statusCode: 200..<400)
+            .validate(statusCode: 204...404)
             .responseString {request, response, responseData, error in
                 if let aError = error {
                     onFailed(request, response, responseData, aError)
                     return
                 }
                 
-                if let aResponseData: AnyObject = responseData {
-                    onSucceed(aResponseData)
-                } else {
-                    onFailed(request, response, responseData, nil)
+                if(response?.statusCode==204){
+                    onSucceed(true)
+                    return
                 }
-                
+                if(response?.statusCode==404){
+                    onSucceed(false)
+                    return
+                }
+                onFailed(request, response, responseData, nil)
         }
     }
     
@@ -287,7 +290,7 @@ class GithubClient: NSObject {
         ]
         
         Alamofire
-            .request(method, apiUrl, parameters: ["access_token": token!])
+            .request(method, apiUrl, parameters: nil)
             .validate(statusCode: 200..<400)
             .responseString {request, response, responseData, error in
                 if let aError = error {
