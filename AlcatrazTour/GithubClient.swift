@@ -11,6 +11,7 @@ import SwiftyJSON
 import Realm
 import OAuthSwift
 import SVProgressHUD
+import JDStatusBarNotification
 
 class GithubClient: NSObject {
     
@@ -300,6 +301,28 @@ class GithubClient: NSObject {
                 
                 onSucceed()
         }
+    }
+    
+    func checkAndStarRepository(owner:String, repositoryName:String){
+        func onFailed(request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) {
+            println("request = \(request)")
+            println("response = \(response)")
+            println("responseData = \(responseData)")
+            println("error = \(error?.description)")
+            JDStatusBarNotification.showWithStatus("Cannot connect to GitHub.", dismissAfter: 3, styleName: JDStatusBarStyleError)
+        }
+        
+        checkIfStarredRepository(owner, repositoryName: repositoryName, onSucceed: { (isStarred) -> Void in
+            if isStarred {
+                JDStatusBarNotification.showWithStatus("Already starred.", dismissAfter: 3, styleName: JDStatusBarStyleWarning)
+                return
+            }
+            self.starRepository(true, owner: owner, repositoryName: repositoryName, onSucceed: { (responseObject) -> Void in
+                JDStatusBarNotification.showWithStatus("Thank you!! Your starred AlcatrazTour.", dismissAfter: 3, styleName: JDStatusBarStyleSuccess)
+                }, onFailed: onFailed)
+            
+            
+        }, onFailed: onFailed)
     }
     
 }
