@@ -20,18 +20,6 @@ class GithubClientTests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
         super.tearDown()
     }
-
-    func testExample() {
-        // This is an example of a functional test case.
-        XCTAssert(true, "Pass")
-    }
-    
-    func testPerformanceExample() {
-        // This is an example of a performance test case.
-        self.measureBlock() {
-            // Put the code you want to measure the time of here.
-        }
-    }
     
     // MARK: - Create URL
     
@@ -112,6 +100,28 @@ class GithubClientTests: XCTestCase {
             expectation.fulfill()
         })
         
+        self.waitForExpectationsWithTimeout(30 , handler: nil)
+    }
+    
+    func test_starRepository_worksFine() {
+        let expectation:XCTestExpectation = self.expectationWithDescription(__FUNCTION__)
+        
+        func onSucceed() {
+            expectation.fulfill()
+            XCTAssert(true, "star成功")
+        }
+        
+        func onFailed(request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) {
+            println("request = \(request)")
+            println("response = \(response)")
+            println("responseData = \(responseData)")
+            println("error = \(error?.description)")
+            expectation.fulfill()
+            XCTFail("star失敗")
+        }
+        
+        let client = GithubClient()
+        client.starRepository(true, owner: "haranicle", repositoryName: "sandbox", onSucceed: onSucceed, onFailed: onFailed);
         self.waitForExpectationsWithTimeout(30 , handler: nil)
     }
 

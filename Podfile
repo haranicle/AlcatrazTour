@@ -9,6 +9,7 @@ pod 'OAuthSwift', '~> 0.3.6'
 pod 'SDWebImage'
 pod 'SVProgressHUD'
 pod 'M2DWebViewController'
+pod 'JDStatusBarNotification'
 
 target 'AlcatrazTourTests' do
     pod 'Alamofire', '~> 1.2'
@@ -16,4 +17,10 @@ target 'AlcatrazTourTests' do
     pod 'Realm/Headers'
     pod 'SDWebImage'
     pod 'SVProgressHUD'
+    pod 'JDStatusBarNotification'
+end
+
+post_install do | installer |
+    require 'fileutils'
+    FileUtils.cp_r('Pods/Target Support Files/Pods/Pods-acknowledgements.plist', 'AlcatrazTour/Settings.bundle/Acknowledgements.plist', :remove_destination => true)
 end

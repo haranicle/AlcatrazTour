@@ -49,6 +49,8 @@ enum Modes:Int {
 
 class PluginTableViewController: UITableViewController, UISearchResultsUpdating, UISearchControllerDelegate {
     
+    @IBOutlet weak var settingsButton: UIBarButtonItem!
+    
     var githubClient = GithubClient()
     var currentMode = Modes.Popularity
     let segments = [Modes.Popularity, Modes.Stars, Modes.Update, Modes.New]
@@ -56,6 +58,11 @@ class PluginTableViewController: UITableViewController, UISearchResultsUpdating,
     override func viewDidLoad() {
         super.viewDidLoad()
         registerTableViewCellNib(self.tableView)
+        
+        // settings button
+        let settingsAttributes = [NSFontAttributeName:UIFont(name: "FontAwesome", size: 24)!]
+        settingsButton.setTitleTextAttributes(settingsAttributes, forState: UIControlState.Normal)
+        settingsButton.title = "\u{f013}"
         
         // notification center
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "onApplicationDidBecomeActive:", name: UIApplicationDidBecomeActiveNotification, object: nil)
@@ -157,6 +164,11 @@ class PluginTableViewController: UITableViewController, UISearchResultsUpdating,
     }
     
     @IBAction func onRefreshPushed(sender: AnyObject) {
+        if !githubClient.isSignedIn() {
+            showSignInAlert()
+            return
+        }
+        
         if !tableView.decelerating {
             self.reloadAllPlugins()
         }
@@ -264,6 +276,16 @@ class PluginTableViewController: UITableViewController, UISearchResultsUpdating,
         var alert = UIAlertController(title: "Error", message: error.description, preferredStyle: UIAlertControllerStyle.Alert)
         alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil))
         self.presentViewController(alert, animated: true, completion: nil)
+    }
+    
+    // MARK: - Segue
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.identifier == "settings" {
+            let settingsNavigationController = segue.destinationViewController as! UINavigationController
+            let settingTableViewController = settingsNavigationController.childViewControllers[0] as! SettingsTableViewController
+            settingTableViewController.githubClient = githubClient
+        }
     }
     
 }
