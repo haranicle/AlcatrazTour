@@ -73,6 +73,6 @@ class SettingsTableViewController: UITableViewController {
             JDStatusBarNotification.showWithStatus("Cannot connect to GitHub.", dismissAfter: 3, styleName: JDStatusBarStyleError)
         }
         
-        self.githubClient!.checkAndStarRepository("haranicle", repositoryName: "sandbox")
+        self.githubClient!.checkAndStarRepository(true, owner:"haranicle", repositoryName: "AlcatrazTour")
     }
 }

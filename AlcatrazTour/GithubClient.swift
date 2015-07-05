@@ -303,7 +303,7 @@ class GithubClient: NSObject {
         }
     }
     
-    func checkAndStarRepository(owner:String, repositoryName:String){
+    func checkAndStarRepository(isStarring:Bool, owner:String, repositoryName:String){
         func onFailed(request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) {
             println("request = \(request)")
             println("response = \(response)")
@@ -313,12 +313,16 @@ class GithubClient: NSObject {
         }
         
         checkIfStarredRepository(owner, repositoryName: repositoryName, onSucceed: { (isStarred) -> Void in
-            if isStarred {
+            if isStarring && isStarred {
                 JDStatusBarNotification.showWithStatus("Already starred.", dismissAfter: 3, styleName: JDStatusBarStyleWarning)
                 return
+            } else if !isStarring && !isStarred {
+                JDStatusBarNotification.showWithStatus("Already unstarred.", dismissAfter: 3, styleName: JDStatusBarStyleWarning)
+                return;
             }
-            self.starRepository(true, owner: owner, repositoryName: repositoryName, onSucceed: { (responseObject) -> Void in
-                JDStatusBarNotification.showWithStatus("Thank you!! Your starred AlcatrazTour.", dismissAfter: 3, styleName: JDStatusBarStyleSuccess)
+            self.starRepository(isStarring, owner: owner, repositoryName: repositoryName, onSucceed: { (responseObject) -> Void in
+                let action = isStarring ? "starred" : "unstarred"
+                JDStatusBarNotification.showWithStatus("Your \(action) \(repositoryName).", dismissAfter: 3, styleName: JDStatusBarStyleSuccess)
                 }, onFailed: onFailed)
             
             
