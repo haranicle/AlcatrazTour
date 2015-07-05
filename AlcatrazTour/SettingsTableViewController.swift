@@ -76,17 +76,21 @@ class SettingsTableViewController: UITableViewController {
         let owner = "haranicle"
         let repositoryName = "sandbox"
         
-        githubClient!.checkIfStarredRepository(owner, repositoryName: repositoryName,
-            onSucceed:{ (starred) -> Void in
-                println("starred = \(starred)")
-                if starred {
-                    JDStatusBarNotification.showWithStatus("Already starred.", dismissAfter: 3, styleName: JDStatusBarStyleWarning)
-                    return
-                }
-                self.githubClient!.starRepository(true, owner: owner, repositoryName: repositoryName, onSucceed: { (responseObject) -> Void in
-                    JDStatusBarNotification.showWithStatus("Thank you!!", dismissAfter: 3, styleName: JDStatusBarStyleSuccess)
-                    }, onFailed: onFailed)
-                
-            }, onFailed: onFailed)
+        self.githubClient!.starRepository(true, owner: owner, repositoryName: repositoryName, onSucceed: { (AnyObject) -> Void in
+        
+        }, onFailed: onFailed)
+        
+//        githubClient!.checkIfStarredRepository(owner, repositoryName: repositoryName,
+//            onSucceed:{ (starred) -> Void in
+//                println("starred = \(starred)")
+//                if starred {
+//                    JDStatusBarNotification.showWithStatus("Already starred.", dismissAfter: 3, styleName: JDStatusBarStyleWarning)
+//                    return
+//                }
+//                self.githubClient!.starRepository(true, owner: owner, repositoryName: repositoryName, onSucceed: { (responseObject) -> Void in
+//                    JDStatusBarNotification.showWithStatus("Thank you!!", dismissAfter: 3, styleName: JDStatusBarStyleSuccess)
+//                    }, onFailed: onFailed)
+//                
+//            }, onFailed: onFailed)
     }
 }

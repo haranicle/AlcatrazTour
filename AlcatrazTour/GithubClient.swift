@@ -273,7 +273,7 @@ class GithubClient: NSObject {
         }
     }
     
-    func starRepository(isStarring:Bool, owner:String, repositoryName:String, onSucceed:(AnyObject) -> Void, onFailed:(NSURLRequest, NSHTTPURLResponse?, AnyObject?, NSError?) -> Void) {
+    func starRepository(isStarring:Bool, owner:String, repositoryName:String, onSucceed:() -> Void, onFailed:(NSURLRequest, NSHTTPURLResponse?, AnyObject?, NSError?) -> Void) {
         
         let apiUrl = githubStarApiUrl + owner + "/" + repositoryName
         let method = isStarring ? Method.PUT : Method.DELETE
@@ -286,11 +286,11 @@ class GithubClient: NSObject {
         
         Manager.sharedInstance.session.configuration.HTTPAdditionalHeaders = [
             "Content-Length" : "0",
-            "token" : "\(token!)"
+            "Authorization" : "token \(token!)"
         ]
         
         Alamofire
-            .request(method, apiUrl, parameters: nil)
+            .request(method, apiUrl, parameters: ["access_token": token!])
             .validate(statusCode: 200..<400)
             .responseString {request, response, responseData, error in
                 if let aError = error {
@@ -298,12 +298,7 @@ class GithubClient: NSObject {
                     return
                 }
                 
-                if let aResponseData: AnyObject = responseData {
-                    onSucceed(aResponseData)
-                } else {
-                    onFailed(request, response, responseData, nil)
-                }
- 
+                onSucceed()
         }
     }
     

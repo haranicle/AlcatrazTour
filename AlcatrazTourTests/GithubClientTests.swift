@@ -106,9 +106,9 @@ class GithubClientTests: XCTestCase {
     func test_starRepository_worksFine() {
         let expectation:XCTestExpectation = self.expectationWithDescription(__FUNCTION__)
         
-        func onSucceed(responseData:AnyObject) {
-            NSLog("responseData = \(responseData)")
+        func onSucceed() {
             expectation.fulfill()
+            XCTAssert(true, "star成功")
         }
         
         func onFailed(request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) {
@@ -117,6 +117,7 @@ class GithubClientTests: XCTestCase {
             println("responseData = \(responseData)")
             println("error = \(error?.description)")
             expectation.fulfill()
+            XCTFail("star失敗")
         }
         
         let client = GithubClient()
