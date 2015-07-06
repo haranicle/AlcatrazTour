@@ -22,6 +22,7 @@ class Plugin: RLMObject {
     dynamic var type = 0
     
     // details
+    dynamic var owner = ""
     dynamic var avaterUrl = ""
     dynamic var starGazersCount:Int = 0
     dynamic var updatedAt:NSDate = NSDate(timeIntervalSince1970: 0)
@@ -50,6 +51,9 @@ class Plugin: RLMObject {
     }
     
     func setDetails(details:NSDictionary) {
+        if let d = details["owner"]?["login"] as? String {
+            owner = d
+        }
         if let d = details["owner"]?["avatar_url"] as? String {
             avaterUrl = d
         }

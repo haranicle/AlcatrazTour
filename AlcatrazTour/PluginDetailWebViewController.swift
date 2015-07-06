@@ -7,14 +7,53 @@
 
 import UIKit
 import M2DWebViewController
+import JDStatusBarNotification
 
 class PluginDetailWebViewController: M2DWebViewController {
     
     var plugin = Plugin()
+    let githubClient = GithubClient()
+    let starringButtonTitle = "Star this repo."
+    let unstarringButtonTitle = "Unstar this repo."
+    var isStarred = false
     
     init(plugin:Plugin) {
         super.init(URL: NSURL(string: plugin.url)!, type: M2DWebViewType.AutoSelect)
         self.plugin = plugin
+        setupStarButton()
+        refreshStarButton()
+    }
+    
+    var starButton = UIBarButtonItem()
+    var isStarButtonAdded = false
+    
+    func setupStarButton() {
+        starButton.title = starringButtonTitle
+        starButton.style = UIBarButtonItemStyle.Plain
+        starButton.target = self
+        starButton.action = ""
+        starButton.enabled = false
+    }
+    
+    func refreshStarButton() {
+        func onFailed(request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) {
+            println("request = \(request)")
+            println("response = \(response)")
+            println("responseData = \(responseData)")
+            println("error = \(error?.description)")
+            JDStatusBarNotification.showWithStatus("Cannot connect to GitHub.", dismissAfter: 3, styleName: JDStatusBarStyleError)
+        }
+        
+        starButton.enabled = false
+        
+        weak var weakSelf = self
+        githubClient.checkIfStarredRepository(plugin.owner, repositoryName: plugin.name, onSucceed: { (isStarred) -> Void in
+            var strongSelf:PluginDetailWebViewController = weakSelf!
+            strongSelf.starButton.title = isStarred ? strongSelf.unstarringButtonTitle : strongSelf.starringButtonTitle
+            strongSelf.isStarred = isStarred
+            strongSelf.starButton.enabled = true
+            
+            }, onFailed: onFailed)
     }
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: NSBundle?) {
@@ -30,6 +69,25 @@ class PluginDetailWebViewController: M2DWebViewController {
 
         let button = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Action, target: self, action: "onShareButtonPushed:")
         navigationItem.rightBarButtonItem = button
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        if isStarButtonAdded {
+            return
+        }
+        
+        for view in self.parentViewController!.view.subviews {
+            if view.isKindOfClass(UIToolbar.self) {
+                var items:Array = view.items
+                items.append(starButton)
+                view.setItems(items, animated:false)
+                isStarButtonAdded = true;
+                return;
+            }
+        }
+
     }
 
     override func didReceiveMemoryWarning() {
