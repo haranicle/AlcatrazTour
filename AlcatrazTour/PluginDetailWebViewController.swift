@@ -13,8 +13,6 @@ class PluginDetailWebViewController: M2DWebViewController {
     
     var plugin = Plugin()
     let githubClient = GithubClient()
-    let starringButtonTitle = "Star this repo."
-    let unstarringButtonTitle = "Unstar this repo."
     var isStarred = false
     
     init(plugin:Plugin) {
@@ -34,6 +32,9 @@ class PluginDetailWebViewController: M2DWebViewController {
         starButton.action = ""
         starButton.enabled = false
     }
+    
+    let starringButtonTitle = "Star this repo."
+    let unstarringButtonTitle = "Unstar this repo."
     
     func refreshStarButton() {
         func onFailed(request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) {
@@ -73,7 +74,10 @@ class PluginDetailWebViewController: M2DWebViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        
+        addStarButton()
+    }
+    
+    func addStarButton() {
         if isStarButtonAdded {
             return
         }
@@ -81,13 +85,14 @@ class PluginDetailWebViewController: M2DWebViewController {
         for view in self.parentViewController!.view.subviews {
             if view.isKindOfClass(UIToolbar.self) {
                 var items:Array = view.items
+                let spacer = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.FlexibleSpace, target: nil, action: nil)
+                items.append(spacer)
                 items.append(starButton)
                 view.setItems(items, animated:false)
                 isStarButtonAdded = true;
                 return;
             }
         }
-
     }
 
     override func didReceiveMemoryWarning() {
