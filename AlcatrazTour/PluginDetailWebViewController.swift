@@ -14,47 +14,16 @@ class PluginDetailWebViewController: M2DWebViewController {
     var plugin = Plugin()
     let githubClient = GithubClient()
     var isStarred = false
+    var starButton = UIBarButtonItem()
+    var isStarButtonAdded = false
+    let starringButtonTitle = "Star this repo."
+    let unstarringButtonTitle = "Unstar this repo."
     
     init(plugin:Plugin) {
         super.init(URL: NSURL(string: plugin.url)!, type: M2DWebViewType.AutoSelect)
         self.plugin = plugin
         setupStarButton()
         refreshStarButton()
-    }
-    
-    var starButton = UIBarButtonItem()
-    var isStarButtonAdded = false
-    
-    func setupStarButton() {
-        starButton.title = starringButtonTitle
-        starButton.style = UIBarButtonItemStyle.Plain
-        starButton.target = self
-        starButton.action = ""
-        starButton.enabled = false
-    }
-    
-    let starringButtonTitle = "Star this repo."
-    let unstarringButtonTitle = "Unstar this repo."
-    
-    func refreshStarButton() {
-        func onFailed(request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) {
-            println("request = \(request)")
-            println("response = \(response)")
-            println("responseData = \(responseData)")
-            println("error = \(error?.description)")
-            JDStatusBarNotification.showWithStatus("Cannot connect to GitHub.", dismissAfter: 3, styleName: JDStatusBarStyleError)
-        }
-        
-        starButton.enabled = false
-        
-        weak var weakSelf = self
-        githubClient.checkIfStarredRepository(plugin.owner, repositoryName: plugin.name, onSucceed: { (isStarred) -> Void in
-            var strongSelf:PluginDetailWebViewController = weakSelf!
-            strongSelf.starButton.title = isStarred ? strongSelf.unstarringButtonTitle : strongSelf.starringButtonTitle
-            strongSelf.isStarred = isStarred
-            strongSelf.starButton.enabled = true
-            
-            }, onFailed: onFailed)
     }
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: NSBundle?) {
@@ -77,6 +46,48 @@ class PluginDetailWebViewController: M2DWebViewController {
         addStarButton()
     }
     
+    // MARK: - button
+    
+    func onShareButtonPushed(sender:AnyObject) {
+        let items = ["I love this Xcode plugin!\n[\(plugin.name)] ❤️:\(plugin.score) ⭐️:\(plugin.starGazersCount) 🔄:\(plugin.updatedAtAsString()) 🚀:\(plugin.createdAtAsString()) ", plugin.url, " #AlcatrazTour"]
+        
+        let activityViewController = UIActivityViewController(activityItems: items, applicationActivities: nil)
+        presentViewController(activityViewController, animated: true, completion: nil)
+    }
+    
+    func setupStarButton() {
+        starButton.title = starringButtonTitle
+        starButton.style = UIBarButtonItemStyle.Plain
+        starButton.target = self
+        starButton.action = "onStarButtonPushed:"
+        starButton.enabled = false
+    }
+    
+    func refreshStarButton() {
+        starButton.enabled = false
+        
+        func onFailed(request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) {
+            println("request = \(request)")
+            println("response = \(response)")
+            println("responseData = \(responseData)")
+            println("error = \(error?.description)")
+            JDStatusBarNotification.showWithStatus("Cannot connect to GitHub.", dismissAfter: 3, styleName: JDStatusBarStyleError)
+        }
+        
+        weak var weakSelf = self
+        githubClient.checkIfStarredRepository(plugin.owner, repositoryName: plugin.name, onSucceed: { (isStarred) -> Void in
+            var strongSelf:PluginDetailWebViewController = weakSelf!
+            strongSelf.isStarred = isStarred
+            strongSelf.toggleStarButton(strongSelf)
+            strongSelf.starButton.enabled = true
+            
+            }, onFailed: onFailed)
+    }
+    
+    func toggleStarButton(strongSelf:PluginDetailWebViewController) {
+        strongSelf.starButton.title = isStarred ? strongSelf.unstarringButtonTitle : strongSelf.starringButtonTitle
+    }
+
     func addStarButton() {
         if isStarButtonAdded {
             return
@@ -94,17 +105,30 @@ class PluginDetailWebViewController: M2DWebViewController {
             }
         }
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
     
-    func onShareButtonPushed(sender:AnyObject) {
-        let items = ["I love this Xcode plugin!\n[\(plugin.name)] ❤️:\(plugin.score) ⭐️:\(plugin.starGazersCount) 🔄:\(plugin.updatedAtAsString()) 🚀:\(plugin.createdAtAsString()) ", plugin.url, " #AlcatrazTour"]
+    func onStarButtonPushed(sender:UIBarButtonItem) {
+        starButton.enabled = false
         
-        let activityViewController = UIActivityViewController(activityItems: items, applicationActivities: nil)
-        presentViewController(activityViewController, animated: true, completion: nil)
+        weak var weakSelf = self
+        func onFailed(request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) {
+            println("request = \(request)")
+            println("response = \(response)")
+            println("responseData = \(responseData)")
+            println("error = \(error?.description)")
+            JDStatusBarNotification.showWithStatus("Cannot connect to GitHub.", dismissAfter: 3, styleName: JDStatusBarStyleError)
+            weakSelf!.starButton.enabled = true
+        }
+        
+        githubClient.checkAndStarRepository(!isStarred, owner: plugin.owner, repositoryName: plugin.name, onSucceed: { () -> Void in
+            var strongSelf:PluginDetailWebViewController = weakSelf!
+            strongSelf.isStarred = !strongSelf.isStarred
+            strongSelf.toggleStarButton(strongSelf)
+            strongSelf.starButton.enabled = true
+            }, onFailed: onFailed)
     }
-
 }

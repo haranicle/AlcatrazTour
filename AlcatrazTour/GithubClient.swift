@@ -303,14 +303,7 @@ class GithubClient: NSObject {
         }
     }
     
-    func checkAndStarRepository(isStarring:Bool, owner:String, repositoryName:String){
-        func onFailed(request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) {
-            println("request = \(request)")
-            println("response = \(response)")
-            println("responseData = \(responseData)")
-            println("error = \(error?.description)")
-            JDStatusBarNotification.showWithStatus("Cannot connect to GitHub.", dismissAfter: 3, styleName: JDStatusBarStyleError)
-        }
+    func checkAndStarRepository(isStarring:Bool, owner:String, repositoryName:String, onSucceed:() -> Void, onFailed:(NSURLRequest, NSHTTPURLResponse?, AnyObject?, NSError?) -> Void){
         
         checkIfStarredRepository(owner, repositoryName: repositoryName, onSucceed: { (isStarred) -> Void in
             if isStarring && isStarred {
@@ -323,6 +316,7 @@ class GithubClient: NSObject {
             self.starRepository(isStarring, owner: owner, repositoryName: repositoryName, onSucceed: { (responseObject) -> Void in
                 let action = isStarring ? "starred" : "unstarred"
                 JDStatusBarNotification.showWithStatus("Your \(action) \(repositoryName).", dismissAfter: 3, styleName: JDStatusBarStyleSuccess)
+                onSucceed()
                 }, onFailed: onFailed)
             
             
