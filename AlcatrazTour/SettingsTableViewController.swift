@@ -11,7 +11,7 @@ import JDStatusBarNotification
 
 class SettingsTableViewController: UITableViewController {
 
-    weak var githubClient:GithubClient? = nil
+    var githubClient:GithubClient = GithubClient()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -51,8 +51,8 @@ class SettingsTableViewController: UITableViewController {
     }
     
     func signOut() {
-        if githubClient!.isSignedIn() {
-            githubClient!.signOut()
+        if githubClient.isSignedIn() {
+            githubClient.signOut()
             JDStatusBarNotification.showWithStatus("Signed out.", dismissAfter: 3, styleName: JDStatusBarStyleSuccess)
         } else {
             JDStatusBarNotification.showWithStatus("Already signed out.", dismissAfter: 3, styleName: JDStatusBarStyleError)
@@ -73,6 +73,7 @@ class SettingsTableViewController: UITableViewController {
             JDStatusBarNotification.showWithStatus("Cannot connect to GitHub.", dismissAfter: 3, styleName: JDStatusBarStyleError)
         }
         
-        self.githubClient!.checkAndStarRepository(true, owner:"haranicle", repositoryName: "AlcatrazTour")
+        githubClient.checkAndStarRepository(true, owner:"haranicle", repositoryName: "AlcatrazTour", onSucceed: {(isStarred) -> Void in println("Starred AlcatrazTour!")
+            }, onFailed: onFailed)
     }
 }
