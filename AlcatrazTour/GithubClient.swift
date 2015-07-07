@@ -242,7 +242,7 @@ class GithubClient: NSObject {
         SVProgressHUD.showProgress(Float(weakSelf!.loadCompleteCount) / Float(pluginsCount) , status: "Loading data", maskType: SVProgressHUDMaskType.Black)
     }
     
-    // MARK: Staring
+    // MARK: - Staring
     
     func checkIfStarredRepository(owner:String, repositoryName:String, onSucceed:(Bool) -> Void, onFailed:(NSURLRequest, NSHTTPURLResponse?, AnyObject?, NSError?) -> Void) {
         let apiUrl = githubStarApiUrl + owner + "/" + repositoryName

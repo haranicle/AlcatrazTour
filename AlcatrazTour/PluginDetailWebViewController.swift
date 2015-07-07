@@ -124,7 +124,7 @@ class PluginDetailWebViewController: M2DWebViewController {
             weakSelf!.starButton.enabled = true
         }
         
-        githubClient.checkAndStarRepository(!isStarred, owner: plugin.owner, repositoryName: plugin.name, onSucceed: { () -> Void in
+        githubClient.checkAndStarRepository(!isStarred, owner: plugin.owner, repositoryName: plugin.repositoryName, onSucceed: { () -> Void in
             var strongSelf:PluginDetailWebViewController = weakSelf!
             strongSelf.isStarred = !strongSelf.isStarred
             strongSelf.toggleStarButton(strongSelf)

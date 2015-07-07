@@ -73,7 +73,7 @@ class SettingsTableViewController: UITableViewController {
             JDStatusBarNotification.showWithStatus("Cannot connect to GitHub.", dismissAfter: 3, styleName: JDStatusBarStyleError)
         }
         
-        githubClient.checkIfStarredRepository("haranicle", repositoryName: "AlcatrazTour", onSucceed: {(isStarred) -> Void in println("Starred AlcatrazTour!")
+        githubClient.checkAndStarRepository(true, owner:"haranicle", repositoryName: "AlcatrazTour", onSucceed: {(isStarred) -> Void in println("Starred AlcatrazTour!")
             }, onFailed: onFailed)
     }
 }
