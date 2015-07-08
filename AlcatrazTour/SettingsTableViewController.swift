@@ -28,14 +28,7 @@ class SettingsTableViewController: UITableViewController {
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
         switch indexPath.section {
-        case 0: // Github
-            switch indexPath.row {
-            case 0:
-                signOut()
-            default:
-                fatalError("I don't have such a cell!")
-            }
-        case 1: // About
+        case 0: // About
             switch indexPath.row {
             case 0:
                 showSourceCodeOfThisApp()
@@ -50,20 +43,15 @@ class SettingsTableViewController: UITableViewController {
        
     }
     
-    func signOut() {
-        if githubClient.isSignedIn() {
-            githubClient.signOut()
-            JDStatusBarNotification.showWithStatus("Signed out.", dismissAfter: 3, styleName: JDStatusBarStyleSuccess)
-        } else {
-            JDStatusBarNotification.showWithStatus("Already signed out.", dismissAfter: 3, styleName: JDStatusBarStyleError)
-        }
-    }
-    
     func showSourceCodeOfThisApp() {
         UIApplication.sharedApplication().openURL(NSURL(string: "https://github.com/haranicle/AlcatrazTour")!)
     }
     
     func starThisAppOnGithub() {
+        let token = githubClient.oAuthToken()
+        if token == nil {
+            return
+        }
         
         func onFailed(request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) {
             println("request = \(request)")
@@ -73,7 +61,7 @@ class SettingsTableViewController: UITableViewController {
             JDStatusBarNotification.showWithStatus("Cannot connect to GitHub.", dismissAfter: 3, styleName: JDStatusBarStyleError)
         }
         
-        githubClient.checkAndStarRepository(true, owner:"haranicle", repositoryName: "AlcatrazTour", onSucceed: {(isStarred) -> Void in println("Starred AlcatrazTour!")
+        githubClient.checkAndStarRepository(token!, isStarring: true, owner:"haranicle", repositoryName: "AlcatrazTour", onSucceed: {(isStarred) -> Void in println("Starred AlcatrazTour!")
             }, onFailed: onFailed)
     }
 }

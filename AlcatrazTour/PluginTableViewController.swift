@@ -183,6 +183,7 @@ class PluginTableViewController: UITableViewController, UISearchResultsUpdating,
         weak var weakSelf = self
         signInAlert!.addAction(UIAlertAction(title: "Sign in", style: UIAlertActionStyle.Default, handler: { action in
             weakSelf!.signIn()
+            weakSelf!.signInAlert?.dismissViewControllerAnimated(true, completion: nil)
         }))
         presentViewController(signInAlert!, animated: true, completion: nil)
     }
@@ -190,9 +191,7 @@ class PluginTableViewController: UITableViewController, UISearchResultsUpdating,
     func signIn() {
         weak var weakSelf = self
         githubClient.requestOAuth({
-            if let alert = weakSelf!.signInAlert {
-                alert.dismissViewControllerAnimated(true, completion: nil)
-            }
+            weakSelf!.signInAlert?.dismissViewControllerAnimated(true, completion: nil)
             weakSelf!.reloadAllPlugins()
             }, onFailed: { error in
                 // login failed. quit app.

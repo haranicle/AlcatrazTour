@@ -87,7 +87,7 @@ class GithubClientTests: XCTestCase {
             expectation.fulfill()
         }
         
-        client.requestRepoDetail(plugin
+        client.requestRepoDetail(client.oAuthToken()!, plugin: plugin
 , onSucceed: onSucceed, onFailed: onFailed)
         self.waitForExpectationsWithTimeout(5 , handler: nil)
     }
@@ -121,7 +121,7 @@ class GithubClientTests: XCTestCase {
         }
         
         let client = GithubClient()
-        client.starRepository(true, owner: "haranicle", repositoryName: "sandbox", onSucceed: onSucceed, onFailed: onFailed);
+        client.starRepository(client.oAuthToken()!, isStarring: true, owner: "haranicle", repositoryName: "sandbox", onSucceed: onSucceed, onFailed: onFailed);
         self.waitForExpectationsWithTimeout(30 , handler: nil)
     }
 
