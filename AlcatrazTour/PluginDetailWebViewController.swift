@@ -74,8 +74,13 @@ class PluginDetailWebViewController: M2DWebViewController {
             JDStatusBarNotification.showWithStatus("Cannot connect to GitHub.", dismissAfter: 3, styleName: JDStatusBarStyleError)
         }
         
+        let token = githubClient.oAuthToken()
+        if token == nil {
+            return
+        }
+        
         weak var weakSelf = self
-        githubClient.checkIfStarredRepository(plugin.owner, repositoryName: plugin.name, onSucceed: { (isStarred) -> Void in
+        githubClient.checkIfStarredRepository(token! ,owner: plugin.owner, repositoryName: plugin.name, onSucceed: { (isStarred) -> Void in
             var strongSelf:PluginDetailWebViewController = weakSelf!
             strongSelf.isStarred = isStarred
             strongSelf.toggleStarButton(strongSelf)
@@ -114,6 +119,11 @@ class PluginDetailWebViewController: M2DWebViewController {
     func onStarButtonPushed(sender:UIBarButtonItem) {
         starButton.enabled = false
         
+        let token = githubClient.oAuthToken()
+        if token == nil {
+            return
+        }
+        
         weak var weakSelf = self
         func onFailed(request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) {
             println("request = \(request)")
@@ -124,7 +134,7 @@ class PluginDetailWebViewController: M2DWebViewController {
             weakSelf!.starButton.enabled = true
         }
         
-        githubClient.checkAndStarRepository(!isStarred, owner: plugin.owner, repositoryName: plugin.repositoryName, onSucceed: { () -> Void in
+        githubClient.checkAndStarRepository(token!, isStarring: !isStarred, owner: plugin.owner, repositoryName: plugin.repositoryName, onSucceed: { () -> Void in
             var strongSelf:PluginDetailWebViewController = weakSelf!
             strongSelf.isStarred = !strongSelf.isStarred
             strongSelf.toggleStarButton(strongSelf)

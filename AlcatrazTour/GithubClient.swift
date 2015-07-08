@@ -81,7 +81,14 @@ class GithubClient: NSObject {
             }, failure: {(error:NSError!) -> Void in
                 println(error.localizedDescription)
         })
-        
+    }
+
+    func oAuthToken() -> String? {
+        let token = NSUserDefaults.standardUserDefaults().stringForKey(githubOauthTokenKey)
+        if token == nil {
+            JDStatusBarNotification.showWithStatus("Not signed in.", dismissAfter: 3, styleName: JDStatusBarStyleError)
+        }
+        return token
     }
     
     // MARK: - Request
@@ -121,16 +128,10 @@ class GithubClient: NSObject {
         }
     }
     
-    func requestRepoDetail(plugin:Plugin, onSucceed:(Plugin?, NSDictionary) -> Void, onFailed:(NSURLRequest, NSHTTPURLResponse?, AnyObject?, NSError?) -> Void) {
-        
-        let token = NSUserDefaults.standardUserDefaults().stringForKey(githubOauthTokenKey)
-        if(token == nil) {
-            println("TOKEN NOT SAVED!")
-            return
-        }
+    func requestRepoDetail(token:String, plugin:Plugin, onSucceed:(Plugin?, NSDictionary) -> Void, onFailed:(NSURLRequest, NSHTTPURLResponse?, AnyObject?, NSError?) -> Void) {
         
         Alamofire
-            .request(Method.GET, createRepoDetailUrl(plugin.url), parameters: ["access_token": token!])
+            .request(Method.GET, createRepoDetailUrl(plugin.url), parameters: ["access_token": token])
             .validate(statusCode: 200..<400)
             .responseJSON {request, response, responseData, error in
                 
@@ -202,9 +203,14 @@ class GithubClient: NSObject {
             RLMRealm.defaultRealm().beginWriteTransaction()
             Plugin.deleteAll()
             
+            let token = self.oAuthToken()
+            if token == nil {
+                return
+            }
+            
             for plugin in plugins {
                 dispatch_group_enter(group)
-                weakSelf!.requestRepoDetail(plugin, onSucceed: onSucceedRequestingRepoDetail, onFailed: onFailed)
+                weakSelf!.requestRepoDetail(token!, plugin: plugin, onSucceed: onSucceedRequestingRepoDetail, onFailed: onFailed)
             }
             
             dispatch_group_notify(group, dispatch_get_main_queue(), {
@@ -244,17 +250,11 @@ class GithubClient: NSObject {
     
     // MARK: - Staring
     
-    func checkIfStarredRepository(owner:String, repositoryName:String, onSucceed:(Bool) -> Void, onFailed:(NSURLRequest, NSHTTPURLResponse?, AnyObject?, NSError?) -> Void) {
+    func checkIfStarredRepository(token:String, owner:String, repositoryName:String, onSucceed:(Bool) -> Void, onFailed:(NSURLRequest, NSHTTPURLResponse?, AnyObject?, NSError?) -> Void) {
         let apiUrl = githubStarApiUrl + owner + "/" + repositoryName
-        
-        let token = NSUserDefaults.standardUserDefaults().stringForKey(githubOauthTokenKey)
-        if(token == nil) {
-            println("TOKEN NOT SAVED!")
-            return
-        }
-        
+
         Alamofire
-            .request(Method.GET, apiUrl, parameters: ["access_token": token!])
+            .request(Method.GET, apiUrl, parameters: ["access_token": token])
             .validate(statusCode: 204...404)
             .responseString {request, response, responseData, error in
                 if let aError = error {
@@ -274,24 +274,18 @@ class GithubClient: NSObject {
         }
     }
     
-    func starRepository(isStarring:Bool, owner:String, repositoryName:String, onSucceed:() -> Void, onFailed:(NSURLRequest, NSHTTPURLResponse?, AnyObject?, NSError?) -> Void) {
+    func starRepository(token:String, isStarring:Bool, owner:String, repositoryName:String, onSucceed:() -> Void, onFailed:(NSURLRequest, NSHTTPURLResponse?, AnyObject?, NSError?) -> Void) {
         
         let apiUrl = githubStarApiUrl + owner + "/" + repositoryName
         let method = isStarring ? Method.PUT : Method.DELETE
         
-        let token = NSUserDefaults.standardUserDefaults().stringForKey(githubOauthTokenKey)
-        if(token == nil) {
-            println("TOKEN NOT SAVED!")
-            return
-        }
-        
         Manager.sharedInstance.session.configuration.HTTPAdditionalHeaders = [
             "Content-Length" : "0",
-            "Authorization" : "token \(token!)"
+            "Authorization" : "token \(token)"
         ]
         
         Alamofire
-            .request(method, apiUrl, parameters: ["access_token": token!])
+            .request(method, apiUrl, parameters: nil)
             .validate(statusCode: 200..<400)
             .responseString {request, response, responseData, error in
                 if let aError = error {
@@ -303,9 +297,9 @@ class GithubClient: NSObject {
         }
     }
     
-    func checkAndStarRepository(isStarring:Bool, owner:String, repositoryName:String, onSucceed:() -> Void, onFailed:(NSURLRequest, NSHTTPURLResponse?, AnyObject?, NSError?) -> Void){
+    func checkAndStarRepository(token:String, isStarring:Bool, owner:String, repositoryName:String, onSucceed:() -> Void, onFailed:(NSURLRequest, NSHTTPURLResponse?, AnyObject?, NSError?) -> Void){
         
-        checkIfStarredRepository(owner, repositoryName: repositoryName, onSucceed: { (isStarred) -> Void in
+        checkIfStarredRepository(token, owner: owner, repositoryName: repositoryName, onSucceed: { (isStarred) -> Void in
             if isStarring && isStarred {
                 JDStatusBarNotification.showWithStatus("Already starred.", dismissAfter: 3, styleName: JDStatusBarStyleWarning)
                 return
@@ -313,7 +307,7 @@ class GithubClient: NSObject {
                 JDStatusBarNotification.showWithStatus("Already unstarred.", dismissAfter: 3, styleName: JDStatusBarStyleWarning)
                 return;
             }
-            self.starRepository(isStarring, owner: owner, repositoryName: repositoryName, onSucceed: { (responseObject) -> Void in
+            self.starRepository(token, isStarring: isStarring, owner: owner, repositoryName: repositoryName, onSucceed: { (responseObject) -> Void in
                 let action = isStarring ? "starred" : "unstarred"
                 JDStatusBarNotification.showWithStatus("Your \(action) \(repositoryName).", dismissAfter: 3, styleName: JDStatusBarStyleSuccess)
                 onSucceed()
