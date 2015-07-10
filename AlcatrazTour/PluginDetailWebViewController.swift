@@ -16,8 +16,8 @@ class PluginDetailWebViewController: M2DWebViewController {
     var isStarred = false
     var starButton = UIBarButtonItem()
     var isStarButtonAdded = false
-    let starringButtonTitle = "Star this repo."
-    let unstarringButtonTitle = "Unstar this repo."
+    let starringButtonTitle = "Star this repo"
+    let unstarringButtonTitle = "Unstar this repo"
     
     init(plugin:Plugin) {
         super.init(URL: NSURL(string: plugin.url)!, type: M2DWebViewType.AutoSelect)
@@ -80,7 +80,7 @@ class PluginDetailWebViewController: M2DWebViewController {
         }
         
         weak var weakSelf = self
-        githubClient.checkIfStarredRepository(token! ,owner: plugin.owner, repositoryName: plugin.name, onSucceed: { (isStarred) -> Void in
+        githubClient.checkIfStarredRepository(token! ,owner: plugin.owner, repositoryName: plugin.repositoryName, onSucceed: { (isStarred) -> Void in
             var strongSelf:PluginDetailWebViewController = weakSelf!
             strongSelf.isStarred = isStarred
             strongSelf.toggleStarButton(strongSelf)
