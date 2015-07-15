@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5F1D66681B557CE700A6FC10 /* Fabric.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F1D66661B557CE700A6FC10 /* Fabric.framework */; };
+		5F1D66691B557CE700A6FC10 /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F1D66671B557CE700A6FC10 /* Crashlytics.framework */; };
 		5F26E7D21AB577E400636136 /* PluginTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F26E7D11AB577E400636136 /* PluginTableViewController.swift */; };
 		5F7C86771AA2F764008AB05E /* fontawesome-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5F7C86761AA2F764008AB05E /* fontawesome-webfont.ttf */; };
 		5FC1920E1AB47BBD00D0BD9A /* PluginTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FC1920C1AB47BBD00D0BD9A /* PluginTableViewCell.swift */; };
@@ -46,6 +48,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		5F1D66661B557CE700A6FC10 /* Fabric.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Fabric.framework; sourceTree = "<group>"; };
+		5F1D66671B557CE700A6FC10 /* Crashlytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Crashlytics.framework; sourceTree = "<group>"; };
 		5F26E7D11AB577E400636136 /* PluginTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PluginTableViewController.swift; sourceTree = "<group>"; };
 		5F7C86761AA2F764008AB05E /* fontawesome-webfont.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "fontawesome-webfont.ttf"; sourceTree = "<group>"; };
 		5FC1920C1AB47BBD00D0BD9A /* PluginTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PluginTableViewCell.swift; sourceTree = "<group>"; };
@@ -85,6 +89,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				EAE8118B6DD8E9D17662928B /* Pods.framework in Frameworks */,
+				5F1D66691B557CE700A6FC10 /* Crashlytics.framework in Frameworks */,
+				5F1D66681B557CE700A6FC10 /* Fabric.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -113,6 +119,8 @@
 		E11474727A9398CD0CF21FDB /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				5F1D66661B557CE700A6FC10 /* Fabric.framework */,
+				5F1D66671B557CE700A6FC10 /* Crashlytics.framework */,
 				F697C3CD1A9C7497001DF614 /* Pods.framework */,
 				C8B2213C770F9DE318596BD9 /* Pods.framework */,
 				B77CF89FE308A62DBDF25C5E /* Pods_AlcatrazTourTests.framework */,
@@ -237,6 +245,7 @@
 				F62E961F1A9AF6F600063445 /* Resources */,
 				A06BD229590775B4E0F1D036 /* Embed Pods Frameworks */,
 				E3DBDD25447F562859FFB46A /* Copy Pods Resources */,
+				5F1D66651B557CAF00A6FC10 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -274,6 +283,7 @@
 		F62E96191A9AF6F600063445 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftUpdateCheck = 0700;
 				LastUpgradeCheck = 0610;
 				ORGANIZATIONNAME = haranicle;
 				TargetAttributes = {
@@ -345,6 +355,19 @@
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
+		};
+		5F1D66651B557CAF00A6FC10 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "./Fabric.framework/run 937dcbf09dc0725970721c92d048c09f4ac6bc12 5af93b25e04d7899e67babf13be2f873cfe8afc56b9d66d5e1aeb20a14bcb8a8";
 		};
 		6EEE6A7FDEEC96246B7215C4 /* Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
