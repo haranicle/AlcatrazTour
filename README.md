@@ -1,8 +1,11 @@
-# AlcatrazTour
+![AlcatrazTour](https://github.com/haranicle/AlcatrazTour/raw/master/images/title.png)
 
-Search Xcode plugins better
+An iOS app which shows Xcode plugins ranking.
 
-![ss1](https://github.com/haranicle/AlcatrazTour/raw/master/images/list_ss.png)
+## Screen Shots
+
+![ss1](https://github.com/haranicle/AlcatrazTour/raw/master/images/list_ss.png)  
+  
 ![ss1](https://github.com/haranicle/AlcatrazTour/raw/master/images/detail_ss.png)
 
 ## Requirements
