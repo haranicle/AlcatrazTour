@@ -8,6 +8,7 @@
 import UIKit
 import M2DWebViewController
 import JDStatusBarNotification
+import Alamofire
 
 class PluginDetailWebViewController: M2DWebViewController {
     
@@ -16,6 +17,7 @@ class PluginDetailWebViewController: M2DWebViewController {
     var isStarred = false
     var starButton = UIBarButtonItem()
     var isStarButtonAdded = false
+    var requestOfCheckIfStarredRepository:Request?
     let starringButtonTitle = "Star this repo"
     let unstarringButtonTitle = "Unstar this repo"
     
@@ -44,6 +46,10 @@ class PluginDetailWebViewController: M2DWebViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         addStarButton()
+    }
+    
+    override func viewDidDisappear(animated: Bool) {
+        requestOfCheckIfStarredRepository?.cancel()
     }
     
     // MARK: - button
@@ -80,7 +86,7 @@ class PluginDetailWebViewController: M2DWebViewController {
         }
         
         weak var weakSelf = self
-        githubClient.checkIfStarredRepository(token! ,owner: plugin.owner, repositoryName: plugin.repositoryName, onSucceed: { (isStarred) -> Void in
+        requestOfCheckIfStarredRepository = githubClient.checkIfStarredRepository(token! ,owner: plugin.owner, repositoryName: plugin.repositoryName, onSucceed: { (isStarred) -> Void in
             var strongSelf:PluginDetailWebViewController = weakSelf!
             strongSelf.isStarred = isStarred
             strongSelf.toggleStarButton(strongSelf)
