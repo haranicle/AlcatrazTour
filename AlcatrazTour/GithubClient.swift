@@ -250,10 +250,10 @@ class GithubClient: NSObject {
     
     // MARK: - Staring
     
-    func checkIfStarredRepository(token:String, owner:String, repositoryName:String, onSucceed:(Bool) -> Void, onFailed:(NSURLRequest, NSHTTPURLResponse?, AnyObject?, NSError?) -> Void) {
+    func checkIfStarredRepository(token:String, owner:String, repositoryName:String, onSucceed:(Bool) -> Void, onFailed:(NSURLRequest, NSHTTPURLResponse?, AnyObject?, NSError?) -> Void) -> Request  {
         let apiUrl = githubStarApiUrl + owner + "/" + repositoryName
 
-        Alamofire
+        return Alamofire
             .request(Method.GET, apiUrl, parameters: ["access_token": token])
             .validate(statusCode: 204...404)
             .responseString {request, response, responseData, error in
