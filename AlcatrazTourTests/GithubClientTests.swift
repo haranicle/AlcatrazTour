@@ -108,7 +108,7 @@ class GithubClientTests: XCTestCase {
         
         let onSucceed = {() -> Void in
             expectation.fulfill()
-            XCTAssert(true, "star成功")
+            XCTAssert(true, "star succeed")
         }
         
         let onFailed = {(request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) -> Void in
@@ -117,6 +117,7 @@ class GithubClientTests: XCTestCase {
             println("responseData = \(responseData)")
             println("error = \(error?.description)")
             expectation.fulfill()
+            XCTAssert(true, "star failed")
         }
         
         let client = GithubClient()

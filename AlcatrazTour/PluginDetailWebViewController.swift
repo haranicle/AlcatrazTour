@@ -86,9 +86,9 @@ class PluginDetailWebViewController: M2DWebViewController {
         }
         
         requestOfCheckIfStarredRepository = githubClient.checkIfStarredRepository(token! ,owner: plugin.owner, repositoryName: plugin.repositoryName, onSucceed: {[weak self] (isStarred) -> Void in
-            self!.isStarred = isStarred
-            self!.toggleStarButton()
-            self!.starButton.enabled = true
+            self?.isStarred = isStarred
+            self?.toggleStarButton()
+            self?.starButton.enabled = true
             }, onFailed: onFailed)
     }
     
@@ -133,13 +133,15 @@ class PluginDetailWebViewController: M2DWebViewController {
             println("responseData = \(responseData)")
             println("error = \(error?.description)")
             JDStatusBarNotification.showWithStatus("Cannot connect to GitHub.", dismissAfter: 3, styleName: JDStatusBarStyleError)
-            self!.starButton.enabled = true
+            self?.starButton.enabled = true
         }
         
         githubClient.checkAndStarRepository(token!, isStarring: !isStarred, owner: plugin.owner, repositoryName: plugin.repositoryName, onSucceed: {[weak self]() -> Void in
-            self!.isStarred = !self!.isStarred
-            self!.toggleStarButton()
-            self!.starButton.enabled = true
+            if let strongSelf = self {
+                self?.isStarred = !strongSelf.isStarred
+            }
+            self?.toggleStarButton()
+            self?.starButton.enabled = true
             }, onFailed: onFailed)
     }
 }

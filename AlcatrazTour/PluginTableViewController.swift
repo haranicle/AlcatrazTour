@@ -182,21 +182,21 @@ class PluginTableViewController: UITableViewController, UISearchResultsUpdating,
         signInAlert =  UIAlertController(title: "Sign in", message: "Please, sign in github to get repository data.", preferredStyle: UIAlertControllerStyle.Alert)
         signInAlert!.addAction(UIAlertAction(title: "Sign in", style: UIAlertActionStyle.Default,
             handler: {[weak self] action in
-            self!.signIn()
-            self!.signInAlert?.dismissViewControllerAnimated(true, completion: nil)
+            self?.signIn()
+            self?.signInAlert?.dismissViewControllerAnimated(true, completion: nil)
         }))
         presentViewController(signInAlert!, animated: true, completion: nil)
     }
     
     func signIn() {
         githubClient.requestOAuth({[weak self] in
-            self!.signInAlert?.dismissViewControllerAnimated(true, completion: nil)
-            self!.reloadAllPlugins()
+            self?.signInAlert?.dismissViewControllerAnimated(true, completion: nil)
+            self?.reloadAllPlugins()
             }, onFailed: {[weak self] error in
                 // login failed. quit app.
                 var errorAlert = UIAlertController(title: "Error", message: error.description, preferredStyle: UIAlertControllerStyle.Alert)
                 errorAlert.addAction(UIAlertAction(title: "Quit app", style: UIAlertActionStyle.Default, handler:{action in exit(0)} ))
-                self!.presentViewController(errorAlert, animated: true, completion: nil)
+                self?.presentViewController(errorAlert, animated: true, completion: nil)
         })
     }
     
@@ -206,9 +206,9 @@ class PluginTableViewController: UITableViewController, UISearchResultsUpdating,
         autoreleasepool{
             self.githubClient.reloadAllPlugins({[weak self] (error:NSError?) in
                 if let err = error {
-                    self!.showErrorAlert(err)
+                    self?.showErrorAlert(err)
                 }
-                self!.tableView.reloadData()
+                self?.tableView.reloadData()
             })
         }
     }

@@ -193,7 +193,7 @@ class GithubClient: NSObject {
             }
             
             let onFailed = {[weak self] (request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) -> Void in
-                self!.updateProgress(plugins.count)
+                self?.updateProgress(plugins.count)
                 dispatch_group_leave(group)
             }
             
