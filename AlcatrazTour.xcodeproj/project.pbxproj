@@ -120,7 +120,6 @@
 			children = (
 				5F1D66661B557CE700A6FC10 /* Fabric.framework */,
 				5F1D66671B557CE700A6FC10 /* Crashlytics.framework */,
-				F697C3CD1A9C7497001DF614 /* Pods.framework */,
 				B77CF89FE308A62DBDF25C5E /* Pods_AlcatrazTourTests.framework */,
 			);
 			name = Frameworks;
