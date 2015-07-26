@@ -85,18 +85,15 @@ class PluginDetailWebViewController: M2DWebViewController {
             return
         }
         
-        weak var weakSelf = self
-        requestOfCheckIfStarredRepository = githubClient.checkIfStarredRepository(token! ,owner: plugin.owner, repositoryName: plugin.repositoryName, onSucceed: { (isStarred) -> Void in
-            var strongSelf:PluginDetailWebViewController = weakSelf!
-            strongSelf.isStarred = isStarred
-            strongSelf.toggleStarButton(strongSelf)
-            strongSelf.starButton.enabled = true
-            
+        requestOfCheckIfStarredRepository = githubClient.checkIfStarredRepository(token! ,owner: plugin.owner, repositoryName: plugin.repositoryName, onSucceed: {[weak self] (isStarred) -> Void in
+            self!.isStarred = isStarred
+            self!.toggleStarButton()
+            self!.starButton.enabled = true
             }, onFailed: onFailed)
     }
     
-    func toggleStarButton(strongSelf:PluginDetailWebViewController) {
-        strongSelf.starButton.title = isStarred ? strongSelf.unstarringButtonTitle : strongSelf.starringButtonTitle
+    func toggleStarButton() {
+        starButton.title = isStarred ? unstarringButtonTitle : starringButtonTitle
     }
 
     func addStarButton() {
@@ -141,7 +138,7 @@ class PluginDetailWebViewController: M2DWebViewController {
         
         githubClient.checkAndStarRepository(token!, isStarring: !isStarred, owner: plugin.owner, repositoryName: plugin.repositoryName, onSucceed: {[weak self]() -> Void in
             self!.isStarred = !self!.isStarred
-            self!.toggleStarButton(self!)
+            self!.toggleStarButton()
             self!.starButton.enabled = true
             }, onFailed: onFailed)
     }

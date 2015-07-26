@@ -180,24 +180,23 @@ class PluginTableViewController: UITableViewController, UISearchResultsUpdating,
     
     func showSignInAlert() {
         signInAlert =  UIAlertController(title: "Sign in", message: "Please, sign in github to get repository data.", preferredStyle: UIAlertControllerStyle.Alert)
-        weak var weakSelf = self
-        signInAlert!.addAction(UIAlertAction(title: "Sign in", style: UIAlertActionStyle.Default, handler: { action in
-            weakSelf!.signIn()
-            weakSelf!.signInAlert?.dismissViewControllerAnimated(true, completion: nil)
+        signInAlert!.addAction(UIAlertAction(title: "Sign in", style: UIAlertActionStyle.Default,
+            handler: {[weak self] action in
+            self!.signIn()
+            self!.signInAlert?.dismissViewControllerAnimated(true, completion: nil)
         }))
         presentViewController(signInAlert!, animated: true, completion: nil)
     }
     
     func signIn() {
-        weak var weakSelf = self
-        githubClient.requestOAuth({
-            weakSelf!.signInAlert?.dismissViewControllerAnimated(true, completion: nil)
-            weakSelf!.reloadAllPlugins()
-            }, onFailed: { error in
+        githubClient.requestOAuth({[weak self] in
+            self!.signInAlert?.dismissViewControllerAnimated(true, completion: nil)
+            self!.reloadAllPlugins()
+            }, onFailed: {[weak self] error in
                 // login failed. quit app.
                 var errorAlert = UIAlertController(title: "Error", message: error.description, preferredStyle: UIAlertControllerStyle.Alert)
                 errorAlert.addAction(UIAlertAction(title: "Quit app", style: UIAlertActionStyle.Default, handler:{action in exit(0)} ))
-                weakSelf!.presentViewController(errorAlert, animated: true, completion: nil)
+                self!.presentViewController(errorAlert, animated: true, completion: nil)
         })
     }
     
@@ -205,12 +204,11 @@ class PluginTableViewController: UITableViewController, UISearchResultsUpdating,
     
     func reloadAllPlugins() {
         autoreleasepool{
-            weak var weakSelf = self
-            self.githubClient.reloadAllPlugins({(error:NSError?) in
+            self.githubClient.reloadAllPlugins({[weak self] (error:NSError?) in
                 if let err = error {
-                    weakSelf!.showErrorAlert(err)
+                    self!.showErrorAlert(err)
                 }
-                weakSelf!.tableView.reloadData()
+                self!.tableView.reloadData()
             })
         }
     }
