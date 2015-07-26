@@ -72,7 +72,7 @@ class PluginDetailWebViewController: M2DWebViewController {
     func refreshStarButton() {
         starButton.enabled = false
         
-        func onFailed(request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) {
+        let onFailed = {(request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) -> Void in
             println("request = \(request)")
             println("response = \(response)")
             println("responseData = \(responseData)")
@@ -85,18 +85,15 @@ class PluginDetailWebViewController: M2DWebViewController {
             return
         }
         
-        weak var weakSelf = self
-        requestOfCheckIfStarredRepository = githubClient.checkIfStarredRepository(token! ,owner: plugin.owner, repositoryName: plugin.repositoryName, onSucceed: { (isStarred) -> Void in
-            var strongSelf:PluginDetailWebViewController = weakSelf!
-            strongSelf.isStarred = isStarred
-            strongSelf.toggleStarButton(strongSelf)
-            strongSelf.starButton.enabled = true
-            
+        requestOfCheckIfStarredRepository = githubClient.checkIfStarredRepository(token! ,owner: plugin.owner, repositoryName: plugin.repositoryName, onSucceed: {[weak self] (isStarred) -> Void in
+            self?.isStarred = isStarred
+            self?.toggleStarButton()
+            self?.starButton.enabled = true
             }, onFailed: onFailed)
     }
     
-    func toggleStarButton(strongSelf:PluginDetailWebViewController) {
-        strongSelf.starButton.title = isStarred ? strongSelf.unstarringButtonTitle : strongSelf.starringButtonTitle
+    func toggleStarButton() {
+        starButton.title = isStarred ? unstarringButtonTitle : starringButtonTitle
     }
 
     func addStarButton() {
@@ -130,21 +127,21 @@ class PluginDetailWebViewController: M2DWebViewController {
             return
         }
         
-        weak var weakSelf = self
-        func onFailed(request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) {
+        let onFailed = {[weak self] (request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) -> Void in
             println("request = \(request)")
             println("response = \(response)")
             println("responseData = \(responseData)")
             println("error = \(error?.description)")
             JDStatusBarNotification.showWithStatus("Cannot connect to GitHub.", dismissAfter: 3, styleName: JDStatusBarStyleError)
-            weakSelf!.starButton.enabled = true
+            self?.starButton.enabled = true
         }
         
-        githubClient.checkAndStarRepository(token!, isStarring: !isStarred, owner: plugin.owner, repositoryName: plugin.repositoryName, onSucceed: { () -> Void in
-            var strongSelf:PluginDetailWebViewController = weakSelf!
-            strongSelf.isStarred = !strongSelf.isStarred
-            strongSelf.toggleStarButton(strongSelf)
-            strongSelf.starButton.enabled = true
+        githubClient.checkAndStarRepository(token!, isStarring: !isStarred, owner: plugin.owner, repositoryName: plugin.repositoryName, onSucceed: {[weak self]() -> Void in
+            if let strongSelf = self {
+                self?.isStarred = !strongSelf.isStarred
+            }
+            self?.toggleStarButton()
+            self?.starButton.enabled = true
             }, onFailed: onFailed)
     }
 }
