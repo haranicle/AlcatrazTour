@@ -72,7 +72,7 @@ class PluginDetailWebViewController: M2DWebViewController {
     func refreshStarButton() {
         starButton.enabled = false
         
-        func onFailed(request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) {
+        let onFailed = {(request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) -> Void in
             println("request = \(request)")
             println("response = \(response)")
             println("responseData = \(responseData)")
@@ -130,21 +130,19 @@ class PluginDetailWebViewController: M2DWebViewController {
             return
         }
         
-        weak var weakSelf = self
-        func onFailed(request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) {
+        let onFailed = {[weak self] (request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) -> Void in
             println("request = \(request)")
             println("response = \(response)")
             println("responseData = \(responseData)")
             println("error = \(error?.description)")
             JDStatusBarNotification.showWithStatus("Cannot connect to GitHub.", dismissAfter: 3, styleName: JDStatusBarStyleError)
-            weakSelf!.starButton.enabled = true
+            self!.starButton.enabled = true
         }
         
-        githubClient.checkAndStarRepository(token!, isStarring: !isStarred, owner: plugin.owner, repositoryName: plugin.repositoryName, onSucceed: { () -> Void in
-            var strongSelf:PluginDetailWebViewController = weakSelf!
-            strongSelf.isStarred = !strongSelf.isStarred
-            strongSelf.toggleStarButton(strongSelf)
-            strongSelf.starButton.enabled = true
+        githubClient.checkAndStarRepository(token!, isStarring: !isStarred, owner: plugin.owner, repositoryName: plugin.repositoryName, onSucceed: {[weak self]() -> Void in
+            self!.isStarred = !self!.isStarred
+            self!.toggleStarButton(self!)
+            self!.starButton.enabled = true
             }, onFailed: onFailed)
     }
 }

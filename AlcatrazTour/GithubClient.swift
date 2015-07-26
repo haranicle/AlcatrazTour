@@ -167,11 +167,10 @@ class GithubClient: NSObject {
         
         isLoading = true
         loadCompleteCount = 0
-        weak var weakSelf = self
         
         // loading plugin list
         
-        func onSucceedRequestingPlugins(plugins:[Plugin]) {
+        let onSucceedRequestingPlugins = {[weak self] (plugins:[Plugin]) -> Void in
             
             println("PLUGIN LIST LOAD COMPLETE!!")
             
@@ -183,19 +182,18 @@ class GithubClient: NSObject {
             var successCount = 0
             
             // loading plugin details
-            
-            func onSucceedRequestingRepoDetail(plugin:Plugin?, pluginDetail:NSDictionary) {
+            let onSucceedRequestingRepoDetail = {[weak self] (plugin:Plugin?, pluginDetail:NSDictionary) -> Void in
                 plugin?.setDetails(pluginDetail)
                 if let p = plugin {
                     p.save()
                 }
                 successCount++
-                weakSelf!.updateProgress(weakSelf, pluginsCount: plugins.count)
+                self?.updateProgress(plugins.count)
                 dispatch_group_leave(group)
             }
             
-            func onFailed(request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) {
-                weakSelf!.updateProgress(weakSelf, pluginsCount: plugins.count)
+            let onFailed = {[weak self] (request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) -> Void in
+                self!.updateProgress(plugins.count)
                 dispatch_group_leave(group)
             }
             
@@ -203,20 +201,20 @@ class GithubClient: NSObject {
             RLMRealm.defaultRealm().beginWriteTransaction()
             Plugin.deleteAll()
             
-            let token = self.oAuthToken()
+            let token = self?.oAuthToken()
             if token == nil {
                 return
             }
             
             for plugin in plugins {
                 dispatch_group_enter(group)
-                weakSelf!.requestRepoDetail(token!, plugin: plugin, onSucceed: onSucceedRequestingRepoDetail, onFailed: onFailed)
+                self?.requestRepoDetail(token!, plugin: plugin, onSucceed: onSucceedRequestingRepoDetail, onFailed: onFailed)
             }
             
             dispatch_group_notify(group, dispatch_get_main_queue(), {
                 // Yay!!! All done!!!
                 SVProgressHUD.dismiss()
-                weakSelf!.isLoading = false
+                self?.isLoading = false
                 
                 // commit
                 RLMRealm.defaultRealm().commitWriteTransaction()
@@ -229,13 +227,13 @@ class GithubClient: NSObject {
             
         }
         
-        func onFailed(request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) {
+        let onFailed = {[weak self] (request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) -> Void in
             println("request = \(request)")
             println("response = \(response)")
             println("responseData = \(responseData)")
             println("error = \(error?.description)")
             
-            weakSelf!.isLoading = false
+            self?.isLoading = false
             SVProgressHUD.dismiss()
             onComplete(error)
         }
@@ -243,9 +241,9 @@ class GithubClient: NSObject {
         requestPlugins(onSucceedRequestingPlugins, onFailed: onFailed)
     }
     
-    func updateProgress(weakSelf:GithubClient?, pluginsCount:Int) {
-        weakSelf!.loadCompleteCount++
-        SVProgressHUD.showProgress(Float(weakSelf!.loadCompleteCount) / Float(pluginsCount) , status: "Loading data", maskType: SVProgressHUDMaskType.Black)
+    func updateProgress(pluginsCount:Int) {
+        self.loadCompleteCount++
+        SVProgressHUD.showProgress(Float(self.loadCompleteCount) / Float(pluginsCount) , status: "Loading data", maskType: SVProgressHUDMaskType.Black)
     }
     
     // MARK: - Staring
