@@ -2,7 +2,7 @@
 
 An iOS app which shows Xcode plugins ranking.
 
-[![appstore](./images/Download_on_the_App_Store_Badge_US-UK_135x40.svg)](https://itunes.apple.com/us/app/alcatraztour/id973816100?mt=8)
+[![appstore](https://rawgithub.com/haranicle/AlcatrazTour/master/images/Download_on_the_App_Store_Badge_US-UK_135x40.svg)](https://itunes.apple.com/us/app/alcatraztour/id973816100?mt=8)
 
 ## Screen Shots
 
