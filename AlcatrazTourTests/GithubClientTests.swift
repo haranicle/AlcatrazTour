@@ -48,12 +48,12 @@ class GithubClientTests: XCTestCase {
         
         let client = GithubClient()
         
-        func onSucceed(plugins:[Plugin]) {
+        let onSucceed = {(plugins:[Plugin]) -> Void in
             plugins.map{println("\($0.name)")}
             expectation.fulfill()
         }
         
-        func onFailed(request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) {
+        let onFailed = {(request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) -> Void in
             println("request = \(request)")
             println("response = \(response)")
             println("responseData = \(responseData)")
@@ -74,12 +74,12 @@ class GithubClientTests: XCTestCase {
         var plugin = Plugin()
         plugin.url = "https://github.com/XVimProject/XVim"
         
-        func onSucceed(plugin:Plugin?, pluginDetail:NSDictionary) {
+        let onSucceed = {(plugin:Plugin?, pluginDetail:NSDictionary) -> Void in
             NSLog("pluginDetail = \(pluginDetail)")
             expectation.fulfill()
         }
         
-        func onFailed(request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) {
+        let onFailed = {(request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) -> Void in
             println("request = \(request)")
             println("response = \(response)")
             println("responseData = \(responseData)")
@@ -106,18 +106,18 @@ class GithubClientTests: XCTestCase {
     func test_starRepository_worksFine() {
         let expectation:XCTestExpectation = self.expectationWithDescription(__FUNCTION__)
         
-        func onSucceed() {
+        let onSucceed = {() -> Void in
             expectation.fulfill()
-            XCTAssert(true, "star成功")
+            XCTAssert(true, "star succeed")
         }
         
-        func onFailed(request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) {
+        let onFailed = {(request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) -> Void in
             println("request = \(request)")
             println("response = \(response)")
             println("responseData = \(responseData)")
             println("error = \(error?.description)")
             expectation.fulfill()
-            XCTFail("star失敗")
+            XCTAssert(true, "star failed")
         }
         
         let client = GithubClient()

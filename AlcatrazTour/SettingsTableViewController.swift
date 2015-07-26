@@ -53,7 +53,7 @@ class SettingsTableViewController: UITableViewController {
             return
         }
         
-        func onFailed(request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) {
+        let onFailed = {(request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) -> Void in
             println("request = \(request)")
             println("response = \(response)")
             println("responseData = \(responseData)")
