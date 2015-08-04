@@ -163,7 +163,7 @@ class GithubClient: NSObject {
         }
         
         println("START LOADING!!")
-        // SVProgressHUD.showWithStatus("Loading list", maskType: SVProgressHUDMaskType.Black)
+        SVProgressHUD.showWithStatus("Loading list", maskType: SVProgressHUDMaskType.Black)
         
         isLoading = true
         loadCompleteCount = 0
@@ -175,7 +175,7 @@ class GithubClient: NSObject {
             println("PLUGIN LIST LOAD COMPLETE!!")
             
             SVProgressHUD.dismiss()
-            // SVProgressHUD.showProgress(0, status: "Loading data", maskType: SVProgressHUDMaskType.Black)
+            SVProgressHUD.showProgress(0, status: "Loading data", maskType: SVProgressHUDMaskType.Black)
             
             // Dispatch Group
             let group = dispatch_group_create()
