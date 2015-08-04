@@ -163,7 +163,7 @@ class GithubClient: NSObject {
         }
         
         println("START LOADING!!")
-        SVProgressHUD.showWithStatus("Loading list", maskType: SVProgressHUDMaskType.Black)
+        // SVProgressHUD.showWithStatus("Loading list", maskType: SVProgressHUDMaskType.Black)
         
         isLoading = true
         loadCompleteCount = 0
@@ -175,7 +175,7 @@ class GithubClient: NSObject {
             println("PLUGIN LIST LOAD COMPLETE!!")
             
             SVProgressHUD.dismiss()
-            SVProgressHUD.showProgress(0, status: "Loading data", maskType: SVProgressHUDMaskType.Black)
+            // SVProgressHUD.showProgress(0, status: "Loading data", maskType: SVProgressHUDMaskType.Black)
             
             // Dispatch Group
             let group = dispatch_group_create()
@@ -306,8 +306,8 @@ class GithubClient: NSObject {
                 return;
             }
             self.starRepository(token, isStarring: isStarring, owner: owner, repositoryName: repositoryName, onSucceed: { (responseObject) -> Void in
-                let action = isStarring ? "starred" : "unstarred"
-                JDStatusBarNotification.showWithStatus("Your \(action) \(repositoryName).", dismissAfter: 3, styleName: JDStatusBarStyleSuccess)
+                let action = isStarring ? "Starred" : "Unstarred"
+                JDStatusBarNotification.showWithStatus("\(action) \(repositoryName).", dismissAfter: 3, styleName: JDStatusBarStyleSuccess)
                 onSucceed()
                 }, onFailed: onFailed)
             
