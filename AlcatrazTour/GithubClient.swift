@@ -306,8 +306,8 @@ class GithubClient: NSObject {
                 return;
             }
             self.starRepository(token, isStarring: isStarring, owner: owner, repositoryName: repositoryName, onSucceed: { (responseObject) -> Void in
-                let action = isStarring ? "starred" : "unstarred"
-                JDStatusBarNotification.showWithStatus("Your \(action) \(repositoryName).", dismissAfter: 3, styleName: JDStatusBarStyleSuccess)
+                let action = isStarring ? "Starred" : "Unstarred"
+                JDStatusBarNotification.showWithStatus("\(action) \(repositoryName).", dismissAfter: 3, styleName: JDStatusBarStyleSuccess)
                 onSucceed()
                 }, onFailed: onFailed)
             
