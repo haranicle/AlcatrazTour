@@ -17,14 +17,16 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #import "RLMQueryUtil.hpp"
-#import "RLMArray.h"
+
+#import "RLMArray_Private.hpp"
+#import "RLMObject_Private.hpp"
 #import "RLMObjectSchema_Private.hpp"
-#import "RLMObject_Private.h"
 #import "RLMProperty_Private.h"
+#import "RLMSchema_Private.h"
 #import "RLMUtil.hpp"
 
-#include <tightdb.hpp>
-using namespace tightdb;
+#include <realm.hpp>
+using namespace realm;
 
 NSString * const RLMPropertiesComparisonTypeMismatchException = @"RLMPropertiesComparisonTypeMismatchException";
 NSString * const RLMUnsupportedTypesFoundInPropertyComparisonException = @"RLMUnsupportedTypesFoundInPropertyComparisonException";
@@ -61,64 +63,118 @@ static void RLMPrecondition(bool condition, NSString *name, NSString *format, ..
 // return the column index for a validated column name
 NSUInteger RLMValidatedColumnIndex(RLMObjectSchema *desc, NSString *columnName) {
     RLMProperty *prop = desc[columnName];
-    RLMPrecondition(prop, @"Invalid column name",
-                    @"Column name %@ not found in table", columnName);
+    RLMPrecondition(prop, @"Invalid property name",
+                    @"Property '%@' not found in object of type '%@'", columnName, desc.className);
     return prop.column;
 }
 
 namespace {
-// add a clause for numeric constraints based on operator type
-template <typename T>
-void add_numeric_constraint_to_query(tightdb::Query& query,
-                                     RLMPropertyType datatype,
-                                     NSPredicateOperatorType operatorType,
-                                     Columns<T> &&column,
-                                     T value)
+
+// FIXME: TrueExpression and FalseExpression should be supported by core in some way
+
+struct TrueExpression : realm::Expression {
+    size_t find_first(size_t start, size_t end) const override
+    {
+        if (start != end)
+            return start;
+
+        return realm::not_found;
+    }
+    void set_table() override {}
+    const Table* get_table() override { return nullptr; }
+};
+
+struct FalseExpression : realm::Expression {
+    size_t find_first(size_t, size_t) const override { return realm::not_found; }
+    void set_table() override {}
+    const Table* get_table() override { return nullptr; }
+};
+
+NSString *operatorName(NSPredicateOperatorType operatorType)
 {
     switch (operatorType) {
         case NSLessThanPredicateOperatorType:
-            query.and_query(column < value);
+            return @"<";
+        case NSLessThanOrEqualToPredicateOperatorType:
+            return @"<=";
+        case NSGreaterThanPredicateOperatorType:
+            return @">";
+        case NSGreaterThanOrEqualToPredicateOperatorType:
+            return @">=";
+        case NSEqualToPredicateOperatorType:
+            return @"==";
+        case NSNotEqualToPredicateOperatorType:
+            return @"!=";
+        case NSMatchesPredicateOperatorType:
+            return @"MATCHES";
+        case NSLikePredicateOperatorType:
+            return @"LIKE";
+        case NSBeginsWithPredicateOperatorType:
+            return @"BEGINSWITH";
+        case NSEndsWithPredicateOperatorType:
+            return @"ENDSWITH";
+        case NSInPredicateOperatorType:
+            return @"IN";
+        case NSContainsPredicateOperatorType:
+            return @"CONTAINS";
+        case NSBetweenPredicateOperatorType:
+            return @"BETWEENS";
+        case NSCustomSelectorPredicateOperatorType:
+            return @"custom selector";
+    }
+
+    return [NSString stringWithFormat:@"unknown operator %lu", (unsigned long)operatorType];
+}
+
+// add a clause for numeric constraints based on operator type
+template <typename A, typename B>
+void add_numeric_constraint_to_query(realm::Query& query,
+                                     RLMPropertyType datatype,
+                                     NSPredicateOperatorType operatorType,
+                                     A lhs,
+                                     B rhs)
+{
+    switch (operatorType) {
+        case NSLessThanPredicateOperatorType:
+            query.and_query(lhs < rhs);
             break;
         case NSLessThanOrEqualToPredicateOperatorType:
-            query.and_query(column <= value);
+            query.and_query(lhs <= rhs);
             break;
         case NSGreaterThanPredicateOperatorType:
-            query.and_query(column > value);
+            query.and_query(lhs > rhs);
             break;
         case NSGreaterThanOrEqualToPredicateOperatorType:
-            query.and_query(column >= value);
+            query.and_query(lhs >= rhs);
             break;
         case NSEqualToPredicateOperatorType:
-            query.and_query(column == value);
+            query.and_query(lhs == rhs);
             break;
         case NSNotEqualToPredicateOperatorType:
-            query.and_query(column != value);
+            query.and_query(lhs != rhs);
             break;
         default:
             @throw RLMPredicateException(@"Invalid operator type",
-                                         @"Operator type %lu not supported for type %@", (unsigned long)operatorType, RLMTypeToString(datatype));
+                                         @"Operator '%@' not supported for type %@", operatorName(operatorType), RLMTypeToString(datatype));
     }
 }
 
-void add_bool_constraint_to_query(tightdb::Query &query,
-                                       NSPredicateOperatorType operatorType,
-                                       Columns<Bool> &&column,
-                                       bool value) {
-
+template <typename A, typename B>
+void add_bool_constraint_to_query(realm::Query &query, NSPredicateOperatorType operatorType, A lhs, B rhs) {
     switch (operatorType) {
         case NSEqualToPredicateOperatorType:
-            query.and_query(column == value);
+            query.and_query(lhs == rhs);
             break;
         case NSNotEqualToPredicateOperatorType:
-            query.and_query(column != value);
+            query.and_query(lhs != rhs);
             break;
         default:
             @throw RLMPredicateException(@"Invalid operator type",
-                                         @"Operator type %lu not supported for bool type", (unsigned long)operatorType);
+                                         @"Operator '%@' not supported for bool type", operatorName(operatorType));
     }
 }
 
-void add_string_constraint_to_query(tightdb::Query &query,
+void add_string_constraint_to_query(realm::Query &query,
                                     NSPredicateOperatorType operatorType,
                                     NSComparisonPredicateOptions predicateOptions,
                                     Columns<String> &&column,
@@ -128,7 +184,7 @@ void add_string_constraint_to_query(tightdb::Query &query,
     RLMPrecondition(!diacriticInsensitive, @"Invalid predicate option",
                     @"NSDiacriticInsensitivePredicateOption not supported for string type");
 
-    tightdb::StringData sd = RLMStringDataWithNSString(value);
+    realm::StringData sd = RLMStringDataWithNSString(value);
     switch (operatorType) {
         case NSBeginsWithPredicateOperatorType:
             query.and_query(column.begins_with(sd, caseSensitive));
@@ -147,7 +203,24 @@ void add_string_constraint_to_query(tightdb::Query &query,
             break;
         default:
             @throw RLMPredicateException(@"Invalid operator type",
-                                         @"Operator type %lu not supported for string type", (unsigned long)operatorType);
+                                         @"Operator '%@' not supported for string type", operatorName(operatorType));
+    }
+}
+
+void add_string_constraint_to_query(realm::Query& query,
+                                    NSPredicateOperatorType operatorType,
+                                    NSComparisonPredicateOptions predicateOptions,
+                                    NSString *value,
+                                    Columns<String>&& column) {
+    switch (operatorType) {
+        case NSEqualToPredicateOperatorType:
+        case NSNotEqualToPredicateOperatorType:
+            add_string_constraint_to_query(query, operatorType, predicateOptions, std::move(column), value);
+            break;
+        default:
+            @throw RLMPredicateException(@"Invalid operator type",
+                                         @"Operator '%@' is not supported for string type with key path on right side of operator",
+                                         operatorName(operatorType));
     }
 }
 
@@ -173,12 +246,13 @@ void validate_and_extract_between_range(id value, RLMProperty *prop, id *from, i
                     @"NSArray objects must be of type %@ for BETWEEN operations", RLMTypeToString(prop.type));
 }
 
-void add_constraint_to_query(tightdb::Query &query, RLMPropertyType type,
+template <typename... T>
+void add_constraint_to_query(realm::Query &query, RLMPropertyType type,
                              NSPredicateOperatorType operatorType,
                              NSComparisonPredicateOptions predicateOptions,
-                             std::vector<NSUInteger> linkColumns, NSUInteger idx, id value);
+                             std::vector<NSUInteger> linkColumns, T... values);
 
-void add_between_constraint_to_query(tightdb::Query &query, std::vector<NSUInteger> const& indexes, RLMProperty *prop, id value) {
+void add_between_constraint_to_query(realm::Query &query, std::vector<NSUInteger> const& indexes, RLMProperty *prop, id value) {
     id from, to;
     validate_and_extract_between_range(value, prop, &from, &to);
 
@@ -214,11 +288,11 @@ void add_between_constraint_to_query(tightdb::Query &query, std::vector<NSUInteg
     }
 }
 
-void add_binary_constraint_to_query(tightdb::Query & query,
+void add_binary_constraint_to_query(realm::Query & query,
                                     NSPredicateOperatorType operatorType,
                                     NSUInteger index,
                                     NSData *value) {
-    tightdb::BinaryData binData = RLMBinaryDataForNSData(value);
+    realm::BinaryData binData = RLMBinaryDataForNSData(value);
     switch (operatorType) {
         case NSBeginsWithPredicateOperatorType:
             query.begins_with(index, binData);
@@ -237,11 +311,24 @@ void add_binary_constraint_to_query(tightdb::Query & query,
             break;
         default:
             @throw RLMPredicateException(@"Invalid operator type",
-                                         @"Operator type %lu not supported for binary type", (unsigned long)operatorType);
+                                         @"Operator '%@' not supported for binary type", operatorName(operatorType));
     }
 }
 
-void add_link_constraint_to_query(tightdb::Query & query,
+void add_binary_constraint_to_query(realm::Query& query, NSPredicateOperatorType operatorType, NSData *value, NSUInteger index) {
+    switch (operatorType) {
+        case NSEqualToPredicateOperatorType:
+        case NSNotEqualToPredicateOperatorType:
+            add_binary_constraint_to_query(query, operatorType, index, value);
+            break;
+        default:
+            @throw RLMPredicateException(@"Invalid operator type",
+                                         @"Operator '%@' is not supported for binary type with key path on right side of operator",
+                                         operatorName(operatorType));
+    }
+}
+
+void add_link_constraint_to_query(realm::Query & query,
                                  NSPredicateOperatorType operatorType,
                                  NSUInteger column,
                                  RLMObject *obj) {
@@ -257,6 +344,12 @@ void add_link_constraint_to_query(tightdb::Query & query,
     else {
         query.and_query(query.get_table()->column<Link>(column).is_null());
     }
+}
+
+void add_link_constraint_to_query(realm::Query& query, NSPredicateOperatorType operatorType, RLMObject *obj, NSUInteger column) {
+    // Link constraints only support the equal-to and not-equal-to operators. The order of operands
+    // is not important for those comparisons so we can delegate to the other implementation.
+    add_link_constraint_to_query(query, operatorType, column, obj);
 }
 
 // iterate over an array of subpredicates, using @func to build a query from each
@@ -282,25 +375,99 @@ void process_or_group(Query &query, id array, Func&& func) {
         // Queries can't be empty, so if there's zero things in the OR group
         // validation will fail. Work around this by adding an expression which
         // will never find any rows in a table.
-        // FIXME: this should be supported by core in some way
-        struct FalseExpression : tightdb::Expression {
-            size_t find_first(size_t, size_t) const override { return tightdb::not_found; }
-            void set_table() override {}
-            const Table* get_table() override { return nullptr; }
-        };
         query.expression(new FalseExpression);
     }
 
     query.end_group();
 }
 
-void add_constraint_to_query(tightdb::Query &query, RLMPropertyType type,
+template <typename RequestedType, typename TableGetter>
+struct ColumnOfTypeHelper {
+    static realm::Columns<RequestedType> convert(TableGetter&& table, NSUInteger idx)
+    {
+        return table()->template column<RequestedType>(idx);
+    }
+};
+
+template <typename TableGetter>
+struct ColumnOfTypeHelper<realm::DateTime, TableGetter> {
+    static realm::Columns<Int> convert(TableGetter&& table, NSUInteger idx)
+    {
+        return table()->template column<Int>(idx);
+    }
+};
+
+template <typename RequestedType, typename TableGetter>
+struct ValueOfTypeHelper;
+
+template <typename TableGetter>
+struct ValueOfTypeHelper<realm::DateTime, TableGetter> {
+    static Int convert(TableGetter&&, id value)
+    {
+        return [value timeIntervalSince1970];
+    }
+};
+
+template <typename TableGetter>
+struct ValueOfTypeHelper<bool, TableGetter> {
+    static bool convert(TableGetter&&, id value)
+    {
+        return [value boolValue];
+    }
+};
+
+template <typename TableGetter>
+struct ValueOfTypeHelper<Double, TableGetter> {
+    static Double convert(TableGetter&&, id value)
+    {
+        return [value doubleValue];
+    }
+};
+
+template <typename TableGetter>
+struct ValueOfTypeHelper<Float, TableGetter> {
+    static Float convert(TableGetter&&, id value)
+    {
+        return [value floatValue];
+    }
+};
+
+template <typename TableGetter>
+struct ValueOfTypeHelper<Int, TableGetter> {
+    static Int convert(TableGetter&&, id value)
+    {
+        return [value longLongValue];
+    }
+};
+
+template <typename TableGetter>
+struct ValueOfTypeHelper<String, TableGetter> {
+    static id convert(TableGetter&&, id value)
+    {
+        return value;
+    }
+};
+
+template <typename RequestedType, typename Value, typename TableGetter>
+auto value_of_type_for_query(TableGetter&& tables, Value&& value)
+{
+    const bool isColumnIndex = std::is_same<NSUInteger, typename std::remove_reference<Value>::type>::value;
+    using helper = std::conditional_t<isColumnIndex,
+                                     ColumnOfTypeHelper<RequestedType, TableGetter>,
+                                     ValueOfTypeHelper<RequestedType, TableGetter>>;
+    return helper::convert(std::forward<TableGetter>(tables), std::forward<Value>(value));
+}
+
+template <typename... T>
+void add_constraint_to_query(realm::Query &query, RLMPropertyType type,
                              NSPredicateOperatorType operatorType,
                              NSComparisonPredicateOptions predicateOptions,
-                             std::vector<NSUInteger> linkColumns, NSUInteger idx, id value)
+                             std::vector<NSUInteger> linkColumns, T... values)
 {
-    tightdb::Table *(^table)() = ^{
-        tightdb::TableRef& tbl = query.get_table();
+    static_assert(sizeof...(T) == 2, "add_constraint_to_query accepts only two values as arguments");
+
+    auto table = [&] {
+        realm::TableRef& tbl = query.get_table();
         for (NSUInteger col : linkColumns) {
             tbl->link(col); // mutates m_link_chain on table
         }
@@ -309,26 +476,26 @@ void add_constraint_to_query(tightdb::Query &query, RLMPropertyType type,
 
     switch (type) {
         case type_Bool:
-            add_bool_constraint_to_query(query, operatorType, table()->column<bool>(idx), bool([value boolValue]));
+            add_bool_constraint_to_query(query, operatorType, value_of_type_for_query<bool>(table, values)...);
             break;
         case type_DateTime:
-            add_numeric_constraint_to_query(query, type, operatorType, table()->column<Int>(idx), Int([value timeIntervalSince1970]));
+            add_numeric_constraint_to_query(query, type, operatorType, value_of_type_for_query<realm::DateTime>(table, values)...);
             break;
         case type_Double:
-            add_numeric_constraint_to_query(query, type, operatorType, table()->column<Double>(idx), [value doubleValue]);
+            add_numeric_constraint_to_query(query, type, operatorType, value_of_type_for_query<Double>(table, values)...);
             break;
         case type_Float:
-            add_numeric_constraint_to_query(query, type, operatorType, table()->column<Float>(idx), [value floatValue]);
+            add_numeric_constraint_to_query(query, type, operatorType, value_of_type_for_query<Float>(table, values)...);
             break;
         case type_Int:
-            add_numeric_constraint_to_query(query, type, operatorType, table()->column<Int>(idx), [value longLongValue]);
+            add_numeric_constraint_to_query(query, type, operatorType, value_of_type_for_query<Int>(table, values)...);
             break;
         case type_String:
-            add_string_constraint_to_query(query, operatorType, predicateOptions, table()->column<String>(idx), value);
+            add_string_constraint_to_query(query, operatorType, predicateOptions, value_of_type_for_query<String>(table, values)...);
             break;
         case type_Binary:
             if (linkColumns.empty()) {
-                add_binary_constraint_to_query(query, operatorType, idx, value);
+                add_binary_constraint_to_query(query, operatorType, values...);
                 break;
             }
             else {
@@ -337,7 +504,7 @@ void add_constraint_to_query(tightdb::Query &query, RLMPropertyType type,
         case type_Link:
         case type_LinkList:
             if (linkColumns.empty()) {
-                add_link_constraint_to_query(query, operatorType, idx, value);
+                add_link_constraint_to_query(query, operatorType, values...);
             }
             else {
                 @throw RLMPredicateException(@"Unsupported operator", @"Multi-level object equality link queries are not supported.");
@@ -353,23 +520,24 @@ RLMProperty *get_property_from_key_path(RLMSchema *schema, RLMObjectSchema *desc
                                         NSString *keyPath, std::vector<NSUInteger> &indexes, bool isAny)
 {
     RLMProperty *prop = nil;
-    NSArray *paths = [keyPath componentsSeparatedByString:@"."];
-    indexes.reserve(paths.count - 1);
 
     NSString *prevPath = nil;
-    for (NSString *path in paths) {
+    NSUInteger start = 0, length = keyPath.length, end = NSNotFound;
+    do {
+        end = [keyPath rangeOfString:@"." options:0 range:{start, length - start}].location;
+        NSString *path = [keyPath substringWithRange:{start, end == NSNotFound ? length - start : end - start}];
         if (prop) {
             RLMPrecondition(prop.type == RLMPropertyTypeObject || prop.type == RLMPropertyTypeArray,
-                            @"Invalid value", @"column name '%@' is not a link", prevPath);
+                            @"Invalid value", @"Property '%@' is not a link in object of type '%@'", prevPath, desc.className);
             indexes.push_back(prop.column);
             prop = desc[path];
-            RLMPrecondition(prop, @"Invalid column name",
-                            @"Column name %@ not found in table", path);
+            RLMPrecondition(prop, @"Invalid property name",
+                            @"Property '%@' not found in object of type '%@'", path, desc.className);
         }
         else {
             prop = desc[path];
-            RLMPrecondition(prop, @"Invalid column name",
-                            @"Column name %@ not found in table", path);
+            RLMPrecondition(prop, @"Invalid property name",
+                            @"Property '%@' not found in object of type '%@'", path, desc.className);
 
             if (isAny) {
                 RLMPrecondition(prop.type == RLMPropertyTypeArray,
@@ -387,25 +555,30 @@ RLMProperty *get_property_from_key_path(RLMSchema *schema, RLMObjectSchema *desc
             desc = schema[prop.objectClassName];
         }
         prevPath = path;
-    }
+        start = end + 1;
+    } while (end != NSNotFound);
 
     return prop;
 }
 
-void validate_property_value(RLMProperty *prop, id value, NSString *err) {
+void validate_property_value(__unsafe_unretained RLMProperty *const prop,
+                             __unsafe_unretained id const value,
+                             __unsafe_unretained NSString *const err,
+                             __unsafe_unretained RLMObjectSchema *const objectSchema,
+                             __unsafe_unretained NSString *const keyPath) {
     if (prop.type == RLMPropertyTypeArray) {
-        RLMPrecondition([RLMDynamicCast<RLMObject>(value).objectSchema.className isEqualToString:prop.objectClassName],
-                        @"Invalid value", err, prop.objectClassName);
+        RLMPrecondition([RLMObjectBaseObjectSchema(RLMDynamicCast<RLMObjectBase>(value)).className isEqualToString:prop.objectClassName],
+                        @"Invalid value", err, prop.objectClassName, keyPath, objectSchema.className, value);
     }
     else {
         RLMPrecondition(RLMIsObjectValidForProperty(value, prop),
-                        @"Invalid value", err, RLMTypeToString(prop.type));
+                        @"Invalid value", err, RLMTypeToString(prop.type), keyPath, objectSchema.className, value);
     }
 }
 
 void update_query_with_value_expression(RLMSchema *schema,
                                         RLMObjectSchema *desc,
-                                        tightdb::Query &query,
+                                        realm::Query &query,
                                         NSString *keyPath,
                                         id value,
                                         NSComparisonPredicate *pred)
@@ -426,16 +599,21 @@ void update_query_with_value_expression(RLMSchema *schema,
     if (pred.predicateOperatorType == NSInPredicateOperatorType) {
         process_or_group(query, value, [&](id item) {
             id normalized = value_from_constant_expression_or_value(item);
-            validate_property_value(prop, normalized, @"Object in IN clause must be of type %@");
+            validate_property_value(prop, normalized, @"Expected object of type %@ in IN clause for property '%@' on object of type '%@', but received: %@", desc, keyPath);
             add_constraint_to_query(query, prop.type, NSEqualToPredicateOperatorType,
                                     pred.options, indexes, index, normalized);
         });
         return;
     }
 
-    validate_property_value(prop, value, @"object must be of type %@");
-    add_constraint_to_query(query, prop.type, pred.predicateOperatorType,
-                            pred.options, indexes, index, value);
+    validate_property_value(prop, value, @"Expected object of type %@ for property '%@' on object of type '%@', but received: %@", desc, keyPath);
+    if (pred.leftExpression.expressionType == NSKeyPathExpressionType) {
+        add_constraint_to_query(query, prop.type, pred.predicateOperatorType,
+                                pred.options, indexes, index, value);
+    } else {
+        add_constraint_to_query(query, prop.type, pred.predicateOperatorType,
+                                pred.options, indexes, value, index);
+    }
 }
 
 template<typename T>
@@ -500,8 +678,6 @@ void update_query_with_column_expression(RLMObjectSchema *scheme, Query &query,
             query.and_query(column_expression<Double>(type, leftIndex, rightIndex, table));
             break;
         case type_DateTime:
-            // FIXME: int64_t should be DateTime but that doesn't work on 32 bit
-            // FIXME: as time_t(32bit) != time_t(64bit)
             query.and_query(column_expression<int64_t>(type, leftIndex, rightIndex, table));
             break;
         case type_String: {
@@ -524,7 +700,7 @@ void update_query_with_column_expression(RLMObjectSchema *scheme, Query &query,
                     break;
                 default:
                     @throw RLMPredicateException(@"Invalid operator type",
-                                                 @"Operator type %lu not supported for string type", (unsigned long)type);
+                                                 @"Operator '%@' not supported for string type", operatorName(type));
             }
             break;
         }
@@ -537,7 +713,7 @@ void update_query_with_column_expression(RLMObjectSchema *scheme, Query &query,
 }
 
 void update_query_with_predicate(NSPredicate *predicate, RLMSchema *schema,
-                                 RLMObjectSchema *objectSchema, tightdb::Query & query)
+                                 RLMObjectSchema *objectSchema, realm::Query &query)
 {
     // Compound predicates.
     if ([predicate isMemberOfClass:[NSCompoundPredicate class]]) {
@@ -545,17 +721,22 @@ void update_query_with_predicate(NSPredicate *predicate, RLMSchema *schema,
 
         switch ([comp compoundPredicateType]) {
             case NSAndPredicateType:
-                // Add all of the subpredicates.
-                query.group();
-                for (NSPredicate *subp in comp.subpredicates) {
-                    update_query_with_predicate(subp, schema, objectSchema, query);
+                if (comp.subpredicates.count) {
+                    // Add all of the subpredicates.
+                    query.group();
+                    for (NSPredicate *subp in comp.subpredicates) {
+                        update_query_with_predicate(subp, schema, objectSchema, query);
+                    }
+                    query.end_group();
+                } else {
+                    // NSCompoundPredicate's documentation states that an AND predicate with no subpredicates evaluates to TRUE.
+                    query.expression(new TrueExpression);
                 }
-                query.end_group();
                 break;
 
             case NSOrPredicateType: {
                 // Add all of the subpredicates with ors inbetween.
-                process_or_group(query, comp.subpredicates, [&](NSPredicate *subp) {
+                process_or_group(query, comp.subpredicates, [&](__unsafe_unretained NSPredicate *const subp) {
                     update_query_with_predicate(subp, schema, objectSchema, query);
                 });
                 break;
@@ -620,17 +801,23 @@ void update_query_with_predicate(NSPredicate *predicate, RLMSchema *schema,
                                          @"Predicate expressions must compare a keypath and another keypath or a constant value");
         }
     }
+    else if ([predicate isEqual:[NSPredicate predicateWithValue:YES]]) {
+        query.expression(new TrueExpression);
+    } else if ([predicate isEqual:[NSPredicate predicateWithValue:NO]]) {
+        query.expression(new FalseExpression);
+    }
     else {
         // invalid predicate type
         @throw RLMPredicateException(@"Invalid predicate",
-                                     @"Only support compound and comparison predicates");
+                                     @"Only support compound, comparison, and constant predicates");
     }
 }
 
 RLMProperty *RLMValidatedPropertyForSort(RLMObjectSchema *schema, NSString *propName) {
     // validate
+    RLMPrecondition([propName rangeOfString:@"."].location == NSNotFound, @"Invalid sort property", @"Cannot sort on '%@': sorting on key paths is not supported.", propName);
     RLMProperty *prop = schema[propName];
-    RLMPrecondition(prop, @"Invalid sort column", @"Column named '%@' not found.", prop);
+    RLMPrecondition(prop, @"Invalid sort property", @"Cannot sort on property '%@' on object of type '%@': property not found.", propName, schema.className);
 
     switch (prop.type) {
         case RLMPropertyTypeBool:
@@ -642,15 +829,15 @@ RLMProperty *RLMValidatedPropertyForSort(RLMObjectSchema *schema, NSString *prop
             break;
 
         default:
-            @throw RLMPredicateException(@"Invalid sort column type",
-                                         @"Sorting is only supported on Bool, Date, Double, Float, Integer and String columns.");
+            @throw RLMPredicateException(@"Invalid sort property type",
+                                         @"Cannot sort on property '%@' on object of type '%@': sorting is only supported on bool, date, double, float, integer, and string properties, but property is of type %@.", propName, schema.className, RLMTypeToString(prop.type));
     }
     return prop;
 }
 
 } // namespace
 
-void RLMUpdateQueryWithPredicate(tightdb::Query *query, NSPredicate *predicate, RLMSchema *schema,
+void RLMUpdateQueryWithPredicate(realm::Query *query, NSPredicate *predicate, RLMSchema *schema,
                                  RLMObjectSchema *objectSchema)
 {
     // passing a nil predicate is a no-op
@@ -669,21 +856,15 @@ void RLMUpdateQueryWithPredicate(tightdb::Query *query, NSPredicate *predicate, 
                     (int)validateMessage.size(), validateMessage.c_str());
 }
 
-void RLMGetColumnIndices(RLMObjectSchema *schema, NSArray *properties,
-                         std::vector<size_t> &columns, std::vector<bool> &order) {
-    columns.reserve(properties.count);
-    order.reserve(properties.count);
+RLMSortOrder RLMSortOrderFromDescriptors(RLMObjectSchema *objectSchema, NSArray *descriptors) {
+    RLMSortOrder sort;
+    sort.columnIndices.reserve(descriptors.count);
+    sort.ascending.reserve(descriptors.count);
 
-    for (RLMSortDescriptor *descriptor in properties) {
-        columns.push_back(RLMValidatedPropertyForSort(schema, descriptor.property).column);
-        order.push_back(descriptor.ascending);
+    for (RLMSortDescriptor *descriptor in descriptors) {
+        sort.columnIndices.push_back(RLMValidatedPropertyForSort(objectSchema, descriptor.property).column);
+        sort.ascending.push_back(descriptor.ascending);
     }
-}
 
-void RLMUpdateViewWithOrder(tightdb::TableView &view, RLMObjectSchema *schema, NSArray *properties)
-{
-    std::vector<size_t> columns;
-    std::vector<bool> order;
-    RLMGetColumnIndices(schema, properties, columns, order);
-    view.sort(move(columns), move(order));
+    return sort;
 }

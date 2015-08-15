@@ -6,9 +6,9 @@
 //
 
 import UIKit
-import Realm
+import RealmSwift
 
-class Plugin: RLMObject {
+class Plugin: Object {
     
     dynamic var uuid = NSUUID().UUIDString
     override class func primaryKey() -> String {
@@ -107,11 +107,11 @@ class Plugin: RLMObject {
     // MARK: - Realm
     
     func save() {
-        RLMRealm.defaultRealm().addObject(self)
+        Realm().add(self, update: true)
     }
     
     class func deleteAll() {
-        RLMRealm.defaultRealm().deleteAllObjects()
+        Realm().deleteAll()
     }
     
     // MARK: - Score

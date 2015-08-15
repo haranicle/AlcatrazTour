@@ -16,8 +16,11 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMMigration.h"
-#import "RLMRealm.h"
+#import <Realm/RLMMigration.h>
+#import <Realm/RLMObjectBase.h>
+#import <Realm/RLMRealm.h>
+
+typedef void (^RLMObjectBaseMigrationBlock)(RLMObjectBase *oldObject, RLMObjectBase *newObject);
 
 @interface RLMMigration ()
 

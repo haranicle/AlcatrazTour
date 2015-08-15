@@ -27,8 +27,6 @@
 		F6602A491A9EEAB0005DF8B9 /* SecretConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6602A471A9EE116005DF8B9 /* SecretConstants.swift */; };
 		F66E663B1A9C7DAC00B7EC4A /* GithubClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = F62E96461A9B0FA500063445 /* GithubClient.swift */; };
 		F673E77C1A9C773800A20CB4 /* Plugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = F697C3C81A9C61FB001DF614 /* Plugin.swift */; };
-		F673E77E1A9C796A00A20CB4 /* RLMSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = F673E77D1A9C796A00A20CB4 /* RLMSupport.swift */; };
-		F673E77F1A9C797900A20CB4 /* RLMSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = F673E77D1A9C796A00A20CB4 /* RLMSupport.swift */; };
 		F697C3C91A9C61FB001DF614 /* Plugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = F697C3C81A9C61FB001DF614 /* Plugin.swift */; };
 		F697C3CB1A9C72F9001DF614 /* GithubClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F697C3CA1A9C72F9001DF614 /* GithubClientTests.swift */; };
 		F6FCEED61AC1658D00EF3909 /* LoginWebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6FCEED41AC1658D00EF3909 /* LoginWebViewController.swift */; };
@@ -71,7 +69,6 @@
 		F62E963C1A9AF6F600063445 /* AlcatrazTourTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlcatrazTourTests.swift; sourceTree = "<group>"; };
 		F62E96461A9B0FA500063445 /* GithubClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GithubClient.swift; sourceTree = "<group>"; };
 		F6602A471A9EE116005DF8B9 /* SecretConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SecretConstants.swift; sourceTree = "<group>"; };
-		F673E77D1A9C796A00A20CB4 /* RLMSupport.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RLMSupport.swift; sourceTree = "<group>"; };
 		F673E7801A9C7B5000A20CB4 /* AlcatrazTour-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AlcatrazTour-Bridging-Header.h"; sourceTree = SOURCE_ROOT; };
 		F697C3C81A9C61FB001DF614 /* Plugin.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Plugin.swift; sourceTree = "<group>"; };
 		F697C3CA1A9C72F9001DF614 /* GithubClientTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GithubClientTests.swift; sourceTree = "<group>"; };
@@ -178,7 +175,6 @@
 			isa = PBXGroup;
 			children = (
 				F673E7801A9C7B5000A20CB4 /* AlcatrazTour-Bridging-Header.h */,
-				F673E77D1A9C796A00A20CB4 /* RLMSupport.swift */,
 				F62E96261A9AF6F600063445 /* AppDelegate.swift */,
 				F6602A471A9EE116005DF8B9 /* SecretConstants.swift */,
 				F60FC5481A9F182500AAAC9B /* Model */,
@@ -429,7 +425,6 @@
 				5F26E7D21AB577E400636136 /* PluginTableViewController.swift in Sources */,
 				F62E96471A9B0FA500063445 /* GithubClient.swift in Sources */,
 				5FC1920E1AB47BBD00D0BD9A /* PluginTableViewCell.swift in Sources */,
-				F673E77E1A9C796A00A20CB4 /* RLMSupport.swift in Sources */,
 				F6FCEED61AC1658D00EF3909 /* LoginWebViewController.swift in Sources */,
 				F6602A481A9EE116005DF8B9 /* SecretConstants.swift in Sources */,
 				5FCF96901B3E675000A1C63A /* SettingsTableViewController.swift in Sources */,
@@ -450,7 +445,6 @@
 				F697C3CB1A9C72F9001DF614 /* GithubClientTests.swift in Sources */,
 				F6FCEED91AC165A200EF3909 /* LoginWebViewController.swift in Sources */,
 				F60FC5471A9F084D00AAAC9B /* PluginTests.swift in Sources */,
-				F673E77F1A9C797900A20CB4 /* RLMSupport.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

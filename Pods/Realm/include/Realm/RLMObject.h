@@ -17,8 +17,10 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #import <Foundation/Foundation.h>
-#import <Realm/RLMConstants.h>
+
 #import <Realm/RLMObjectBase.h>
+
+RLM_ASSUME_NONNULL_BEGIN
 
 @class RLMRealm;
 @class RLMResults;
@@ -48,17 +50,7 @@
  - `NSData`
  - RLMObject subclasses, so you can have many-to-one relationships.
  - `RLMArray<X>`, where X is an RLMObject subclass, so you can have many-to-many relationships.
- 
- ### Attributes for Properties
 
- You can set which of these properties should be indexed, stored inline, unique, required
- as well as delete rules for the links by implementing the attributesForProperty: method.
- 
- You can set properties to ignore (i.e. transient properties you do not want
- persisted to a Realm) by implementing ignoredProperties.
- 
- You can set default values for properties by implementing defaultPropertyValues.
- 
  ### Querying
  
  You can query an object directly via the class methods: allObjects, objectsWhere:, objectsOrderedBy:where: and objectForKeyedSubscript:
@@ -97,26 +89,31 @@
  
  @see [RLMRealm addObject:]:
  */
-- (instancetype)initWithObject:(id)object;
+- (instancetype)initWithValue:(id)value;
+
+- (instancetype)initWithObject:(id)object DEPRECATED_MSG_ATTRIBUTE("use initWithValue:");
 
 
 /**
  Helper to return the class name for an RLMObject subclass.
+
+ @warning Do not override. Realm relies on this method returning the exact class
+          name.
  
- @return    The class name for the model class.
+ @return  The class name for the model class.
  */
 + (NSString *)className;
 
 /**
- Create an RLMObject in the default Realm with a given object.
+ Create an RLMObject in the default Realm with a given value.
 
  Creates an instance of this object and adds it to the default Realm populating
- the object with the given object.
+ the object with the given value.
  
- If nested objects are included in the argument, `createInDefaultRealmWithObject:` will be called
+ If nested objects are included in the argument, `createInDefaultRealmWithValue:` will be called
  on them.
 
- @param object  The object used to populate the object. This can be any key/value coding compliant
+ @param value   The value used to populate the object. This can be any key/value coding compliant
                 object, or a JSON object such as those returned from the methods in NSJSONSerialization, or
                 an NSArray with one object for each persisted property. An exception will be
                 thrown if any required properties are not present and no default is set.
@@ -125,7 +122,9 @@
 
  @see   defaultPropertyValues
  */
-+ (instancetype)createInDefaultRealmWithObject:(id)object;
++ (instancetype)createInDefaultRealmWithValue:(id)value;
+
++ (instancetype)createInDefaultRealmWithObject:(id)object DEPRECATED_MSG_ATTRIBUTE("use createInDefaultRealmWithValue:");
 
 /**
  Create an RLMObject in a Realm with a given object.
@@ -133,11 +132,11 @@
  Creates an instance of this object and adds it to the given Realm populating
  the object with the given object.
  
- If nested objects are included in the argument, `createInRealm:withObject:` will be called
+ If nested objects are included in the argument, `createInRealm:withValue:` will be called
  on them.
  
  @param realm   The Realm in which this object is persisted.
- @param object  The object used to populate the object. This can be any key/value coding compliant
+ @param value   The value used to populate the object. This can be any key/value coding compliant
                 object, or a JSON object such as those returned from the methods in NSJSONSerialization, or
                 an NSArray with one object for each persisted property. An exception will be
                 thrown if any required properties are not present and no default is set.
@@ -146,7 +145,9 @@
  
  @see   defaultPropertyValues
  */
-+ (instancetype)createInRealm:(RLMRealm *)realm withObject:(id)object;
++ (instancetype)createInRealm:(RLMRealm *)realm withValue:(id)value;
+
++ (instancetype)createInRealm:(RLMRealm *)realm withObject:(id)object DEPRECATED_MSG_ATTRIBUTE("use createInRealm:withValue:");
 
 /**
  Create or update an RLMObject in the default Realm with a given object.
@@ -155,12 +156,12 @@
  an object with the same primary key value in the default RLMRealm its values are updated and the object
  is returned. Otherwise this creates and populates a new instance of this object in the default Realm.
  
- If nested objects are included in the argument, `createOrUpdateInDefaultRealmWithObject:` will be
- called on them if have a primary key (`createInDefaultRealmWithObject:` otherwise).
+ If nested objects are included in the argument, `createOrUpdateInDefaultRealmWithValue:` will be
+ called on them if have a primary key (`createInDefaultRealmWithValue:` otherwise).
  
  This is a no-op if the argument is an RLMObject of the same type already backed by the target realm.
 
- @param object  The object used to populate the object. This can be any key/value coding compliant
+ @param value   The value used to populate the object. This can be any key/value coding compliant
                 object, or a JSON object such as those returned from the methods in NSJSONSerialization, or
                 an NSArray with one object for each persisted property. An exception will be
                 thrown if any required properties are not present and no default is set.
@@ -169,7 +170,9 @@
 
  @see   defaultPropertyValues, primaryKey
  */
-+ (instancetype)createOrUpdateInDefaultRealmWithObject:(id)object;
++ (instancetype)createOrUpdateInDefaultRealmWithValue:(id)value;
+
++ (instancetype)createOrUpdateInDefaultRealmWithObject:(id)object DEPRECATED_MSG_ATTRIBUTE("use createOrUpdateInDefaultRealmWithValue:");
 
 /**
  Create or update an RLMObject with a given object.
@@ -178,13 +181,13 @@
  an object with the same primary key value in the provided RLMRealm its values are updated and the object
  is returned. Otherwise this creates and populates a new instance of this object in the provided Realm.
  
- If nested objects are included in the argument, `createOrUpdateInRealm:withObject:` will be
- called on them if have a primary key (`createInRealm:withObject:` otherwise).
+ If nested objects are included in the argument, `createOrUpdateInRealm:withValue:` will be
+ called on them if have a primary key (`createInRealm:withValue:` otherwise).
 
  This is a no-op if the argument is an RLMObject of the same type already backed by the target realm.
 
  @param realm   The Realm in which this object is persisted.
- @param object  The object used to populate the object. This can be any key/value coding compliant
+ @param value   The value used to populate the object. This can be any key/value coding compliant
                 object, or a JSON object such as those returned from the methods in NSJSONSerialization, or
                 an NSArray with one object for each persisted property. An exception will be
                 thrown if any required properties are not present and no default is set.
@@ -193,12 +196,14 @@
 
  @see   defaultPropertyValues, primaryKey
  */
-+ (instancetype)createOrUpdateInRealm:(RLMRealm *)realm withObject:(id)object;
++ (instancetype)createOrUpdateInRealm:(RLMRealm *)realm withValue:(id)value;
+
++ (instancetype)createOrUpdateInRealm:(RLMRealm *)realm withObject:(id)object DEPRECATED_MSG_ATTRIBUTE("use createOrUpdateInRealm:withValue:");
 
 /**
  The Realm in which this object is persisted. Returns nil for standalone objects.
  */
-@property (nonatomic, readonly) RLMRealm *realm;
+@property (nonatomic, readonly, nullable) RLMRealm *realm;
 
 /**
  The ObjectSchema which lists the persisted properties for this object.
@@ -219,48 +224,28 @@
  */
 
 /**
- Implement to set custom attributes for each property.
-
- The default attributes for each property should be obtained by calling
- `[super attributesForProperty:propertyName]`, and then ORed together with
- the attributes you wish to add. For example, to index a single property:
-
-     @interface Model : RLMObject
-     @property NSString *indexedProperty;
-     @property NSString *unindexedProperty;
-     @end
-
-     @implementation Model
-     + (RLMPropertyAttributes)attributesForProperty:(NSString *)propertyName {
-        RLMPropertyAttributes attributes = [super attributesForProperty:propertyName];
-        if ([propertyName isEqualToString:@"indexedProperty"]) {
-            attributes |= RLMPropertyAttributeIndexed;
-        }
-        return attributes;
-     }
-     @end
-
- @param propertyName    Name of property for which attributes have been requested.
- @return                Bitmask of property attributes for the given property.
+ Return an array of property names for properties which should be indexed. Only supported
+ for string and int properties.
+ @return    NSArray of property names.
  */
-+ (RLMPropertyAttributes)attributesForProperty:(NSString *)propertyName;
++ (NSArray *)indexedProperties;
 
 /**
  Implement to indicate the default values to be used for each property.
  
  @return    NSDictionary mapping property names to their default values.
  */
-+ (NSDictionary *)defaultPropertyValues;
++ (nullable NSDictionary *)defaultPropertyValues;
 
 /**
  Implement to designate a property as the primary key for an RLMObject subclass. Only properties of
  type RLMPropertyTypeString and RLMPropertyTypeInt can be designated as the primary key. Primary key 
  properties enforce uniqueness for each value whenever the property is set which incurs some overhead.
- Indexes are created automatically for string primary key properties.
+ Indexes are created automatically for primary key properties.
 
  @return    Name of the property designated as the primary key.
  */
-+ (NSString *)primaryKey;
++ (nullable NSString *)primaryKey;
 
 /**
  Implement to return an array of property names to ignore. These properties will not be persisted
@@ -268,7 +253,20 @@
  
  @return    NSArray of property names to ignore.
  */
-+ (NSArray *)ignoredProperties;
++ (nullable NSArray *)ignoredProperties;
+
+/**
+ Implement to return an array of property names that should not allow storing nil.
+
+ By default, all properties of a type that support storing nil are considered optional properties.
+ To require that an object in a Realm always have a non-nil value for a property, add the name of the property to the array returned from this method.
+
+ Currently only String, Data, and Object properties support storing nil, and all other properties are implicitly treated as if they were required properties.
+ Support for additional types will come in the future.
+ 
+ @return    NSArray of property names that are required.
+ */
++ (NSArray *)requiredProperties;
 
 
 /**---------------------------------------------------------------------------------------
@@ -300,7 +298,7 @@
 
  @return    An RLMResults of objects of the subclass type in the default Realm that match the given predicate
  */
-+ (RLMResults *)objectsWithPredicate:(NSPredicate *)predicate;
++ (RLMResults *)objectsWithPredicate:(nullable NSPredicate *)predicate;
 
 /**
  Get the single object with the given primary key from the default Realm.
@@ -314,7 +312,7 @@
  @return    An object of the subclass type or nil if an object with the given primary key does not exist.
  @see       -primaryKey
  */
-+ (instancetype)objectForPrimaryKey:(id)primaryKey;
++ (nullable instancetype)objectForPrimaryKey:(nullable id)primaryKey;
 
 
 /**---------------------------------------------------------------------------------------
@@ -349,7 +347,7 @@
 
  @return    An RLMResults of objects of the subclass type in the specified Realm that match the given predicate
  */
-+ (RLMResults *)objectsInRealm:(RLMRealm *)realm withPredicate:(NSPredicate *)predicate;
++ (RLMResults *)objectsInRealm:(RLMRealm *)realm withPredicate:(nullable NSPredicate *)predicate;
 
 /**
  Get the single object with the given primary key from the specified Realm.
@@ -363,7 +361,7 @@
  @return    An object of the subclass type or nil if an object with the given primary key does not exist.
  @see       -primaryKey
  */
-+ (instancetype)objectInRealm:(RLMRealm *)realm forPrimaryKey:(id)primaryKey;
++ (nullable instancetype)objectInRealm:(RLMRealm *)realm forPrimaryKey:(nullable id)primaryKey;
 
 /**
  Get an `NSArray` of objects of type `className` which have this object as the given property value. This can
@@ -416,8 +414,10 @@
  
      RLM_ARRAY_TYPE(ObjectType)
      ...
-     @property RLMArray<ObjectType> *arrayOfObjectTypes;
+     @property RLMArray<ObjectType *><ObjectType> *arrayOfObjectTypes;
   */
 #define RLM_ARRAY_TYPE(RLM_OBJECT_SUBCLASS)\
 @protocol RLM_OBJECT_SUBCLASS <NSObject>   \
 @end
+
+RLM_ASSUME_NONNULL_END
