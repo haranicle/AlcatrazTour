@@ -17,7 +17,11 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #import <Foundation/Foundation.h>
-#import "RLMObjectSchema.h"
+#import <Realm/RLMDefines.h>
+
+RLM_ASSUME_NONNULL_BEGIN
+
+@class RLMObjectSchema;
 
 /**
  This class represents the collection of model object schemas persisted to Realm.
@@ -45,7 +49,7 @@
  
  @see               RLMObjectSchema
  */
-- (RLMObjectSchema *)schemaForClassName:(NSString *)className;
+- (nullable RLMObjectSchema *)schemaForClassName:(NSString *)className;
 
 /**
  Look up an RLMObjectSchema for the given class name in this Realm. Throws if there
@@ -64,3 +68,5 @@
 - (BOOL)isEqualToSchema:(RLMSchema *)schema;
 
 @end
+
+RLM_ASSUME_NONNULL_END

@@ -16,6 +16,10 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
+#import <Realm/RLMDefines.h>
+
+RLM_ASSUME_NONNULL_BEGIN
+
 @class RLMRealm, RLMResults, RLMObject;
 
 @protocol RLMCollection <NSFastEnumeration>
@@ -27,8 +31,8 @@
 @property (nonatomic, readonly) RLMRealm *realm;
 
 - (id)objectAtIndex:(NSUInteger)index;
-- (id)firstObject;
-- (id)lastObject;
+- (nullable id)firstObject;
+- (nullable id)lastObject;
 - (NSUInteger)indexOfObject:(RLMObject *)object;
 - (NSUInteger)indexOfObjectWhere:(NSString *)predicateFormat, ...;
 - (NSUInteger)indexOfObjectWithPredicate:(NSPredicate *)predicate;
@@ -38,4 +42,25 @@
 - (RLMResults *)sortedResultsUsingDescriptors:(NSArray *)properties;
 - (id)objectAtIndexedSubscript:(NSUInteger)index;
 
+/**
+ Returns an NSArray containing the results of invoking `valueForKey:` using key on each of the collection's objects.
+
+ @param key The name of the property.
+
+ @return NSArray containing the results of invoking `valueForKey:` using key on each of the collection's objects.
+ */
+- (nullable id)valueForKey:(NSString *)key;
+
+/**
+ Invokes `setValue:forKey:` on each of the collection's objects using the specified value and key.
+
+ @warning This method can only be called during a write transaction.
+
+ @param value The object value.
+ @param key   The name of the property.
+ */
+- (void)setValue:(nullable id)value forKey:(NSString *)key;
+
 @end
+
+RLM_ASSUME_NONNULL_END

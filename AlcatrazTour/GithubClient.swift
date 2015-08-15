@@ -8,7 +8,7 @@
 import UIKit
 import Alamofire
 import SwiftyJSON
-import Realm
+import RealmSwift
 import OAuthSwift
 import SVProgressHUD
 import JDStatusBarNotification
@@ -198,7 +198,7 @@ class GithubClient: NSObject {
             }
             
             // start writing
-            RLMRealm.defaultRealm().beginWriteTransaction()
+            Realm().beginWrite()
             Plugin.deleteAll()
             
             let token = self?.oAuthToken()
@@ -217,7 +217,7 @@ class GithubClient: NSObject {
                 self?.isLoading = false
                 
                 // commit
-                RLMRealm.defaultRealm().commitWriteTransaction()
+                Realm().commitWrite()
                 
                 println("successCount = \(successCount)")
                 println("plugins.count = \(plugins.count)")

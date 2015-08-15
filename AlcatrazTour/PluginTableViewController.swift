@@ -6,7 +6,7 @@
 //
 
 import UIKit
-import Realm
+import RealmSwift
 
 let PluginCellReuseIdentifier = "Cell"
 
@@ -127,18 +127,18 @@ class PluginTableViewController: UITableViewController, UISearchResultsUpdating,
         
         let searchText = searchController.searchBar.text
         // TODO: Must be tested here!!
-        searchResults = Plugin.objectsWhere("name contains[c] '\(searchText)' OR note contains[c] '\(searchText)'").sortedResultsUsingProperty(currentMode.propertyName(), ascending: false)
+        searchResults = Realm().objects(Plugin).filter("name contains[c] '\(searchText)' OR note contains[c] '\(searchText)'").sorted(currentMode.propertyName(), ascending: false)
         searchResultTableViewController.tableView.reloadData()
     }
     
     // MARK: - Realm
-    var searchResults:RLMResults?
-    var popularityResults = Plugin.allObjects().sortedResultsUsingProperty(Modes.Popularity.propertyName(), ascending: false)
-    var starsResults = Plugin.allObjects().sortedResultsUsingProperty(Modes.Stars.propertyName(), ascending: false)
-    var updateResults = Plugin.allObjects().sortedResultsUsingProperty(Modes.Update.propertyName(), ascending: false)
-    var newResults = Plugin.allObjects().sortedResultsUsingProperty(Modes.New.propertyName(), ascending: false)
+    var searchResults:Results<Plugin>?
+    var popularityResults:Results<Plugin> = Realm ().objects(Plugin).sorted(Modes.Popularity.propertyName(), ascending: false)
+    var starsResults:Results<Plugin> = Realm ().objects(Plugin).sorted(Modes.Stars.propertyName(), ascending: false)
+    var updateResults:Results<Plugin> = Realm ().objects(Plugin).sorted(Modes.Update.propertyName(), ascending: false)
+    var newResults:Results<Plugin> = Realm ().objects(Plugin).sorted(Modes.New.propertyName(), ascending: false)
     
-    func currentResult()->RLMResults {
+    func currentResult()->Results<Plugin> {
         if searchController!.active {
             return searchResults!
         }
@@ -222,7 +222,7 @@ class PluginTableViewController: UITableViewController, UISearchResultsUpdating,
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell
     {
-        let plugin = currentResult()[UInt(indexPath.row)] as! Plugin
+        let plugin = currentResult()[Int(indexPath.row)] as Plugin
         
         var cell = tableView.dequeueReusableCellWithIdentifier(PluginCellReuseIdentifier) as! PluginTableViewCell
         configureCell(cell, plugin: plugin, indexPath: indexPath)
@@ -235,7 +235,7 @@ class PluginTableViewController: UITableViewController, UISearchResultsUpdating,
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
         
-        let selectedPlugin = currentResult()[UInt(indexPath.row)] as! Plugin
+        let selectedPlugin = currentResult()[Int(indexPath.row)] as Plugin
         var webViewController = PluginDetailWebViewController(plugin: selectedPlugin)
         navigationController?.pushViewController(webViewController, animated: true)
     }

@@ -17,8 +17,11 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #import <Foundation/Foundation.h>
+#import <Realm/RLMDefines.h>
 
 @class RLMObject, RLMSchema, RLMMigration, RLMNotificationToken;
+
+RLM_ASSUME_NONNULL_BEGIN
 
 /**
  An RLMRealm instance (also referred to as "a realm") represents a Realm
@@ -91,7 +94,7 @@
 
  @return An `RLMRealm` instance.
  */
-+ (instancetype)realmWithPath:(NSString *)path readOnly:(BOOL)readonly error:(NSError **)error;
++ (nullable instancetype)realmWithPath:(NSString *)path readOnly:(BOOL)readonly error:(NSError **)error;
 
 /**
  Obtains an `RLMRealm` instance persisted to an encrypted file.
@@ -100,9 +103,11 @@
  but otherwise they behave like normal persisted Realms.
 
  Encrypted Realms currently cannot be opened while lldb is attached to the
- process since lldb cannot forward mach exceptions to the process being
- debugged. Attempting to open an encrypted Realm with lldb attached will result
- in an EXC_BAD_ACCESS.
+ process since lldb often hangs in this situation. See issue #1625 for
+ further discussion. Attempting to open an encrypted Realm with lldb attached
+ will result in an EXC_BAD_ACCESS. Running your application with
+ REALM_DISABLE_ENCRYPTION=YES set in your environment will result in Realm
+ treating requests to open an encrypted Realm as requesting an unencrypted Realm.
 
  @param path        Path to the file you want the data saved in.
  @param key         64-byte key to use to encrypt the data.
@@ -113,27 +118,27 @@
 
  @return An encrypted `RLMRealm` instance.
  */
-+ (instancetype)realmWithPath:(NSString *)path
-                encryptionKey:(NSData *)key
-                     readOnly:(BOOL)readonly
-                        error:(NSError **)error;
++ (nullable instancetype)realmWithPath:(NSString *)path
+                         encryptionKey:(NSData *)key
+                              readOnly:(BOOL)readonly
+                                 error:(NSError **)error;
 
 /**
  Set the encryption key to use when opening Realms at a certain path.
 
  This can be used as an alternative to explicitly passing the key to
- `encryptedRealmWithPath:key:readOnly:error:` each time a Realm instance is
+ `realmWithPath:key:readOnly:error:` each time a Realm instance is
  needed. The encryption key will be used any time a Realm is opened with
  `realmWithPath:` or `defaultRealm`.
 
  If you do not want Realm to hold on to your encryption keys any longer than
- needed, then use `encryptedRealmWithPath:key:readOnly:error:` rather than this
+ needed, then use `realmWithPath:encryptionKey:readOnly:error:` rather than this
  method.
 
  @param key     64-byte encryption key to use, or `nil` to unset.
  @param path    Realm path to set the encryption key for.
  */
-+ (void)setEncryptionKey:(NSData *)key forRealmsAtPath:(NSString *)path;
++ (void)setEncryptionKey:(nullable NSData *)key forRealmsAtPath:(NSString *)path;
 
 /**
  Obtains an `RLMRealm` instance for an un-persisted in-memory Realm. The identifier
@@ -167,7 +172,17 @@
 /**
  The RLMSchema used by this RLMRealm.
  */
-@property (nonatomic, readonly) RLMSchema *schema;
+@property (nonatomic, readonly, null_unspecified) RLMSchema *schema;
+
+/**
+ Indicates if this Realm is currently in a write transaction.
+
+ @warning Wrapping mutating operations in a write transaction if this property returns `NO`
+          may cause a large number of write transactions to be created, which could negatively
+          impact Realm's performance. Always prefer performing multiple mutations in a single
+          transaction when possible.
+ */
+@property (nonatomic, readonly) BOOL inWriteTransaction;
 
 /**---------------------------------------------------------------------------------------
  *  @name Default Realm Path
@@ -176,7 +191,7 @@
 /**
  Returns the location of the default Realm as a string.
 
- `~/Application Support/{bundle ID}/default.realm` on OS X.
+ `~/Library/Application Support/{bundle ID}/default.realm` on OS X.
 
  `default.realm` in your application's documents directory on iOS.
 
@@ -431,7 +446,7 @@ typedef void(^RLMNotificationBlock)(NSString *notification, RLMRealm *realm);
  inserted. Otherwise, the existing object is updated with any changed values.
 
  As with `addObject:`, the object cannot already be persisted in a different
- Realm. Use `-[RLMObject createOrUpdateInRealm:withObject:]` to copy values to
+ Realm. Use `-[RLMObject createOrUpdateInRealm:withValue:]` to copy values to
  a different Realm.
 
  @param object  Object to be added or updated.
@@ -479,11 +494,8 @@ typedef void(^RLMNotificationBlock)(NSString *notification, RLMRealm *realm);
                     existing objects which require migration.
 
  @param oldSchemaVersion    The schema version of the `RLMRealm` being migrated.
-
- @return    Schema version number for the `RLMRealm` after completing the
-            migration. Must be greater than `oldSchemaVersion`.
  */
-typedef void (^RLMMigrationBlock)(RLMMigration *migration, NSUInteger oldSchemaVersion);
+typedef void (^RLMMigrationBlock)(RLMMigration *migration, uint64_t oldSchemaVersion);
 
 /**
  Specify a schema version and an associated migration block which is applied when
@@ -511,11 +523,10 @@ typedef void (^RLMMigrationBlock)(RLMMigration *migration, NSUInteger oldSchemaV
 
  @param version     The current schema version.
  @param block       The block which migrates the Realm to the current version.
- @return            The error that occurred while applying the migration, if any.
 
  @see               RLMMigration
  */
-+ (void)setDefaultRealmSchemaVersion:(NSUInteger)version withMigrationBlock:(RLMMigrationBlock)block;
++ (void)setDefaultRealmSchemaVersion:(uint64_t)version withMigrationBlock:(nullable RLMMigrationBlock)block;
 
 /**
  Specify a schema version and an associated migration block which is applied when
@@ -524,11 +535,10 @@ typedef void (^RLMMigrationBlock)(RLMMigration *migration, NSUInteger oldSchemaV
  @param version     The current schema version.
  @param realmPath   The path at which this schema version and migration block is applied.
  @param block       The block which migrates the Realm to the current version.
- @return            The error that occurred while applying the migration, if any.
 
  @see               RLMMigration
  */
-+ (void)setSchemaVersion:(NSUInteger)version forRealmAtPath:(NSString *)realmPath withMigrationBlock:(RLMMigrationBlock)block;
++ (void)setSchemaVersion:(uint64_t)version forRealmAtPath:(NSString *)realmPath withMigrationBlock:(nullable RLMMigrationBlock)block;
 
 /**
  Get the schema version for a Realm at a given path.
@@ -540,7 +550,7 @@ typedef void (^RLMMigrationBlock)(RLMMigration *migration, NSUInteger oldSchemaV
 
  @return            The version of the Realm at `realmPath` or RLMNotVersioned if the version cannot be read.
  */
-+ (NSUInteger)schemaVersionAtPath:(NSString *)realmPath error:(NSError **)error;
++ (uint64_t)schemaVersionAtPath:(NSString *)realmPath error:(NSError **)error;
 
 /**
  Get the schema version for an encrypted Realm at a given path.
@@ -553,7 +563,7 @@ typedef void (^RLMMigrationBlock)(RLMMigration *migration, NSUInteger oldSchemaV
 
  @return            The version of the Realm at `realmPath` or RLMNotVersioned if the version cannot be read.
  */
-+ (NSUInteger)schemaVersionAtPath:(NSString *)realmPath encryptionKey:(NSData *)key error:(NSError **)error;
++ (uint64_t)schemaVersionAtPath:(NSString *)realmPath encryptionKey:(nullable NSData *)key error:(NSError **)error;
 
 /**
  Performs the registered migration block on a Realm at the given path.
@@ -617,3 +627,5 @@ typedef void (^RLMMigrationBlock)(RLMMigration *migration, NSUInteger oldSchemaV
 //
 @interface RLMNotificationToken : NSObject
 @end
+
+RLM_ASSUME_NONNULL_END

@@ -6,7 +6,7 @@
 //
 
 import UIKit
-import Realm
+import RealmSwift
 import OAuthSwift
 
 @UIApplicationMain
@@ -17,7 +17,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
-        println("RLMRealm.defaultRealmPath() = \(RLMRealm.defaultRealmPath())")
+        println("RLMRealm.defaultRealmPath() = \(Realm().path)")
         
         return true
     }

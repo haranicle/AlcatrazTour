@@ -33,14 +33,20 @@
 // Realm
 #define COCOAPODS_POD_AVAILABLE_Realm
 #define COCOAPODS_VERSION_MAJOR_Realm 0
-#define COCOAPODS_VERSION_MINOR_Realm 90
-#define COCOAPODS_VERSION_PATCH_Realm 6
+#define COCOAPODS_VERSION_MINOR_Realm 94
+#define COCOAPODS_VERSION_PATCH_Realm 1
 
 // Realm/Headers
 #define COCOAPODS_POD_AVAILABLE_Realm_Headers
 #define COCOAPODS_VERSION_MAJOR_Realm_Headers 0
-#define COCOAPODS_VERSION_MINOR_Realm_Headers 90
-#define COCOAPODS_VERSION_PATCH_Realm_Headers 6
+#define COCOAPODS_VERSION_MINOR_Realm_Headers 94
+#define COCOAPODS_VERSION_PATCH_Realm_Headers 1
+
+// RealmSwift
+#define COCOAPODS_POD_AVAILABLE_RealmSwift
+#define COCOAPODS_VERSION_MAJOR_RealmSwift 0
+#define COCOAPODS_VERSION_MINOR_RealmSwift 94
+#define COCOAPODS_VERSION_PATCH_RealmSwift 1
 
 // SDWebImage
 #define COCOAPODS_POD_AVAILABLE_SDWebImage

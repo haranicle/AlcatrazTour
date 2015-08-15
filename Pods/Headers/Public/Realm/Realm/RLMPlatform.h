@@ -1,1 +1,1 @@
-../../../../Realm/include/Realm/RLMPlatform.h
+../../../../Realm/include/realm/RLMPlatform.h
