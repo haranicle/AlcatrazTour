@@ -7,7 +7,6 @@ pod 'Alamofire', '~> 1.2'
 pod 'SwiftyJSON', '~> 2.2'
 pod 'OAuthSwift', '~> 0.3.6'
 pod 'SDWebImage'
-pod 'SVProgressHUD'
 pod 'M2DWebViewController'
 pod 'JDStatusBarNotification'
 
@@ -16,7 +15,6 @@ target 'AlcatrazTourTests' do
     pod 'SwiftyJSON', '~> 2.2'
     pod 'Realm/Headers'
     pod 'SDWebImage'
-    pod 'SVProgressHUD'
     pod 'JDStatusBarNotification'
 end
 

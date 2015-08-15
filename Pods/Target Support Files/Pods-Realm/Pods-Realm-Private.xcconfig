@@ -3,7 +3,7 @@ CLANG_CXX_LANGUAGE_STANDARD = ${PODS_REALM_CLANG_CXX_LANGUAGE_STANDARD}
 CONFIGURATION_BUILD_DIR = $PODS_FRAMEWORK_BUILD_PATH
 FRAMEWORK_SEARCH_PATHS = "$PODS_FRAMEWORK_BUILD_PATH"
 GCC_PREPROCESSOR_DEFINITIONS = $(inherited) COCOAPODS=1
-HEADER_SEARCH_PATHS = "${PODS_ROOT}/Headers/Private" "${PODS_ROOT}/Headers/Private/Realm" "${PODS_ROOT}/Headers/Private/Realm/realm" "${PODS_ROOT}/Headers/Private/Realm/realm/impl" "${PODS_ROOT}/Headers/Private/Realm/realm/util" "${PODS_ROOT}/Headers/Public" "${PODS_ROOT}/Headers/Public/Alamofire" "${PODS_ROOT}/Headers/Public/JDStatusBarNotification" "${PODS_ROOT}/Headers/Public/M2DWebViewController" "${PODS_ROOT}/Headers/Public/OAuthSwift" "${PODS_ROOT}/Headers/Public/Realm" "${PODS_ROOT}/Headers/Public/Realm/realm" "${PODS_ROOT}/Headers/Public/RealmSwift" "${PODS_ROOT}/Headers/Public/SDWebImage" "${PODS_ROOT}/Headers/Public/SVProgressHUD" "${PODS_ROOT}/Headers/Public/SwiftyJSON"
+HEADER_SEARCH_PATHS = "${PODS_ROOT}/Headers/Private" "${PODS_ROOT}/Headers/Private/Realm" "${PODS_ROOT}/Headers/Private/Realm/realm" "${PODS_ROOT}/Headers/Private/Realm/realm/impl" "${PODS_ROOT}/Headers/Private/Realm/realm/util" "${PODS_ROOT}/Headers/Public" "${PODS_ROOT}/Headers/Public/Alamofire" "${PODS_ROOT}/Headers/Public/JDStatusBarNotification" "${PODS_ROOT}/Headers/Public/M2DWebViewController" "${PODS_ROOT}/Headers/Public/OAuthSwift" "${PODS_ROOT}/Headers/Public/Realm" "${PODS_ROOT}/Headers/Public/Realm/realm" "${PODS_ROOT}/Headers/Public/RealmSwift" "${PODS_ROOT}/Headers/Public/SDWebImage" "${PODS_ROOT}/Headers/Public/SwiftyJSON"
 LIBRARY_SEARCH_PATHS = ${PODS_REALM_LIBRARY_SEARCH_PATHS}
 OTHER_CPLUSPLUSFLAGS = ${PODS_REALM_OTHER_CPLUSPLUSFLAGS}
 OTHER_LDFLAGS = ${PODS_REALM_OTHER_LDFLAGS} -ObjC

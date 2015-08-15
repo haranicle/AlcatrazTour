@@ -10,7 +10,6 @@ import Alamofire
 import SwiftyJSON
 import RealmSwift
 import OAuthSwift
-import SVProgressHUD
 import JDStatusBarNotification
 
 class GithubClient: NSObject {
@@ -163,7 +162,8 @@ class GithubClient: NSObject {
         }
         
         println("START LOADING!!")
-        SVProgressHUD.showWithStatus("Loading list", maskType: SVProgressHUDMaskType.Black)
+        JDStatusBarNotification.showWithStatus("Loading plugins list")
+        
         
         isLoading = true
         loadCompleteCount = 0
@@ -174,8 +174,7 @@ class GithubClient: NSObject {
             
             println("PLUGIN LIST LOAD COMPLETE!!")
             
-            SVProgressHUD.dismiss()
-            SVProgressHUD.showProgress(0, status: "Loading data", maskType: SVProgressHUDMaskType.Black)
+            JDStatusBarNotification.showWithStatus("Loading plugins detail")
             
             // Dispatch Group
             let group = dispatch_group_create()
@@ -213,7 +212,7 @@ class GithubClient: NSObject {
             
             dispatch_group_notify(group, dispatch_get_main_queue(), {
                 // Yay!!! All done!!!
-                SVProgressHUD.dismiss()
+                JDStatusBarNotification.dismiss()
                 self?.isLoading = false
                 
                 // commit
@@ -234,7 +233,7 @@ class GithubClient: NSObject {
             println("error = \(error?.description)")
             
             self?.isLoading = false
-            SVProgressHUD.dismiss()
+            JDStatusBarNotification.dismiss()
             onComplete(error)
         }
         
@@ -243,7 +242,7 @@ class GithubClient: NSObject {
     
     func updateProgress(pluginsCount:Int) {
         self.loadCompleteCount++
-        SVProgressHUD.showProgress(Float(self.loadCompleteCount) / Float(pluginsCount) , status: "Loading data", maskType: SVProgressHUDMaskType.Black)
+        JDStatusBarNotification.showProgress(CGFloat(self.loadCompleteCount) / CGFloat(pluginsCount))
     }
     
     // MARK: - Staring
