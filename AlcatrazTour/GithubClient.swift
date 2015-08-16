@@ -184,7 +184,7 @@ class GithubClient: NSObject {
             let onSucceedRequestingRepoDetail = {[weak self] (plugin:Plugin?, pluginDetail:NSDictionary) -> Void in
                 plugin?.setDetails(pluginDetail)
                 if let p = plugin {
-                    p.save()
+                    Realm().add(p, update: true)
                 }
                 successCount++
                 self?.updateProgress(plugins.count)
@@ -198,7 +198,7 @@ class GithubClient: NSObject {
             
             // start writing
             Realm().beginWrite()
-            Plugin.deleteAll()
+            Realm().deleteAll()
             
             let token = self?.oAuthToken()
             if token == nil {
@@ -215,8 +215,8 @@ class GithubClient: NSObject {
                 JDStatusBarNotification.dismiss()
                 self?.isLoading = false
                 
-                // commit
                 Realm().commitWrite()
+                Realm().refresh()
                 
                 println("successCount = \(successCount)")
                 println("plugins.count = \(plugins.count)")

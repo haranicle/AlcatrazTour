@@ -104,16 +104,6 @@ class Plugin: Object {
         return formatDate(createdAt)
     }
     
-    // MARK: - Realm
-    
-    func save() {
-        Realm().add(self, update: true)
-    }
-    
-    class func deleteAll() {
-        Realm().deleteAll()
-    }
-    
     // MARK: - Score
     
     func calcScore() {
