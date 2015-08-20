@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		5F26E7D21AB577E400636136 /* PluginTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F26E7D11AB577E400636136 /* PluginTableViewController.swift */; };
 		5F5C50391B80740900237580 /* CurrentRealm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F5C50381B80740900237580 /* CurrentRealm.swift */; };
+		5F6380671B86406E0058A3C9 /* CurrentRealm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F5C50381B80740900237580 /* CurrentRealm.swift */; };
 		5F6605991B80AD9B00746AC6 /* CurrentRealmTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F6605981B80AD9B00746AC6 /* CurrentRealmTests.swift */; };
 		5F7C86771AA2F764008AB05E /* fontawesome-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5F7C86761AA2F764008AB05E /* fontawesome-webfont.ttf */; };
 		5FC1920E1AB47BBD00D0BD9A /* PluginTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FC1920C1AB47BBD00D0BD9A /* PluginTableViewCell.swift */; };
@@ -456,6 +457,7 @@
 				F62E963D1A9AF6F600063445 /* AlcatrazTourTests.swift in Sources */,
 				5F6605991B80AD9B00746AC6 /* CurrentRealmTests.swift in Sources */,
 				F673E77C1A9C773800A20CB4 /* Plugin.swift in Sources */,
+				5F6380671B86406E0058A3C9 /* CurrentRealm.swift in Sources */,
 				F66E663B1A9C7DAC00B7EC4A /* GithubClient.swift in Sources */,
 				F6602A491A9EEAB0005DF8B9 /* SecretConstants.swift in Sources */,
 				F697C3CB1A9C72F9001DF614 /* GithubClientTests.swift in Sources */,

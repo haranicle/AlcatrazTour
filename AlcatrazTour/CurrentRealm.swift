@@ -38,8 +38,6 @@ class CurrentRealm {
     
     func update() {
         delete()
-        
-        
     }
     
     func delete() {

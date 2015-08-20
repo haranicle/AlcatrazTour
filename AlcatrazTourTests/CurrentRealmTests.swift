@@ -8,6 +8,7 @@
 
 import UIKit
 import XCTest
+import RealmSwift
 
 class CurrentRealmTests: XCTestCase {
 
@@ -22,15 +23,7 @@ class CurrentRealmTests: XCTestCase {
     }
 
     func testExample() {
-        // This is an example of a functional test case.
-        XCTAssert(true, "Pass")
-    }
-
-    func testPerformanceExample() {
-        // This is an example of a performance test case.
-        self.measureBlock() {
-            // Put the code you want to measure the time of here.
-        }
+        CurrentRealm().realm.deleteAll()
     }
 
 }
