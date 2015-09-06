@@ -18,7 +18,6 @@ DEPENDENCIES:
   - JDStatusBarNotification
   - M2DWebViewController
   - OAuthSwift (~> 0.3.6)
-  - Realm/Headers
   - RealmSwift (= 0.94.1)
   - SDWebImage
   - SwiftyJSON (~> 2.2)

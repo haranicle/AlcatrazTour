@@ -14,7 +14,7 @@ target 'AlcatrazTourTests' do
     pod 'RealmSwift', '0.94.1'
     pod 'Alamofire', '~> 1.2'
     pod 'SwiftyJSON', '~> 2.2'
-    pod 'Realm/Headers'
+#    pod 'Realm/Headers'
     pod 'SDWebImage'
     pod 'JDStatusBarNotification'
 end

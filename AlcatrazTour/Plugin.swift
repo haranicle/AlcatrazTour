@@ -8,10 +8,10 @@
 import UIKit
 import RealmSwift
 
-class Plugin: Object {
+public class Plugin: Object {
     
     dynamic var uuid = NSUUID().UUIDString
-    override class func primaryKey() -> String {
+    override public class func primaryKey() -> String {
         return "uuid"
     }
     
@@ -89,7 +89,6 @@ class Plugin: Object {
         return NSString(format: "%0.2f", score) as String
     }
     
-    // TODO: must be tested!!
     func formatDate(date:NSDate) -> String {
         var formatter = NSDateFormatter()
         formatter.dateFormat = "MM/dd/yy"
