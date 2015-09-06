@@ -23,8 +23,10 @@ struct RealmFile {
 class TempRealm {
     
     convenience init() {
+        var formatter = NSDateFormatter()
+        formatter.dateFormat = "MM-dd-yy_HH:mm:ss:SSS"
+        var fileName = "\(formatter.stringFromDate(NSDate())).realm"
         let defaults = NSUserDefaults.standardUserDefaults()
-        var fileName = "\(NSDate()).realm"
         if let name = defaults.objectForKey(RealmFile.tempRealmFileNameSaveKey) as? String {
             // already saved
             fileName = name
@@ -39,25 +41,27 @@ class TempRealm {
     
     func updateDefaultRealm() {
         let defaults = NSUserDefaults.standardUserDefaults()
-        Realm.defaultPath = defaults.objectForKey(RealmFile.tempRealmFileNameSaveKey) as! String
-        delete()
+        let fileName = defaults.objectForKey(RealmFile.tempRealmFileNameSaveKey) as! String
+        Realm.defaultPath = "\(RealmFile.currentRealmDirPath)/\(fileName)"
+        println("Realm.defaultPath = \(Realm.defaultPath)")
+        Realm().refresh()
+        
+        // delete()
     }
     
-    // MARK: Internal
-    
-    internal var realm: Realm
-    
-    internal init(_ realm: Realm) {
-        self.realm = realm
-    }
-    
-    internal func delete() {
+    func delete() {
         let defaults = NSUserDefaults.standardUserDefaults()
         let fileName = defaults.objectForKey(RealmFile.tempRealmFileNameSaveKey) as! String
-        let filePath = "\(RealmFile.currentRealmDirPath)\(fileName)"
+        let filePath = "\(RealmFile.currentRealmDirPath)/\(fileName)"
         let fileManager = NSFileManager.defaultManager()
         fileManager.removeItemAtPath(filePath, error: nil)
         fileManager.removeItemAtPath("\(filePath).lock", error: nil)
         defaults.removeObjectForKey(RealmFile.tempRealmFileNameSaveKey)
+    }
+    
+    var realm: Realm
+    
+    init(_ realm: Realm) {
+        self.realm = realm
     }
 }

@@ -76,7 +76,9 @@ class PluginTableViewController: UITableViewController, UISearchResultsUpdating,
         
         // hide search bar
         if githubClient.isSignedIn() {
-            tableView.scrollToRowAtIndexPath(NSIndexPath(forRow: 0, inSection: 0), atScrollPosition: UITableViewScrollPosition.Top, animated: false)
+            if (Int(currentResult().count) > 0) {
+                tableView.scrollToRowAtIndexPath(NSIndexPath(forRow: 0, inSection: 0), atScrollPosition: UITableViewScrollPosition.Top, animated: false)
+            }
         }
         
         for i in 0 ..< segments.count {
@@ -160,7 +162,10 @@ class PluginTableViewController: UITableViewController, UISearchResultsUpdating,
     @IBAction func onSegmentChanged(sender: UISegmentedControl) {
         currentMode = Modes(rawValue: sender.selectedSegmentIndex)!
         tableView.reloadData()
-        tableView.scrollToRowAtIndexPath(NSIndexPath(forRow: 0, inSection: 0), atScrollPosition: UITableViewScrollPosition.Top, animated: false)
+        
+        if (Int(currentResult().count) > 0) {
+            tableView.scrollToRowAtIndexPath(NSIndexPath(forRow: 0, inSection: 0), atScrollPosition: UITableViewScrollPosition.Top, animated: false)
+        }
     }
     
     @IBAction func onRefreshPushed(sender: AnyObject) {
