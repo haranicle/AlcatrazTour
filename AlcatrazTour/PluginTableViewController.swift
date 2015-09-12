@@ -94,7 +94,9 @@ class PluginTableViewController: UITableViewController, UISearchResultsUpdating,
     }
     
     func onApplicationDidBecomeActive(notification:NSNotification) {
-        if !githubClient.isSignedIn() {
+        if githubClient.isSignedIn() {
+            reloadAllPlugins()
+        } else {
             showSignInAlert()
         }
     }
