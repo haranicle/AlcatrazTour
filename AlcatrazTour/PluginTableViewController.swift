@@ -51,7 +51,7 @@ class PluginTableViewController: UITableViewController, UISearchResultsUpdating,
     
     @IBOutlet weak var settingsButton: UIBarButtonItem!
     
-    var githubClient = GithubClient()
+    let githubClient = GithubClient()
     var currentMode = Modes.Popularity
     let segments = [Modes.Popularity, Modes.Stars, Modes.Update, Modes.New]
     
@@ -135,10 +135,10 @@ class PluginTableViewController: UITableViewController, UISearchResultsUpdating,
     
     // MARK: - Realm
     var searchResults:Results<Plugin>?
-    var popularityResults:Results<Plugin> = Realm ().objects(Plugin).sorted(Modes.Popularity.propertyName(), ascending: false)
-    var starsResults:Results<Plugin> = Realm ().objects(Plugin).sorted(Modes.Stars.propertyName(), ascending: false)
-    var updateResults:Results<Plugin> = Realm ().objects(Plugin).sorted(Modes.Update.propertyName(), ascending: false)
-    var newResults:Results<Plugin> = Realm ().objects(Plugin).sorted(Modes.New.propertyName(), ascending: false)
+    var popularityResults:Results<Plugin> = Realm().objects(Plugin).sorted(Modes.Popularity.propertyName(), ascending: false)
+    var starsResults:Results<Plugin> = Realm().objects(Plugin).sorted(Modes.Stars.propertyName(), ascending: false)
+    var updateResults:Results<Plugin> = Realm().objects(Plugin).sorted(Modes.Update.propertyName(), ascending: false)
+    var newResults:Results<Plugin> = Realm().objects(Plugin).sorted(Modes.New.propertyName(), ascending: false)
     
     func currentResult()->Results<Plugin> {
         if searchController!.active {

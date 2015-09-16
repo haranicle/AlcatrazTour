@@ -11,6 +11,7 @@
 		5F7C86771AA2F764008AB05E /* fontawesome-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5F7C86761AA2F764008AB05E /* fontawesome-webfont.ttf */; };
 		5FC1920E1AB47BBD00D0BD9A /* PluginTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FC1920C1AB47BBD00D0BD9A /* PluginTableViewCell.swift */; };
 		5FC1920F1AB47BBD00D0BD9A /* PluginTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5FC1920D1AB47BBD00D0BD9A /* PluginTableViewCell.xib */; };
+		5FCF12D91BA6F4F700B71994 /* NewestPluginNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FCF12D81BA6F4F700B71994 /* NewestPluginNotification.swift */; };
 		5FCF96901B3E675000A1C63A /* SettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FCF968F1B3E675000A1C63A /* SettingsTableViewController.swift */; };
 		5FE2E4711AB5A2B5005DE41F /* PluginDetailWebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FE2E4701AB5A2B5005DE41F /* PluginDetailWebViewController.swift */; };
 		E7D12409782D7E5CE93986BE /* Pods_AlcatrazTourTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B77CF89FE308A62DBDF25C5E /* Pods_AlcatrazTourTests.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
@@ -48,6 +49,7 @@
 		5F7C86761AA2F764008AB05E /* fontawesome-webfont.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "fontawesome-webfont.ttf"; sourceTree = "<group>"; };
 		5FC1920C1AB47BBD00D0BD9A /* PluginTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PluginTableViewCell.swift; sourceTree = "<group>"; };
 		5FC1920D1AB47BBD00D0BD9A /* PluginTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PluginTableViewCell.xib; sourceTree = "<group>"; };
+		5FCF12D81BA6F4F700B71994 /* NewestPluginNotification.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewestPluginNotification.swift; sourceTree = "<group>"; };
 		5FCF968F1B3E675000A1C63A /* SettingsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsTableViewController.swift; sourceTree = "<group>"; };
 		5FE2E4701AB5A2B5005DE41F /* PluginDetailWebViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PluginDetailWebViewController.swift; sourceTree = "<group>"; };
 		876A289308A618BE1B5DDD8A /* Pods-AlcatrazTourTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AlcatrazTourTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-AlcatrazTourTests/Pods-AlcatrazTourTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -127,6 +129,7 @@
 			isa = PBXGroup;
 			children = (
 				F62E96461A9B0FA500063445 /* GithubClient.swift */,
+				5FCF12D81BA6F4F700B71994 /* NewestPluginNotification.swift */,
 			);
 			name = Logic;
 			sourceTree = "<group>";
@@ -274,6 +277,11 @@
 					F62E96201A9AF6F600063445 = {
 						CreatedOnToolsVersion = 6.1.1;
 						DevelopmentTeam = DD6325WAAZ;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
+						};
 					};
 					F62E96351A9AF6F600063445 = {
 						CreatedOnToolsVersion = 6.1.1;
@@ -427,6 +435,7 @@
 				5FC1920E1AB47BBD00D0BD9A /* PluginTableViewCell.swift in Sources */,
 				F6FCEED61AC1658D00EF3909 /* LoginWebViewController.swift in Sources */,
 				F6602A481A9EE116005DF8B9 /* SecretConstants.swift in Sources */,
+				5FCF12D91BA6F4F700B71994 /* NewestPluginNotification.swift in Sources */,
 				5FCF96901B3E675000A1C63A /* SettingsTableViewController.swift in Sources */,
 				5FE2E4711AB5A2B5005DE41F /* PluginDetailWebViewController.swift in Sources */,
 				F697C3C91A9C61FB001DF614 /* Plugin.swift in Sources */,

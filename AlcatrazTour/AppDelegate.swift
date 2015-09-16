@@ -19,7 +19,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
         println("RLMRealm.defaultRealmPath() = \(Realm().path)")
         
+        // Enable background fetch
+        UIApplication.sharedApplication().setMinimumBackgroundFetchInterval(UIApplicationBackgroundFetchIntervalMinimum)
+        
         return true
+    }
+    
+    func application(application: UIApplication, performFetchWithCompletionHandler completionHandler: (UIBackgroundFetchResult) -> Void) {
+        let gitHubClient = GithubClient()
+        if gitHubClient.isSignedIn() {
+            gitHubClient.reloadAllPlugins{ (error:NSError?) in
+                if let err = error {
+                    return
+                }
+                
+            }
+        }
     }
 
     func applicationWillResignActive(application: UIApplication) {
