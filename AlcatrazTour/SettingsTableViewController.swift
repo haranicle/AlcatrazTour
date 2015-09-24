@@ -54,14 +54,14 @@ class SettingsTableViewController: UITableViewController {
         }
         
         let onFailed = {(request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) -> Void in
-            print("request = \(request)")
-            print("response = \(response)")
-            print("responseData = \(responseData)")
-            print("error = \(error?.description)")
+            print("request = \(request)", terminator: "")
+            print("response = \(response)", terminator: "")
+            print("responseData = \(responseData)", terminator: "")
+            print("error = \(error?.description)", terminator: "")
             JDStatusBarNotification.showWithStatus("Cannot connect to GitHub.", dismissAfter: 3, styleName: JDStatusBarStyleError)
         }
         
-        githubClient.checkAndStarRepository(token!, isStarring: true, owner:"haranicle", repositoryName: "AlcatrazTour", onSucceed: {(isStarred) -> Void in print("Starred AlcatrazTour!")
+        githubClient.checkAndStarRepository(token!, isStarring: true, owner:"haranicle", repositoryName: "AlcatrazTour", onSucceed: {(isStarred) -> Void in print("Starred AlcatrazTour!", terminator: "")
             }, onFailed: onFailed)
     }
 }

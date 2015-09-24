@@ -73,10 +73,10 @@ class PluginDetailWebViewController: M2DWebViewController {
         starButton.enabled = false
         
         let onFailed = {(request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) -> Void in
-            print("request = \(request)")
-            print("response = \(response)")
-            print("responseData = \(responseData)")
-            print("error = \(error?.description)")
+            print("request = \(request)", terminator: "")
+            print("response = \(response)", terminator: "")
+            print("responseData = \(responseData)", terminator: "")
+            print("error = \(error?.description)", terminator: "")
             JDStatusBarNotification.showWithStatus("Cannot connect to GitHub.", dismissAfter: 3, styleName: JDStatusBarStyleError)
         }
         
@@ -128,10 +128,10 @@ class PluginDetailWebViewController: M2DWebViewController {
         }
         
         let onFailed = {[weak self] (request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) -> Void in
-            print("request = \(request)")
-            print("response = \(response)")
-            print("responseData = \(responseData)")
-            print("error = \(error?.description)")
+            print("request = \(request)", terminator: "")
+            print("response = \(response)", terminator: "")
+            print("responseData = \(responseData)", terminator: "")
+            print("error = \(error?.description)", terminator: "")
             JDStatusBarNotification.showWithStatus("Cannot connect to GitHub.", dismissAfter: 3, styleName: JDStatusBarStyleError)
             self?.starButton.enabled = true
         }

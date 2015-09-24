@@ -79,7 +79,7 @@ class GithubClient: NSObject {
             onSucceed()
             
             }, failure: {(error:NSError!) -> Void in
-                println(error.localizedDescription)
+                print(error.localizedDescription)
         })
     }
 
@@ -158,11 +158,11 @@ class GithubClient: NSObject {
     func reloadAllPlugins(onComplete:NSError?->Void) {
         
         if(isLoading) {
-            print("NOW LOADING!!")
+            print("NOW LOADING!!", terminator: "")
             return
         }
         
-        print("START LOADING!!")
+        print("START LOADING!!", terminator: "")
         SVProgressHUD.showWithStatus("Loading list", maskType: SVProgressHUDMaskType.Black)
         
         isLoading = true
@@ -172,7 +172,7 @@ class GithubClient: NSObject {
         
         let onSucceedRequestingPlugins = {[weak self] (plugins:[Plugin]) -> Void in
             
-            print("PLUGIN LIST LOAD COMPLETE!!")
+            print("PLUGIN LIST LOAD COMPLETE!!", terminator: "")
             
             SVProgressHUD.dismiss()
             SVProgressHUD.showProgress(0, status: "Loading data", maskType: SVProgressHUDMaskType.Black)
@@ -219,8 +219,8 @@ class GithubClient: NSObject {
                 // commit
                 Realm().commitWrite()
                 
-                print("successCount = \(successCount)")
-                print("plugins.count = \(plugins.count)")
+                print("successCount = \(successCount)", terminator: "")
+                print("plugins.count = \(plugins.count)", terminator: "")
                 
                 onComplete(nil)
             })
@@ -228,10 +228,10 @@ class GithubClient: NSObject {
         }
         
         let onFailed = {[weak self] (request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) -> Void in
-            print("request = \(request)")
-            print("response = \(response)")
-            print("responseData = \(responseData)")
-            print("error = \(error?.description)")
+            print("request = \(request)", terminator: "")
+            print("response = \(response)", terminator: "")
+            print("responseData = \(responseData)", terminator: "")
+            print("error = \(error?.description)", terminator: "")
             
             self?.isLoading = false
             SVProgressHUD.dismiss()

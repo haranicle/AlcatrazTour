@@ -1,6 +1,0 @@
-framework module M2DWebViewController {
-  umbrella header "Pods-AlcatrazTourTests-M2DWebViewController-umbrella.h"
-
-  export *
-  module * { export * }
-}

@@ -14,7 +14,7 @@ set -o pipefail
 set -e
 
 # You can override the version of the core library
-: ${REALM_CORE_VERSION:=0.92.1.1} # set to "current" to always use the current build
+: ${REALM_CORE_VERSION:=0.92.2} # set to "current" to always use the current build
 
 # You can override the xcmode used
 : ${XCMODE:=xcodebuild} # must be one of: xcodebuild (default), xcpretty, xctool
@@ -69,6 +69,7 @@ environment variables:
   XCMODE: xcodebuild (default), xcpretty or xctool
   CONFIGURATION: Debug or Release (default)
   REALM_CORE_VERSION: version in x.y.z format or "current" to use local build
+  REALM_EXTRA_BUILD_ARGUMENTS: additional arguments to pass to the build tool
 EOF
 }
 
@@ -78,7 +79,7 @@ EOF
 
 xcode() {
     mkdir -p build/DerivedData
-    CMD="xcodebuild -IDECustomDerivedDataLocation=build/DerivedData $@"
+    CMD="xcodebuild -IDECustomDerivedDataLocation=build/DerivedData $@ $REALM_EXTRA_BUILD_ARGUMENTS"
     echo "Building with command:" $CMD
     eval "$CMD"
 }
@@ -174,6 +175,14 @@ clean_retrieve() {
   mkdir -p "$2"
   rm -rf "$2/$3"
   cp -R "$1" "$2"
+}
+
+shutdown_simulators() {
+    # Shut down simulators until there's no booted ones left
+    # Only do one at a time because devices sometimes show up multiple times
+    while xcrun simctl list | grep -q Booted; do
+      xcrun simctl list | grep Booted | sed 's/.* (\(.*\)) (Booted)/\1/' | head -n 1 | xargs xcrun simctl shutdown
+    done
 }
 
 ######################################
@@ -306,11 +315,7 @@ case "$COMMAND" in
     "set-swift-version")
         version="$2"
         if [[ -z "$version" ]]; then
-            if [[ $REALM_SWIFT_VERSION ]]; then
-                version="$REALM_SWIFT_VERSION"
-            else
-                version="$(get_swift_version)"
-            fi
+            version="$REALM_SWIFT_VERSION"
         fi
 
         # Update the symlinks to point to the correct verion of the source, and
@@ -328,29 +333,46 @@ case "$COMMAND" in
         ;;
 
     "prelaunch-simulator")
-        killall "iOS Simulator" 2>/dev/null || true
-        killall Simulator 2>/dev/null || true
-        pkill CoreSimulator 2>/dev/null || true
-        # Erase all available simulators
+        # Kill all the current simulator processes as they may be from a
+        # different Xcode version
+        pkill Simulator 2>/dev/null || true
+        # CoreSimulatorService doesn't exit when sent SIGTERM
+        pkill -9 Simulator 2>/dev/null || true
+
+        shutdown_simulators
+
+        # Clean up all available simulators
         (
+            previous_device=''
             IFS=$'\n' # make newlines the only separator
             for LINE in $(xcrun simctl list); do
-                if [[ $LINE =~ unavailable ]]; then
+                if [[ $LINE =~ unavailable || $LINE =~ disconnected ]]; then
                     # skip unavailable simulators
                     continue
                 fi
-                if [[ $LINE =~ ([0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}) ]]; then
-                    xcrun simctl erase "${BASH_REMATCH[1]}" 2>/dev/null || true
+
+                regex='^(.*) [(]([0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12})[)]'
+                if [[ $LINE =~ $regex ]]; then
+                    device="${BASH_REMATCH[1]}"
+                    guid="${BASH_REMATCH[2]}"
+
+                    # Delete the simulator if it's a duplicate of the last seen one
+                    # Otherwise delete all contents and settings for it
+                    if [[ $device == $previous_device ]]; then
+                        xcrun simctl delete $guid
+                    else
+                        xcrun simctl erase $guid
+                        previous_device="$device"
+                    fi
                 fi
             done
         )
-        sleep 5
+
         if [[ -a "${DEVELOPER_DIR}/Applications/iOS Simulator.app" ]]; then
             open "${DEVELOPER_DIR}/Applications/iOS Simulator.app"
         elif [[ -a "${DEVELOPER_DIR}/Applications/Simulator.app" ]]; then
             open "${DEVELOPER_DIR}/Applications/Simulator.app"
         fi
-        sleep 5
         ;;
 
     ######################################
@@ -404,8 +426,8 @@ case "$COMMAND" in
     "osx-swift")
         xcrealmswift "-scheme 'RealmSwift' -configuration $CONFIGURATION build"
         destination="build/osx/swift-$REALM_SWIFT_VERSION"
-        mkdir -p "$destination"
-        cp -R build/DerivedData/RealmSwift/Build/Products/$CONFIGURATION/RealmSwift.framework "$destination"
+        clean_retrieve "build/DerivedData/RealmSwift/Build/Products/$CONFIGURATION/RealmSwift.framework" "$destination" "RealmSwift.framework"
+        cp -R build/osx/Realm.framework "$destination"
         exit 0
         ;;
 
@@ -434,25 +456,29 @@ case "$COMMAND" in
 
     "test-ios-static")
         xcrealm "-scheme iOS -configuration $CONFIGURATION -sdk iphonesimulator -destination 'name=iPhone 6' test"
-        xcrealm "-scheme iOS -configuration $CONFIGURATION -sdk iphonesimulator -destination 'name=iPhone 4S' test"
+        shutdown_simulators
+        xcrealm "-scheme iOS -configuration $CONFIGURATION -sdk iphonesimulator -destination 'name=iPhone 4s' test"
         exit 0
         ;;
 
     "test-ios7-static")
         xcrealm "-scheme iOS -configuration $CONFIGURATION -sdk iphonesimulator -destination 'name=iPhone 5S,OS=7.1' test"
-        xcrealm "-scheme iOS -configuration $CONFIGURATION -sdk iphonesimulator -destination 'name=iPhone 4S,OS=7.1' test"
+        shutdown_simulators
+        xcrealm "-scheme iOS -configuration $CONFIGURATION -sdk iphonesimulator -destination 'name=iPhone 4s,OS=7.1' test"
         exit 0
         ;;
 
     "test-ios-dynamic")
         xcrealm "-scheme 'iOS Dynamic' -configuration $CONFIGURATION -sdk iphonesimulator -destination 'name=iPhone 6' test"
-        xcrealm "-scheme 'iOS Dynamic' -configuration $CONFIGURATION -sdk iphonesimulator -destination 'name=iPhone 4S' test"
+        shutdown_simulators
+        xcrealm "-scheme 'iOS Dynamic' -configuration $CONFIGURATION -sdk iphonesimulator -destination 'name=iPhone 4s' test"
         exit 0
         ;;
 
     "test-ios-swift")
         xcrealmswift "-scheme RealmSwift -configuration $CONFIGURATION -sdk iphonesimulator -destination 'name=iPhone 6' test"
-        xcrealmswift "-scheme RealmSwift -configuration $CONFIGURATION -sdk iphonesimulator -destination 'name=iPhone 4S' test"
+        shutdown_simulators
+        xcrealmswift "-scheme RealmSwift -configuration $CONFIGURATION -sdk iphonesimulator -destination 'name=iPhone 4s' test"
         exit 0
         ;;
 
@@ -495,6 +521,7 @@ case "$COMMAND" in
         sh build.sh verify-ios-swift
         sh build.sh verify-ios-swift-debug
         sh build.sh verify-ios-device
+        sh build.sh verify-watchos
         ;;
 
     "verify-osx")
@@ -546,9 +573,10 @@ case "$COMMAND" in
         exit 0
         ;;
 
-
-    # FIXME: remove these targets from ci
-    "verify-ios")
+    "verify-watchos")
+        if [ $REALM_SWIFT_VERSION != '1.2' ]; then
+            sh build.sh watchos-swift
+        fi
         exit 0
         ;;
 
@@ -631,14 +659,15 @@ case "$COMMAND" in
     "cocoapods-setup")
         if [[ "$2" != "without-core" ]]; then
             sh build.sh download-core
+            mv core/librealm.a core/librealm-osx.a
         fi
 
         # CocoaPods won't automatically preserve files referenced via symlinks
         for symlink in $(find . -not -path "./.git/*" -type l); do
           if [[ -L "$symlink" ]]; then
             link="$(dirname "$symlink")/$(readlink "$symlink")"
-            rm -rf "$symlink"
-            mv "$link" "$symlink"
+            rm "$symlink"
+            cp -R "$link" "$symlink"
           fi
         done
 
@@ -730,8 +759,6 @@ case "$COMMAND" in
         REALM_SWIFT_VERSION=2.0 sh build.sh osx-swift
 
         cd build/osx
-        cp -R Realm.framework swift-1.2
-        cp -R Realm.framework swift-2.0
         zip --symlinks -r realm-swift-framework-osx.zip swift-1.2 swift-2.0
         ;;
 

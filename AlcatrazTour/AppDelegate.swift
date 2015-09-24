@@ -17,7 +17,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
-        println("RLMRealm.defaultRealmPath() = \(Realm().path)")
+        print("RLMRealm.defaultRealmPath() = \(Realm().path)")
         
         return true
     }
@@ -45,7 +45,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func application(application: UIApplication, openURL url: NSURL, sourceApplication: String?, annotation: AnyObject) -> Bool {
-        print(url)
+        print(url, terminator: "")
         if (url.host == "oauth-callback") {
             if url.path!.hasPrefix("/github") {
                 OAuth2Swift.handleOpenURL(url)
