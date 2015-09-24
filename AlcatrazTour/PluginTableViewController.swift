@@ -196,7 +196,7 @@ class PluginTableViewController: UITableViewController, UISearchResultsUpdating,
             self?.reloadAllPlugins()
             }, onFailed: {[weak self] error in
                 // login failed. quit app.
-                var errorAlert = UIAlertController(title: "Error", message: error.description, preferredStyle: UIAlertControllerStyle.Alert)
+                let errorAlert = UIAlertController(title: "Error", message: error.description, preferredStyle: UIAlertControllerStyle.Alert)
                 errorAlert.addAction(UIAlertAction(title: "Quit app", style: UIAlertActionStyle.Default, handler:{action in exit(0)} ))
                 self?.presentViewController(errorAlert, animated: true, completion: nil)
         })
@@ -272,7 +272,7 @@ class PluginTableViewController: UITableViewController, UISearchResultsUpdating,
     // MARK: - Error
     
     func showErrorAlert(error:NSError) {
-        var alert = UIAlertController(title: "Error", message: error.description, preferredStyle: UIAlertControllerStyle.Alert)
+        let alert = UIAlertController(title: "Error", message: error.description, preferredStyle: UIAlertControllerStyle.Alert)
         alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil))
         self.presentViewController(alert, animated: true, completion: nil)
     }

@@ -33,14 +33,14 @@ class GithubClient: NSObject {
     
     func createRepoDetailUrl(repoUrl:String) -> String {
         // create api url
-        var repoDetailUrl:String = repoUrl.stringByReplacingOccurrencesOfString(githubRepoUrl, withString: githubRepoApiUrl, options: nil, range: nil)
+        var repoDetailUrl:String = repoUrl.stringByReplacingOccurrencesOfString(githubRepoUrl, withString: githubRepoApiUrl, options: [], range: nil)
         // remove last "/"
         if repoDetailUrl.hasSuffix("/") {
-            repoDetailUrl = repoDetailUrl[repoDetailUrl.startIndex..<advance(repoDetailUrl.endIndex, -1)]
+            repoDetailUrl = repoDetailUrl[repoDetailUrl.startIndex..<repoDetailUrl.endIndex.advancedBy(-1)]
         }
         // remove last ".git"
         if repoDetailUrl.hasSuffix(".git") {
-            repoDetailUrl = repoDetailUrl[repoDetailUrl.startIndex..<advance(repoDetailUrl.endIndex, -4)]
+            repoDetailUrl = repoDetailUrl[repoDetailUrl.startIndex..<repoDetailUrl.endIndex.advancedBy(-4)]
         }
         
         return repoDetailUrl
@@ -158,11 +158,11 @@ class GithubClient: NSObject {
     func reloadAllPlugins(onComplete:NSError?->Void) {
         
         if(isLoading) {
-            println("NOW LOADING!!")
+            print("NOW LOADING!!")
             return
         }
         
-        println("START LOADING!!")
+        print("START LOADING!!")
         SVProgressHUD.showWithStatus("Loading list", maskType: SVProgressHUDMaskType.Black)
         
         isLoading = true
@@ -172,7 +172,7 @@ class GithubClient: NSObject {
         
         let onSucceedRequestingPlugins = {[weak self] (plugins:[Plugin]) -> Void in
             
-            println("PLUGIN LIST LOAD COMPLETE!!")
+            print("PLUGIN LIST LOAD COMPLETE!!")
             
             SVProgressHUD.dismiss()
             SVProgressHUD.showProgress(0, status: "Loading data", maskType: SVProgressHUDMaskType.Black)
@@ -219,8 +219,8 @@ class GithubClient: NSObject {
                 // commit
                 Realm().commitWrite()
                 
-                println("successCount = \(successCount)")
-                println("plugins.count = \(plugins.count)")
+                print("successCount = \(successCount)")
+                print("plugins.count = \(plugins.count)")
                 
                 onComplete(nil)
             })
@@ -228,10 +228,10 @@ class GithubClient: NSObject {
         }
         
         let onFailed = {[weak self] (request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) -> Void in
-            println("request = \(request)")
-            println("response = \(response)")
-            println("responseData = \(responseData)")
-            println("error = \(error?.description)")
+            print("request = \(request)")
+            print("response = \(response)")
+            print("responseData = \(responseData)")
+            print("error = \(error?.description)")
             
             self?.isLoading = false
             SVProgressHUD.dismiss()
