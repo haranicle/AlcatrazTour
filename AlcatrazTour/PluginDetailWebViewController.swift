@@ -103,11 +103,12 @@ class PluginDetailWebViewController: M2DWebViewController {
         
         for view in self.parentViewController!.view.subviews {
             if view.isKindOfClass(UIToolbar.self) {
-                var items:Array = view.items
+                let toolbar = view as! UIToolbar
+                var items:Array = toolbar.items!
                 let spacer = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.FlexibleSpace, target: nil, action: nil)
                 items.append(spacer)
                 items.append(starButton)
-                view.setItems(items, animated:false)
+                toolbar.setItems(items, animated:false)
                 isStarButtonAdded = true;
                 return;
             }

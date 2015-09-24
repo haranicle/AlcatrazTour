@@ -107,11 +107,19 @@ class Plugin: Object {
     // MARK: - Realm
     
     func save() {
-        Realm().add(self, update: true)
+        do {
+            try Realm().add(self, update: true)
+        } catch {
+            fatalError()
+        }
     }
     
     class func deleteAll() {
-        Realm().deleteAll()
+        do {
+            try Realm().deleteAll()
+        } catch {
+            fatalError()
+        }
     }
     
     // MARK: - Score

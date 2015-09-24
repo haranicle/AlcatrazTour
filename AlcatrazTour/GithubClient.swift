@@ -50,7 +50,7 @@ class GithubClient: NSObject {
     let githubOauthTokenKey = "githubTokenKey"
     
     func isSignedIn()->Bool {
-        if let token = NSUserDefaults.standardUserDefaults().stringForKey(githubOauthTokenKey) {
+        if let _ = NSUserDefaults.standardUserDefaults().stringForKey(githubOauthTokenKey) {
             return true
         }
         return false
