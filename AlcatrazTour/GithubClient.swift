@@ -273,13 +273,13 @@ class GithubClient: NSObject {
         let apiUrl = githubStarApiUrl + owner + "/" + repositoryName
         let method = isStarring ? Method.PUT : Method.DELETE
         
-        Manager.sharedInstance.session.configuration.HTTPAdditionalHeaders = [
+        let header = [
             "Content-Length" : "0",
             "Authorization" : "token \(token)"
         ]
         
         Alamofire
-            .request(method, apiUrl, parameters: nil)
+            .request(method, apiUrl, parameters: nil, encoding: .URL, headers: header)
             .validate(statusCode: 200..<400)
             .responseString {request, response, result -> Void in
                 switch result {
