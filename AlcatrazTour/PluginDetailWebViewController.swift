@@ -72,11 +72,11 @@ class PluginDetailWebViewController: M2DWebViewController {
     func refreshStarButton() {
         starButton.enabled = false
         
-        let onFailed = {(request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) -> Void in
-            println("request = \(request)")
-            println("response = \(response)")
-            println("responseData = \(responseData)")
-            println("error = \(error?.description)")
+        let onFailed = {(request:NSURLRequest?, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) -> Void in
+            print("request = \(request)", terminator: "")
+            print("response = \(response)", terminator: "")
+            print("responseData = \(responseData)", terminator: "")
+            print("error = \(error?.description)", terminator: "")
             JDStatusBarNotification.showWithStatus("Cannot connect to GitHub.", dismissAfter: 3, styleName: JDStatusBarStyleError)
         }
         
@@ -103,11 +103,12 @@ class PluginDetailWebViewController: M2DWebViewController {
         
         for view in self.parentViewController!.view.subviews {
             if view.isKindOfClass(UIToolbar.self) {
-                var items:Array = view.items
+                let toolbar = view as! UIToolbar
+                var items:Array = toolbar.items!
                 let spacer = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.FlexibleSpace, target: nil, action: nil)
                 items.append(spacer)
                 items.append(starButton)
-                view.setItems(items, animated:false)
+                toolbar.setItems(items, animated:false)
                 isStarButtonAdded = true;
                 return;
             }
@@ -127,11 +128,11 @@ class PluginDetailWebViewController: M2DWebViewController {
             return
         }
         
-        let onFailed = {[weak self] (request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) -> Void in
-            println("request = \(request)")
-            println("response = \(response)")
-            println("responseData = \(responseData)")
-            println("error = \(error?.description)")
+        let onFailed = {[weak self] (request:NSURLRequest?, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) -> Void in
+            print("request = \(request)", terminator: "")
+            print("response = \(response)", terminator: "")
+            print("responseData = \(responseData)", terminator: "")
+            print("error = \(error?.description)", terminator: "")
             JDStatusBarNotification.showWithStatus("Cannot connect to GitHub.", dismissAfter: 3, styleName: JDStatusBarStyleError)
             self?.starButton.enabled = true
         }

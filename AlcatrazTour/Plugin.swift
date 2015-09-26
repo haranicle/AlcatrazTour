@@ -80,7 +80,7 @@ class Plugin: Object {
     }
     
     func stringAsDate(string:String) -> NSDate {
-        var formatter = NSDateFormatter()
+        let formatter = NSDateFormatter()
         formatter.dateFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"
         return formatter.dateFromString(string) ?? NSDate(timeIntervalSince1970: 0)
     }
@@ -91,7 +91,7 @@ class Plugin: Object {
     
     // TODO: must be tested!!
     func formatDate(date:NSDate) -> String {
-        var formatter = NSDateFormatter()
+        let formatter = NSDateFormatter()
         formatter.dateFormat = "MM/dd/yy"
         return formatter.stringFromDate(date)
     }
@@ -107,11 +107,19 @@ class Plugin: Object {
     // MARK: - Realm
     
     func save() {
-        Realm().add(self, update: true)
+        do {
+            try Realm().add(self, update: true)
+        } catch {
+            fatalError()
+        }
     }
     
     class func deleteAll() {
-        Realm().deleteAll()
+        do {
+            try Realm().deleteAll()
+        } catch {
+            fatalError()
+        }
     }
     
     // MARK: - Score

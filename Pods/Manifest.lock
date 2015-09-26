@@ -1,39 +1,55 @@
 PODS:
-  - Alamofire (1.2.1)
+  - Alamofire (2.0.2)
   - JDStatusBarNotification (1.5.2)
   - M2DWebViewController (0.1.11)
-  - OAuthSwift (0.3.6)
-  - Realm (0.94.1):
-    - Realm/Headers (= 0.94.1)
-  - Realm/Headers (0.94.1)
-  - RealmSwift (0.94.1):
-    - Realm (= 0.94.1)
+  - OAuthSwift (0.4.4)
+  - Realm (0.95.1):
+    - Realm/Headers (= 0.95.1)
+  - Realm/Headers (0.95.1)
+  - RealmSwift (0.95.1):
+    - Realm (= 0.95.1)
   - SDWebImage (3.7.1):
     - SDWebImage/Core (= 3.7.1)
   - SDWebImage/Core (3.7.1)
   - SVProgressHUD (1.1.2)
-  - SwiftyJSON (2.2.0)
+  - SwiftyJSON (2.3.0)
 
 DEPENDENCIES:
-  - Alamofire (~> 1.2)
+  - Alamofire (~> 2.0)
   - JDStatusBarNotification
   - M2DWebViewController
-  - OAuthSwift (~> 0.3.6)
-  - Realm/Headers
-  - RealmSwift (= 0.94.1)
+  - OAuthSwift (~> 0.4)
+  - Realm (from `https://github.com/realm/realm-cocoa.git`, branch `swift-2.0`)
+  - RealmSwift (from `https://github.com/realm/realm-cocoa.git`, branch `swift-2.0`)
   - SDWebImage
   - SVProgressHUD
-  - SwiftyJSON (~> 2.2)
+  - SwiftyJSON (~> 2.3)
+
+EXTERNAL SOURCES:
+  Realm:
+    :branch: swift-2.0
+    :git: https://github.com/realm/realm-cocoa.git
+  RealmSwift:
+    :branch: swift-2.0
+    :git: https://github.com/realm/realm-cocoa.git
+
+CHECKOUT OPTIONS:
+  Realm:
+    :commit: 7b9471932740c91f55c9439786c891fe83008d75
+    :git: https://github.com/realm/realm-cocoa.git
+  RealmSwift:
+    :commit: 7b9471932740c91f55c9439786c891fe83008d75
+    :git: https://github.com/realm/realm-cocoa.git
 
 SPEC CHECKSUMS:
-  Alamofire: 1acfdf179aff68b41a48dff70c1ac7fa263e2bcb
+  Alamofire: 8edbab00802a752bb5240cc2abe70e7e881488ad
   JDStatusBarNotification: a36d09ccbb047217572b074a61e7ca10dddc5f0a
   M2DWebViewController: ccdbbe41b792a4111672b8ad7e85b04500e6df30
-  OAuthSwift: 3517e94380923085dfa7f23421bc3d4a61ce48c0
-  Realm: d999a6cf0b41577a077349c9cc9d496cc62a7d17
-  RealmSwift: 06b60ff5b1338755654d39aab44ac38001600f76
+  OAuthSwift: b25a2b1a4c913d06a2b92b2a1c34ed6208b56951
+  Realm: 6888430917b197eed845dcce9a1f99c9c4bd9cd1
+  RealmSwift: 01ecf1cd1a6cc7cd05eed53c6bfaec21b0db6bf8
   SDWebImage: ed3095af2ff88b436426037444979b917f6c5575
   SVProgressHUD: 3afb875b9eb23acd1bed9b82495695c68621a8b2
-  SwiftyJSON: 0b3e6c07af17ff745e77e8e9984097b55c956e5c
+  SwiftyJSON: 8d6b61a70277ef2a5d710d372e06e7e2d87fb9e4
 
-COCOAPODS: 0.37.2
+COCOAPODS: 0.38.2

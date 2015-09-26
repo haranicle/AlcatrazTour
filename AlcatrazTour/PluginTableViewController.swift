@@ -22,7 +22,6 @@ enum Modes:Int {
         case Modes.Stars: return "\u{f005}"
         case Modes.Update: return "\u{f021}"
         case Modes.New: return "\u{f135}"
-        default: return ""
         }
     }
     
@@ -32,7 +31,6 @@ enum Modes:Int {
         case Modes.Stars: return "Stars"
         case Modes.Update: return "Update"
         case Modes.New: return "New"
-        default: return ""
         }
     }
     
@@ -42,7 +40,6 @@ enum Modes:Int {
         case Modes.Stars: return "starGazersCount"
         case Modes.Update: return "updatedAt"
         case Modes.New: return "createdAt"
-        default: return ""
         }
     }
 }
@@ -54,6 +51,16 @@ class PluginTableViewController: UITableViewController, UISearchResultsUpdating,
     var githubClient = GithubClient()
     var currentMode = Modes.Popularity
     let segments = [Modes.Popularity, Modes.Stars, Modes.Update, Modes.New]
+
+    required init?(coder aDecoder: NSCoder) {
+        do {
+            try! popularityResults = Realm ().objects(Plugin).sorted(Modes.Popularity.propertyName(), ascending: false)
+            try! starsResults = Realm ().objects(Plugin).sorted(Modes.Stars.propertyName(), ascending: false)
+            try! updateResults = Realm ().objects(Plugin).sorted(Modes.Update.propertyName(), ascending: false)
+            try! newResults = Realm ().objects(Plugin).sorted(Modes.New.propertyName(), ascending: false)
+        }
+        super.init(coder: aDecoder)
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -129,16 +136,18 @@ class PluginTableViewController: UITableViewController, UISearchResultsUpdating,
         
         let searchText = searchController.searchBar.text
         // TODO: Must be tested here!!
-        searchResults = Realm().objects(Plugin).filter("name contains[c] '\(searchText)' OR note contains[c] '\(searchText)'").sorted(currentMode.propertyName(), ascending: false)
+        do {
+            try! searchResults = Realm().objects(Plugin).filter("name contains[c] '\(searchText)' OR note contains[c] '\(searchText)'").sorted(currentMode.propertyName(), ascending: false)
+        }
         searchResultTableViewController.tableView.reloadData()
     }
     
     // MARK: - Realm
     var searchResults:Results<Plugin>?
-    var popularityResults:Results<Plugin> = Realm ().objects(Plugin).sorted(Modes.Popularity.propertyName(), ascending: false)
-    var starsResults:Results<Plugin> = Realm ().objects(Plugin).sorted(Modes.Stars.propertyName(), ascending: false)
-    var updateResults:Results<Plugin> = Realm ().objects(Plugin).sorted(Modes.Update.propertyName(), ascending: false)
-    var newResults:Results<Plugin> = Realm ().objects(Plugin).sorted(Modes.New.propertyName(), ascending: false)
+    var popularityResults:Results<Plugin>
+    var starsResults:Results<Plugin>
+    var updateResults:Results<Plugin>
+    var newResults:Results<Plugin>
     
     func currentResult()->Results<Plugin> {
         if searchController!.active {
@@ -196,7 +205,7 @@ class PluginTableViewController: UITableViewController, UISearchResultsUpdating,
             self?.reloadAllPlugins()
             }, onFailed: {[weak self] error in
                 // login failed. quit app.
-                var errorAlert = UIAlertController(title: "Error", message: error.description, preferredStyle: UIAlertControllerStyle.Alert)
+                let errorAlert = UIAlertController(title: "Error", message: error.description, preferredStyle: UIAlertControllerStyle.Alert)
                 errorAlert.addAction(UIAlertAction(title: "Quit app", style: UIAlertActionStyle.Default, handler:{action in exit(0)} ))
                 self?.presentViewController(errorAlert, animated: true, completion: nil)
         })
@@ -226,7 +235,7 @@ class PluginTableViewController: UITableViewController, UISearchResultsUpdating,
     {
         let plugin = currentResult()[Int(indexPath.row)] as Plugin
         
-        var cell = tableView.dequeueReusableCellWithIdentifier(PluginCellReuseIdentifier) as! PluginTableViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier(PluginCellReuseIdentifier) as! PluginTableViewCell
         configureCell(cell, plugin: plugin, indexPath: indexPath)
         
         return cell
@@ -238,7 +247,7 @@ class PluginTableViewController: UITableViewController, UISearchResultsUpdating,
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
         
         let selectedPlugin = currentResult()[Int(indexPath.row)] as Plugin
-        var webViewController = PluginDetailWebViewController(plugin: selectedPlugin)
+        let webViewController = PluginDetailWebViewController(plugin: selectedPlugin)
         navigationController?.pushViewController(webViewController, animated: true)
     }
     
@@ -272,7 +281,7 @@ class PluginTableViewController: UITableViewController, UISearchResultsUpdating,
     // MARK: - Error
     
     func showErrorAlert(error:NSError) {
-        var alert = UIAlertController(title: "Error", message: error.description, preferredStyle: UIAlertControllerStyle.Alert)
+        let alert = UIAlertController(title: "Error", message: error.description, preferredStyle: UIAlertControllerStyle.Alert)
         alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil))
         self.presentViewController(alert, animated: true, completion: nil)
     }
