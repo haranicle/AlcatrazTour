@@ -51,19 +51,15 @@ class PluginTableViewController: UITableViewController, UISearchResultsUpdating,
     var githubClient = GithubClient()
     var currentMode = Modes.Popularity
     let segments = [Modes.Popularity, Modes.Stars, Modes.Update, Modes.New]
-    
-    init () {
+
+    required init?(coder aDecoder: NSCoder) {
         do {
             try! popularityResults = Realm ().objects(Plugin).sorted(Modes.Popularity.propertyName(), ascending: false)
             try! starsResults = Realm ().objects(Plugin).sorted(Modes.Stars.propertyName(), ascending: false)
             try! updateResults = Realm ().objects(Plugin).sorted(Modes.Update.propertyName(), ascending: false)
             try! newResults = Realm ().objects(Plugin).sorted(Modes.New.propertyName(), ascending: false)
         }
-        super.init(style: UITableViewStyle.Plain)
-    }
-
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        super.init(coder: aDecoder)
     }
     
     override func viewDidLoad() {
