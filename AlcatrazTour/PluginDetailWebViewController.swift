@@ -72,7 +72,7 @@ class PluginDetailWebViewController: M2DWebViewController {
     func refreshStarButton() {
         starButton.enabled = false
         
-        let onFailed = {(request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) -> Void in
+        let onFailed = {(request:NSURLRequest?, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) -> Void in
             print("request = \(request)", terminator: "")
             print("response = \(response)", terminator: "")
             print("responseData = \(responseData)", terminator: "")
@@ -128,7 +128,7 @@ class PluginDetailWebViewController: M2DWebViewController {
             return
         }
         
-        let onFailed = {[weak self] (request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) -> Void in
+        let onFailed = {[weak self] (request:NSURLRequest?, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) -> Void in
             print("request = \(request)", terminator: "")
             print("response = \(response)", terminator: "")
             print("responseData = \(responseData)", terminator: "")

@@ -137,8 +137,8 @@ class GithubClient: NSObject {
                     }
                 case .Failure(let data, let error):
                     onFailed(request, response, data, error as NSError)
+                }
         }
-        
     }
     
     // MARK: - Processing Flow
