@@ -36,10 +36,18 @@ class NewestPluginNotification:NSObject {
     // MARK: UserDefaults
     
     func newestPlugin() -> Plugin? {
-        let newestResults:Results<Plugin> = Realm().objects(Plugin).sorted(Modes.New.propertyName(), ascending: false)
-        if newestResults.count <= 0 {
-            return nil
+        let newestResults:Results<Plugin>
+        
+        do {
+            try newestResults = Realm().objects(Plugin).sorted(Modes.New.propertyName(), ascending: false)
+            if newestResults.count <= 0 {
+                return nil
+            }
+            
+        } catch {
+            fatalError()
         }
+        
         return newestResults.first
     }
     

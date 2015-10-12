@@ -33,14 +33,14 @@ class GithubClient: NSObject {
     
     func createRepoDetailUrl(repoUrl:String) -> String {
         // create api url
-        var repoDetailUrl:String = repoUrl.stringByReplacingOccurrencesOfString(githubRepoUrl, withString: githubRepoApiUrl, options: nil, range: nil)
+        var repoDetailUrl:String = repoUrl.stringByReplacingOccurrencesOfString(githubRepoUrl, withString: githubRepoApiUrl, options: [], range: nil)
         // remove last "/"
         if repoDetailUrl.hasSuffix("/") {
-            repoDetailUrl = repoDetailUrl[repoDetailUrl.startIndex..<advance(repoDetailUrl.endIndex, -1)]
+            repoDetailUrl = repoDetailUrl[repoDetailUrl.startIndex..<repoDetailUrl.endIndex.advancedBy(-1)]
         }
         // remove last ".git"
         if repoDetailUrl.hasSuffix(".git") {
-            repoDetailUrl = repoDetailUrl[repoDetailUrl.startIndex..<advance(repoDetailUrl.endIndex, -4)]
+            repoDetailUrl = repoDetailUrl[repoDetailUrl.startIndex..<repoDetailUrl.endIndex.advancedBy(-4)]
         }
         
         return repoDetailUrl
@@ -50,7 +50,7 @@ class GithubClient: NSObject {
     let githubOauthTokenKey = "githubTokenKey"
     
     func isSignedIn()->Bool {
-        if let token = NSUserDefaults.standardUserDefaults().stringForKey(githubOauthTokenKey) {
+        if let _ = NSUserDefaults.standardUserDefaults().stringForKey(githubOauthTokenKey) {
             return true
         }
         return false
@@ -79,7 +79,7 @@ class GithubClient: NSObject {
             onSucceed()
             
             }, failure: {(error:NSError!) -> Void in
-                println(error.localizedDescription)
+                print(error.localizedDescription)
         })
     }
 
@@ -93,64 +93,52 @@ class GithubClient: NSObject {
     
     // MARK: - Request
     
-    func requestPlugins(onSucceed:[Plugin] -> Void, onFailed:(NSURLRequest, NSHTTPURLResponse?, AnyObject?, NSError?) -> Void) {
+    func requestPlugins(onSucceed:[Plugin] -> Void, onFailed:(NSURLRequest?, NSHTTPURLResponse?, AnyObject?, NSError?) -> Void) {
         Alamofire
             .request(.GET, alcatrazPackagesUrl)
             .validate(statusCode: 200..<400)
-            .responseJSON {request, response, responseData, error in
-                
-                if let aError = error {
-                    onFailed(request, response, responseData, aError)
-                    return
-                }
-                
-                if let aResponseData: AnyObject = responseData {
-                    
-                    var plugins:[Plugin] = []
-                    
-                    let jsonData = JSON(aResponseData)
-                    let jsonPlugins = jsonData["packages"]["plugins"].array
-                    
-                    if let count = jsonPlugins?.count {
-                        for i in 0 ..< count {
-                            if let pluginParams = jsonPlugins?[i].object as? NSDictionary {
-                                var plugin = Plugin()
-                                plugin.setParams(pluginParams)
-                                plugins.append(plugin)
+            .responseJSON {request, response, result -> Void in
+                switch result {
+                case .Success(let data):
+                        var plugins:[Plugin] = []
+                        let jsonData = JSON(data)
+                        let jsonPlugins = jsonData["packages"]["plugins"].array
+                        
+                        if let count = jsonPlugins?.count {
+                            for i in 0 ..< count {
+                                if let pluginParams = jsonPlugins?[i].object as? NSDictionary {
+                                    let plugin = Plugin()
+                                    plugin.setParams(pluginParams)
+                                    plugins.append(plugin)
+                                }
                             }
                         }
-                    }
-                    
-                    onSucceed(plugins)
-                } else {
-                    onFailed(request, response, responseData, nil)
+                        
+                        onSucceed(plugins)
+                case .Failure(let data, let error):
+                    onFailed(request, response, data, error as NSError)
                 }
         }
     }
     
-    func requestRepoDetail(token:String, plugin:Plugin, onSucceed:(Plugin?, NSDictionary) -> Void, onFailed:(NSURLRequest, NSHTTPURLResponse?, AnyObject?, NSError?) -> Void) {
+    func requestRepoDetail(token:String, plugin:Plugin, onSucceed:(Plugin?, NSDictionary) -> Void, onFailed:(NSURLRequest?, NSHTTPURLResponse?, AnyObject?, NSError?) -> Void) {
         
         Alamofire
             .request(Method.GET, createRepoDetailUrl(plugin.url), parameters: ["access_token": token])
             .validate(statusCode: 200..<400)
-            .responseJSON {request, response, responseData, error in
-                
-                if let aError = error {
-                    onFailed(request, response, responseData, aError)
-                    return
-                }
-                
-                if let aResponseData: AnyObject = responseData {
-                    let jsonData = JSON(aResponseData)
-                    
+            .responseJSON {request, response, result -> Void in
+                switch result {
+                case .Success(let data):
+                    let jsonData = JSON(data)
                     if let pluginDetail = jsonData.object as? NSDictionary {
                         onSucceed(plugin, pluginDetail)
+                    } else {
+                        onFailed(request, response, data, nil)
                     }
-                } else {
-                    onFailed(request, response, responseData, nil)
+                case .Failure(let data, let error):
+                    onFailed(request, response, data, error as NSError)
                 }
         }
-        
     }
     
     // MARK: - Processing Flow
@@ -158,11 +146,11 @@ class GithubClient: NSObject {
     func reloadAllPlugins(onComplete:NSError?->Void) {
         
         if(isLoading) {
-            println("NOW LOADING!!")
+            print("NOW LOADING!!", terminator: "")
             return
         }
         
-        println("START LOADING!!")
+        print("START LOADING!!", terminator: "")
         SVProgressHUD.showWithStatus("Loading list", maskType: SVProgressHUDMaskType.Black)
         
         isLoading = true
@@ -172,7 +160,7 @@ class GithubClient: NSObject {
         
         let onSucceedRequestingPlugins = {[weak self] (plugins:[Plugin]) -> Void in
             
-            println("PLUGIN LIST LOAD COMPLETE!!")
+            print("PLUGIN LIST LOAD COMPLETE!!", terminator: "")
             
             SVProgressHUD.dismiss()
             SVProgressHUD.showProgress(0, status: "Loading data", maskType: SVProgressHUDMaskType.Black)
@@ -192,13 +180,17 @@ class GithubClient: NSObject {
                 dispatch_group_leave(group)
             }
             
-            let onFailed = {[weak self] (request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) -> Void in
+            let onFailed = {[weak self] (request:NSURLRequest?, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) -> Void in
                 self?.updateProgress(plugins.count)
                 dispatch_group_leave(group)
             }
             
             // start writing
-            Realm().beginWrite()
+            do {
+                try Realm().beginWrite()
+            } catch {
+                fatalError()
+            }
             Plugin.deleteAll()
             
             let token = self?.oAuthToken()
@@ -217,21 +209,25 @@ class GithubClient: NSObject {
                 self?.isLoading = false
                 
                 // commit
-                Realm().commitWrite()
+                do {
+                    try Realm().commitWrite()
+                } catch {
+                    fatalError()
+                }
                 
-                println("successCount = \(successCount)")
-                println("plugins.count = \(plugins.count)")
+                print("successCount = \(successCount)", terminator: "")
+                print("plugins.count = \(plugins.count)", terminator: "")
                 
                 onComplete(nil)
             })
             
         }
         
-        let onFailed = {[weak self] (request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) -> Void in
-            println("request = \(request)")
-            println("response = \(response)")
-            println("responseData = \(responseData)")
-            println("error = \(error?.description)")
+        let onFailed = {[weak self] (request:NSURLRequest?, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) -> Void in
+            print("request = \(request)", terminator: "")
+            print("response = \(response)", terminator: "")
+            print("responseData = \(responseData)", terminator: "")
+            print("error = \(error?.description)", terminator: "")
             
             self?.isLoading = false
             SVProgressHUD.dismiss()
@@ -248,54 +244,54 @@ class GithubClient: NSObject {
     
     // MARK: - Staring
     
-    func checkIfStarredRepository(token:String, owner:String, repositoryName:String, onSucceed:(Bool) -> Void, onFailed:(NSURLRequest, NSHTTPURLResponse?, AnyObject?, NSError?) -> Void) -> Request  {
+    func checkIfStarredRepository(token:String, owner:String, repositoryName:String, onSucceed:(Bool) -> Void, onFailed:(NSURLRequest?, NSHTTPURLResponse?, AnyObject?, NSError?) -> Void) -> Request  {
         let apiUrl = githubStarApiUrl + owner + "/" + repositoryName
 
         return Alamofire
             .request(Method.GET, apiUrl, parameters: ["access_token": token])
             .validate(statusCode: 204...404)
-            .responseString {request, response, responseData, error in
-                if let aError = error {
-                    onFailed(request, response, responseData, aError)
-                    return
+            .responseString {request, response, result -> Void in
+                switch result {
+                case .Success(let data):
+                    if(response?.statusCode==204){
+                        onSucceed(true)
+                        return
+                    }
+                    if(response?.statusCode==404){
+                        onSucceed(false)
+                        return
+                    }
+                    onFailed(request, response, data, nil)
+                case .Failure(let data, let error):
+                    onFailed(request, response, data, error as NSError)
                 }
-                
-                if(response?.statusCode==204){
-                    onSucceed(true)
-                    return
-                }
-                if(response?.statusCode==404){
-                    onSucceed(false)
-                    return
-                }
-                onFailed(request, response, responseData, nil)
         }
     }
     
-    func starRepository(token:String, isStarring:Bool, owner:String, repositoryName:String, onSucceed:() -> Void, onFailed:(NSURLRequest, NSHTTPURLResponse?, AnyObject?, NSError?) -> Void) {
+    func starRepository(token:String, isStarring:Bool, owner:String, repositoryName:String, onSucceed:() -> Void, onFailed:(NSURLRequest?, NSHTTPURLResponse?, AnyObject?, NSError?) -> Void) {
         
         let apiUrl = githubStarApiUrl + owner + "/" + repositoryName
         let method = isStarring ? Method.PUT : Method.DELETE
         
-        Manager.sharedInstance.session.configuration.HTTPAdditionalHeaders = [
+        let header = [
             "Content-Length" : "0",
             "Authorization" : "token \(token)"
         ]
         
         Alamofire
-            .request(method, apiUrl, parameters: nil)
+            .request(method, apiUrl, parameters: nil, encoding: .URL, headers: header)
             .validate(statusCode: 200..<400)
-            .responseString {request, response, responseData, error in
-                if let aError = error {
-                    onFailed(request, response, responseData, aError)
-                    return
+            .responseString {request, response, result -> Void in
+                switch result {
+                case .Success( _):
+                    onSucceed()
+                case .Failure(let data, let error):
+                    onFailed(request, response, data, error as NSError)
                 }
-                
-                onSucceed()
         }
     }
     
-    func checkAndStarRepository(token:String, isStarring:Bool, owner:String, repositoryName:String, onSucceed:() -> Void, onFailed:(NSURLRequest, NSHTTPURLResponse?, AnyObject?, NSError?) -> Void){
+    func checkAndStarRepository(token:String, isStarring:Bool, owner:String, repositoryName:String, onSucceed:() -> Void, onFailed:(NSURLRequest?, NSHTTPURLResponse?, AnyObject?, NSError?) -> Void){
         
         checkIfStarredRepository(token, owner: owner, repositoryName: repositoryName, onSucceed: { (isStarred) -> Void in
             if isStarring && isStarred {
