@@ -14,7 +14,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
-
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
         
@@ -26,12 +25,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(application: UIApplication, performFetchWithCompletionHandler completionHandler: (UIBackgroundFetchResult) -> Void) {
         let gitHubClient = GithubClient()
         if gitHubClient.isSignedIn() {
-            gitHubClient.reloadAllPlugins{ (error:NSError?) in
-                if let err = error {
-                    return
-                }
-                
-            }
+            gitHubClient.requestPlugins(
+                { (plugins:[Plugin]) -> Void in
+                    
+                }, onFailed: { (_, _, _, _) -> Void in
+            })
         }
     }
 

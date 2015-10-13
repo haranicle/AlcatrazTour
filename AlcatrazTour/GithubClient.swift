@@ -114,6 +114,8 @@ class GithubClient: NSObject {
                             }
                         }
                         
+                        NewcomerPluginNotificator().checkIfNewcomerExists(plugins)
+                        
                         onSucceed(plugins)
                 case .Failure(let data, let error):
                     onFailed(request, response, data, error as NSError)
