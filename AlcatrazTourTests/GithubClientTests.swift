@@ -49,15 +49,15 @@ class GithubClientTests: XCTestCase {
         let client = GithubClient()
         
         let onSucceed = {(plugins:[Plugin]) -> Void in
-            plugins.map{println("\($0.name)")}
+            plugins.map{print("\($0.name)")}
             expectation.fulfill()
         }
         
         let onFailed = {(request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) -> Void in
-            println("request = \(request)")
-            println("response = \(response)")
-            println("responseData = \(responseData)")
-            println("error = \(error?.description)")
+            print("request = \(request)")
+            print("response = \(response)")
+            print("responseData = \(responseData)")
+            print("error = \(error?.description)")
             expectation.fulfill()
         }
         
@@ -71,7 +71,7 @@ class GithubClientTests: XCTestCase {
         
         let client = GithubClient()
         
-        var plugin = Plugin()
+        let plugin = Plugin()
         plugin.url = "https://github.com/XVimProject/XVim"
         
         let onSucceed = {(plugin:Plugin?, pluginDetail:NSDictionary) -> Void in
@@ -80,10 +80,10 @@ class GithubClientTests: XCTestCase {
         }
         
         let onFailed = {(request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) -> Void in
-            println("request = \(request)")
-            println("response = \(response)")
-            println("responseData = \(responseData)")
-            println("error = \(error?.description)")
+            print("request = \(request)")
+            print("response = \(response)")
+            print("responseData = \(responseData)")
+            print("error = \(error?.description)")
             expectation.fulfill()
         }
         
@@ -112,10 +112,10 @@ class GithubClientTests: XCTestCase {
         }
         
         let onFailed = {(request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) -> Void in
-            println("request = \(request)")
-            println("response = \(response)")
-            println("responseData = \(responseData)")
-            println("error = \(error?.description)")
+            print("request = \(request)")
+            print("response = \(response)")
+            print("responseData = \(responseData)")
+            print("error = \(error?.description)")
             expectation.fulfill()
             XCTAssert(true, "star failed")
         }

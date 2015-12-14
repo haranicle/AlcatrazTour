@@ -80,7 +80,7 @@ class Plugin: RLMObject {
     }
     
     func stringAsDate(string:String) -> NSDate {
-        var formatter = NSDateFormatter()
+        let formatter = NSDateFormatter()
         formatter.dateFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"
         return formatter.dateFromString(string) ?? NSDate(timeIntervalSince1970: 0)
     }
@@ -91,7 +91,7 @@ class Plugin: RLMObject {
     
     // TODO: must be tested!!
     func formatDate(date:NSDate) -> String {
-        var formatter = NSDateFormatter()
+        let formatter = NSDateFormatter()
         formatter.dateFormat = "MM/dd/yy"
         return formatter.stringFromDate(date)
     }
