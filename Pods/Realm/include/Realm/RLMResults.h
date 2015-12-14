@@ -18,6 +18,9 @@
 
 #import <Foundation/Foundation.h>
 #import <Realm/RLMCollection.h>
+#import <Realm/RLMDefines.h>
+
+RLM_ASSUME_NONNULL_BEGIN
 
 @class RLMObject, RLMRealm;
 
@@ -30,13 +33,9 @@
 
  RLMResults cannot be created directly.
  */
+@interface RLMResults RLM_GENERIC_COLLECTION : NSObject<RLMCollection, NSFastEnumeration>
 
-@interface RLMResults : NSObject<RLMCollection, NSFastEnumeration>
-
-/**---------------------------------------------------------------------------------------
- *  @name RLMResults Properties
- *  ---------------------------------------------------------------------------------------
- */
+#pragma mark - Properties
 
 /**
  Number of objects in the results.
@@ -53,12 +52,7 @@
  */
 @property (nonatomic, readonly) RLMRealm *realm;
 
-#pragma mark -
-
-/**---------------------------------------------------------------------------------------
- *  @name Accessing Objects from an RLMResults
- * ---------------------------------------------------------------------------------------
- */
+#pragma mark - Accessing Objects from an RLMResults
 
 /**
  Returns the object at the index specified.
@@ -67,7 +61,7 @@
 
  @return An RLMObject of the class contained by this RLMResults.
  */
-- (id)objectAtIndex:(NSUInteger)index;
+- (RLMObjectType)objectAtIndex:(NSUInteger)index;
 
 /**
  Returns the first object in the results.
@@ -76,7 +70,7 @@
 
  @return An RLMObject of the class contained by this RLMResults.
  */
-- (id)firstObject;
+- (nullable RLMObjectType)firstObject;
 
 /**
  Returns the last object in the results.
@@ -85,17 +79,13 @@
 
  @return An RLMObject of the class contained by this RLMResults.
  */
-- (id)lastObject;
+- (nullable RLMObjectType)lastObject;
 
 
 
-#pragma mark -
 
+#pragma mark - Querying Results
 
-/**---------------------------------------------------------------------------------------
- *  @name Querying Results
- *  ---------------------------------------------------------------------------------------
- */
 /**
  Gets the index of an object.
 
@@ -103,7 +93,7 @@
 
  @param object  An object (of the same type as returned from the objectClassName selector).
  */
-- (NSUInteger)indexOfObject:(RLMObject *)object;
+- (NSUInteger)indexOfObject:(RLMObjectArgument)object;
 
 /**
  Gets the index of the first object matching the predicate.
@@ -130,7 +120,7 @@
 
  @return                An RLMResults of objects that match the given predicate
  */
-- (RLMResults *)objectsWhere:(NSString *)predicateFormat, ...;
+- (RLMResults RLM_GENERIC_RETURN*)objectsWhere:(NSString *)predicateFormat, ...;
 
 /**
  Get objects matching the given predicate in the RLMResults.
@@ -139,7 +129,7 @@
 
  @return            An RLMResults of objects that match the given predicate
  */
-- (RLMResults *)objectsWithPredicate:(NSPredicate *)predicate;
+- (RLMResults RLM_GENERIC_RETURN*)objectsWithPredicate:(NSPredicate *)predicate;
 
 /**
  Get a sorted `RLMResults` from an existing `RLMResults` sorted by a property.
@@ -149,7 +139,7 @@
 
  @return    An RLMResults sorted by the specified property.
  */
-- (RLMResults *)sortedResultsUsingProperty:(NSString *)property ascending:(BOOL)ascending;
+- (RLMResults RLM_GENERIC_RETURN*)sortedResultsUsingProperty:(NSString *)property ascending:(BOOL)ascending;
 
 /**
  Get a sorted `RLMResults` from an existing `RLMResults` sorted by an `NSArray`` of `RLMSortDescriptor`s.
@@ -158,20 +148,15 @@
 
  @return    An RLMResults sorted by the specified properties.
  */
-- (RLMResults *)sortedResultsUsingDescriptors:(NSArray *)properties;
-
-#pragma mark -
+- (RLMResults RLM_GENERIC_RETURN*)sortedResultsUsingDescriptors:(NSArray *)properties;
 
 
-/**---------------------------------------------------------------------------------------
- *  @name Aggregating Property Values
- *  ---------------------------------------------------------------------------------------
- */
+#pragma mark - Aggregating Property Values
 
 /**
  Returns the minimum (lowest) value of the given property
 
- NSNumber *min = [results minOfProperty:@"age"];
+     NSNumber *min = [results minOfProperty:@"age"];
 
  @warning You cannot use this method on RLMObject, RLMArray, and NSData properties.
 
@@ -179,12 +164,12 @@
 
  @return The minimum value for the property amongst objects in an RLMResults.
  */
--(id)minOfProperty:(NSString *)property;
+- (nullable id)minOfProperty:(NSString *)property;
 
 /**
  Returns the maximum (highest) value of the given property of objects in an RLMResults
 
- NSNumber *max = [results maxOfProperty:@"age"];
+     NSNumber *max = [results maxOfProperty:@"age"];
 
  @warning You cannot use this method on RLMObject, RLMArray, and NSData properties.
 
@@ -192,12 +177,12 @@
 
  @return The maximum value for the property amongst objects in an RLMResults
  */
--(id)maxOfProperty:(NSString *)property;
+- (nullable id)maxOfProperty:(NSString *)property;
 
 /**
  Returns the sum of the given property for objects in an RLMResults.
 
- NSNumber *sum = [results sumOfProperty:@"age"];
+     NSNumber *sum = [results sumOfProperty:@"age"];
 
  @warning You cannot use this method on RLMObject, RLMArray, and NSData properties.
 
@@ -205,12 +190,12 @@
 
  @return The sum of the given property over all objects in an RLMResults.
  */
--(NSNumber *)sumOfProperty:(NSString *)property;
+- (NSNumber *)sumOfProperty:(NSString *)property;
 
 /**
  Returns the average of a given property for objects in an RLMResults.
 
- NSNumber *average = [results averageOfProperty:@"age"];
+     NSNumber *average = [results averageOfProperty:@"age"];
 
  @warning You cannot use this method on RLMObject, RLMArray, and NSData properties.
 
@@ -219,18 +204,12 @@
  @return    The average for the given property amongst objects in an RLMResults. This will be of type double for both
  float and double properties.
  */
--(NSNumber *)averageOfProperty:(NSString *)property;
+- (nullable NSNumber *)averageOfProperty:(NSString *)property;
 
-#pragma mark -
-
+/// :nodoc:
 - (id)objectAtIndexedSubscript:(NSUInteger)index;
 
-#pragma mark -
-
-/**---------------------------------------------------------------------------------------
- *  @name Unavailable Methods
- *  ---------------------------------------------------------------------------------------
- */
+#pragma mark - Unavailable Methods
 
 /**
  -[RLMResults init] is not available because RLMResults cannot be created directly.
@@ -246,3 +225,4 @@
 
 @end
 
+RLM_ASSUME_NONNULL_END
