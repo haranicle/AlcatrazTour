@@ -16,74 +16,52 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMSchema.h"
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-//
-// Realm table namespace costants/methods
-//
+#import <Realm/RLMSchema.h>
+#import <Realm/RLMDefines.h>
 
-// NOTE: the object store uses a custom table namespace for storing data.
-// There current names used are:
-//  class_* - any table name beginning with class is used to store objects
-//            of the typename (the rest of the name after class)
-//  metadata - table used for realm metadata storage
-extern NSString * const c_objectTableNamePrefix;
-extern const char * const c_metadataTableName;
-extern const char * const c_primaryKeyTableName;
-extern const char * const c_versionColumnName;
-extern const size_t c_versionColumnIndex;
+RLM_ASSUME_NONNULL_BEGIN
 
-inline NSString *RLMClassForTableName(NSString *tableName) {
-    if ([tableName hasPrefix:c_objectTableNamePrefix]) {
-        return [tableName substringFromIndex:6];
-    }
-    return nil;
-}
-
-inline NSString *RLMTableNameForClass(NSString *className) {
-    return [c_objectTableNamePrefix stringByAppendingString:className];
-}
-
-
-//
-// Realm schema metadata
-//
-
-// create any metadata tables that don't already exist
-// must be in write transaction to set
-// returns true if it actually did anything
-bool RLMRealmCreateMetadataTables(RLMRealm *realm);
-
-NSUInteger RLMRealmSchemaVersion(RLMRealm *realm);
-
-// must be in write transaction to set
-void RLMRealmSetSchemaVersion(RLMRealm *realm, NSUInteger version);
-
-// get primary key property name for object class
-NSString *RLMRealmPrimaryKeyForObjectClass(RLMRealm *realm, NSString *objectClass);
-
-// sets primary key property for object class
-// must be in write transaction to set
-void RLMRealmSetPrimaryKeyForObjectClass(RLMRealm *realm, NSString *objectClass, NSString *primaryKey);
-
+@class RLMRealm;
 
 //
 // RLMSchema private interface
 //
-@class RLMRealm;
 @interface RLMSchema ()
+
+/**
+ Returns an `RLMSchema` containing only the given `RLMObject` subclasses.
+
+ @param classes The classes to be included in the schema.
+
+ @return An `RLMSchema` containing only the given classes.
+ */
++ (instancetype)schemaWithObjectClasses:(NSArray *)classes;
+
 @property (nonatomic, readwrite, copy) NSArray *objectSchema;
 
 // schema based on runtime objects
-+(instancetype)sharedSchema;
++ (instancetype)sharedSchema;
+
+// schema based upon all currently registered object classes
++ (instancetype)partialSharedSchema;
 
 // schema based on tables in a Realm
-+(instancetype)dynamicSchemaFromRealm:(RLMRealm *)realm;
++ (instancetype)dynamicSchemaFromRealm:(RLMRealm *)realm;
 
 // class for string
-+ (Class)classForString:(NSString *)className;
++ (nullable Class)classForString:(NSString *)className;
 
 // shallow copy for reusing schema properties accross the same Realm on multiple threads
 - (instancetype)shallowCopy;
 
 @end
+
+RLM_ASSUME_NONNULL_END
+
+#ifdef __cplusplus
+}
+#endif

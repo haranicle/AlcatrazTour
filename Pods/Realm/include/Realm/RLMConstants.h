@@ -16,93 +16,30 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-/**
- Attributes which can be returned when implementing attributesForProperty:
- */
+#import <Foundation/Foundation.h>
 
-typedef NS_OPTIONS(NSUInteger, RLMPropertyAttributes) {
-/**
- Create an index for this property for improved search performance. Only string properties
- can be indexed. Returning this for properties of any other type will have no effect.
- */
-    RLMPropertyAttributeIndexed = 1 << 2,
-
-/**
- Store this property inline (de-normalization) which in some cases can improve performance. Setting this
- attribute will result in objects being copied (rather than linked) when setting this property.
- */
-//    RLMPropertyAttributeInlined = 1 << 3,
-
-/**
- The value for a property with this attribute must be unique across all objects of this type. An exception
- will be thrown when setting a property with this attribute to a non-unique value.
- */
-//    RLMPropertyAttributeUnique = 1 << 4,
-
-/**
- This property value must be set before the object can be added to a Realm. If not set an
- exception will be thrown if no default value for this property is specified. If a default
- value is specified it is set upon insertion into a Realm
-
- @see [RLMObject defaultPropertyValues]
- */
-//    RLMPropertyAttributeRequired = 1 << 5,
-
-/**
- When a parent object is deleted or a child property is nullified nothing is done.
- This is the default delete rule.
-
- Set this attribute on RLMPropertyTypeObject or RLMPropertyTypeArray properties
- to customize the properties’ delete rule. This rule is mutually exclusive with
- `RLMPropertyAttributeDeleteIfOnlyOwner` and `RLMPropertyAttributeDeleteAlways`.
- */
-//    RLMPropertyAttributeDeleteNever = 0,
-
-/**
- Delete a child object (or object in an RLMArray) when the parent is deleted or the object is
- nullified only if no other objects in the realm reference the object.
-
- Set this attribute on RLMPropertyTypeObject or RLMPropertyTypeArray properties
- to customize the properties’ delete rule. This rule is mutually exclusive with
- `RLMPropertyAttributeDeleteNever` and `RLMPropertyAttributeDeleteAlways`.
- */
-//    RLMPropertyAttributeDeleteIfOnlyOwner = 1 << 0,
-
-/**
- Always delete a child object or object in a child array when the parent is deleted or the
- reference in nullified. If other objects reference the same child object those references are
- nullified.
-
- Set this attribute on RLMPropertyTypeObject or RLMPropertyTypeArray properties
- to customize the properties’ delete rule. This rule is mutually exclusive with
- `RLMPropertyAttributeDeleteNever` and `RLMPropertyAttributeDeleteIfOnlyOwner`.
- */
-//    RLMPropertyAttributeDeleteAlways = 1 << 1
-};
+#pragma mark - Enums
 
 /**
  Property types supported in Realm models.
 
- See [Realm Models](http://realm.io/docs/cocoa/latest/#models)
+ See [Realm Models](https://realm.io/docs/objc/latest/#models)
  */
-// Make sure numbers match those in <tightdb/data_type.hpp>
+// Make sure numbers match those in <realm/data_type.hpp>
 typedef NS_ENUM(int32_t, RLMPropertyType) {
-    ////////////////////////////////
-    // Primitive types
-    ////////////////////////////////
+
+#pragma mark - Primitive types
 
     /** Integer type: NSInteger, int, long, Int (Swift) */
     RLMPropertyTypeInt    = 0,
     /** Boolean type: BOOL, bool, Bool (Swift) */
     RLMPropertyTypeBool   = 1,
-    /** Float type: CGFloat (32bit), float, Float (Swift) */
+    /** Float type: float, Float (Swift) */
     RLMPropertyTypeFloat  = 9,
-    /** Double type: CGFloat (64bit), double, Double (Swift) */
+    /** Double type: double, Double (Swift) */
     RLMPropertyTypeDouble = 10,
 
-    ////////////////////////////////
-    // Object types
-    ////////////////////////////////
+#pragma mark - Object types
 
     /** String type: NSString, String (Swift) */
     RLMPropertyTypeString = 2,
@@ -113,50 +50,19 @@ typedef NS_ENUM(int32_t, RLMPropertyType) {
     /** Date type: NSDate */
     RLMPropertyTypeDate   = 7,
 
-    ////////////////////////////////
-    // Array/Linked object types
-    ////////////////////////////////
+#pragma mark - Array/Linked object types
 
-    /** Object type. See [Realm Models](http://realm.io/docs/cocoa/latest/#models) */
+    /** Object type. See [Realm Models](https://realm.io/docs/objc/latest/#models) */
     RLMPropertyTypeObject = 12,
-    /** Array type. See [Realm Models](http://realm.io/docs/cocoa/latest/#models) */
+    /** Array type. See [Realm Models](http://realms.io/docs/objc/latest/#models) */
     RLMPropertyTypeArray  = 13,
 };
 
-// Appledoc doesn't support documenting externed globals, so document them as an
-// enum instead
-#ifdef APPLEDOC
-typedef NS_ENUM(NSString, RLMRealmNotification) {
 /**
- Posted by RLMRealm when the data in the realm has changed.
-
- DidChange are posted after a realm has been refreshed to reflect a write
- transaction, i.e. when an autorefresh occurs, [refresh]([RLMRealm refresh]) is
- called, after an implicit refresh from [beginWriteTransaction]([RLMRealm beginWriteTransaction]),
- and after a local write transaction is committed.
+ Enum representing all recoverable errors in Realm.
  */
-    RLMRealmDidChangeNotification,
-/**
- Posted by RLMRealm when a write transaction has been committed to an RLMRealm on
- a different thread for the same file. This is not posted if
- [autorefresh]([RLMRealm autorefresh]) is enabled or if the RLMRealm is
- refreshed before the notifcation has a chance to run.
-
- Realms with autorefresh disabled should normally have a handler for this
- notification which calls [refresh]([RLMRealm refresh]) after doing some work.
- While not refreshing is allowed, it may lead to large Realm files as Realm has
- to keep an extra copy of the data for the un-refreshed RLMRealm.
- */
-    RLMRealmRefreshRequiredNotification,
-};
-#else
-// See comments above
-extern NSString * const RLMRealmRefreshRequiredNotification;
-extern NSString * const RLMRealmDidChangeNotification;
-#endif
-
 typedef NS_ENUM(NSInteger, RLMError) {
-    /** Retuned by RLMRealm if no other specific error is returned when a realm is opened. */
+    /** Returned by RLMRealm if no other specific error is returned when a realm is opened. */
     RLMErrorFail                  = 1,
     /** Returned by RLMRealm for any I/O related exception scenarios when a realm is opened. */
     RLMErrorFileAccessError       = 2,
@@ -173,6 +79,49 @@ typedef NS_ENUM(NSInteger, RLMError) {
     RLMErrorIncompatibleLockFile  = 8,
 };
 
-// Schema version used for unitialized Realms
-extern const NSUInteger RLMNotVersioned;
+#pragma mark - Constants
 
+#pragma mark - Notification Constants
+
+/**
+ Posted by RLMRealm when the data in the realm has changed.
+
+ DidChange are posted after a realm has been refreshed to reflect a write
+ transaction, i.e. when an autorefresh occurs, `[RLMRealm refresh]` is
+ called, after an implicit refresh from `[RLMRealm beginWriteTransaction]`,
+ and after a local write transaction is committed.
+ */
+extern NSString * const RLMRealmRefreshRequiredNotification;
+
+/**
+ Posted by RLMRealm when a write transaction has been committed to an RLMRealm on
+ a different thread for the same file. This is not posted if
+ `[RLMRealm autorefresh]` is enabled or if the RLMRealm is
+ refreshed before the notifcation has a chance to run.
+
+ Realms with autorefresh disabled should normally have a handler for this
+ notification which calls `[RLMRealm refresh]` after doing some work.
+ While not refreshing is allowed, it may lead to large Realm files as Realm has
+ to keep an extra copy of the data for the un-refreshed RLMRealm.
+ */
+extern NSString * const RLMRealmDidChangeNotification;
+
+#pragma mark - Other Constants
+
+/** Schema version used for uninitialized Realms */
+extern const uint64_t RLMNotVersioned;
+
+/** Error domain used in Realm. */
+extern NSString * const RLMErrorDomain;
+
+/** Key for name of Realm exceptions. */
+extern NSString * const RLMExceptionName;
+
+/** Key for Realm file version. */
+extern NSString * const RLMRealmVersionKey;
+
+/** Key for Realm core version. */
+extern NSString * const RLMRealmCoreVersionKey;
+
+/** Key for Realm invalidated property name. */
+extern NSString * const RLMInvalidatedKey;

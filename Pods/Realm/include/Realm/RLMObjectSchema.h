@@ -17,7 +17,11 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #import <Foundation/Foundation.h>
-#import "RLMProperty.h"
+#import <Realm/RLMDefines.h>
+
+RLM_ASSUME_NONNULL_BEGIN
+
+@class RLMProperty;
 
 /**
  This class represents Realm model object schemas persisted to Realm in an RLMSchema.
@@ -28,6 +32,8 @@
  Object schemas map to tables in the core database.
  */
 @interface RLMObjectSchema : NSObject<NSCopying>
+
+#pragma mark - Properties
 
 /**
  Array of persisted RLMProperty objects for an object.
@@ -44,7 +50,9 @@
 /**
  The property which is the primary key for this object (if any).
  */
-@property (nonatomic, readonly) RLMProperty *primaryKeyProperty;
+@property (nonatomic, readonly, nullable) RLMProperty *primaryKeyProperty;
+
+#pragma mark - Methods
 
 /**
  Retrieve an RLMProperty object by name.
@@ -53,7 +61,7 @@
  
  @return RLMProperty object or nil if there is no property with the given name.
  */
-- (RLMProperty *)objectForKeyedSubscript:(id <NSCopying>)propertyName;
+- (nullable RLMProperty *)objectForKeyedSubscript:(id <NSCopying>)propertyName;
 
 /**
  Returns YES if equal to objectSchema
@@ -61,3 +69,5 @@
 - (BOOL)isEqualToObjectSchema:(RLMObjectSchema *)objectSchema;
 
 @end
+
+RLM_ASSUME_NONNULL_END

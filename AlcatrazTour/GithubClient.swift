@@ -33,14 +33,14 @@ class GithubClient: NSObject {
     
     func createRepoDetailUrl(repoUrl:String) -> String {
         // create api url
-        var repoDetailUrl:String = repoUrl.stringByReplacingOccurrencesOfString(githubRepoUrl, withString: githubRepoApiUrl, options: nil, range: nil)
+        var repoDetailUrl:String = repoUrl.stringByReplacingOccurrencesOfString(githubRepoUrl, withString: githubRepoApiUrl, options: [], range: nil)
         // remove last "/"
         if repoDetailUrl.hasSuffix("/") {
-            repoDetailUrl = repoDetailUrl[repoDetailUrl.startIndex..<advance(repoDetailUrl.endIndex, -1)]
+            repoDetailUrl = repoDetailUrl[repoDetailUrl.startIndex..<repoDetailUrl.endIndex.advancedBy(-1)]
         }
         // remove last ".git"
         if repoDetailUrl.hasSuffix(".git") {
-            repoDetailUrl = repoDetailUrl[repoDetailUrl.startIndex..<advance(repoDetailUrl.endIndex, -4)]
+            repoDetailUrl = repoDetailUrl[repoDetailUrl.startIndex..<repoDetailUrl.endIndex.advancedBy(-4)]
         }
         
         return repoDetailUrl
@@ -79,7 +79,7 @@ class GithubClient: NSObject {
             onSucceed()
             
             }, failure: {(error:NSError!) -> Void in
-                println(error.localizedDescription)
+                print(error.localizedDescription)
         })
     }
 
@@ -97,14 +97,13 @@ class GithubClient: NSObject {
         Alamofire
             .request(.GET, alcatrazPackagesUrl)
             .validate(statusCode: 200..<400)
-            .responseJSON {request, response, responseData, error in
-                
-                if let aError = error {
-                    onFailed(request, response, responseData, aError)
+            .responseJSON { response in
+                if let aError = response.result.error {
+                    onFailed(response.request!, response.response, response.data, aError)
                     return
                 }
                 
-                if let aResponseData: AnyObject = responseData {
+                if let aResponseData: AnyObject = response.data {
                     
                     var plugins:[Plugin] = []
                     
@@ -114,7 +113,7 @@ class GithubClient: NSObject {
                     if let count = jsonPlugins?.count {
                         for i in 0 ..< count {
                             if let pluginParams = jsonPlugins?[i].object as? NSDictionary {
-                                var plugin = Plugin()
+                                let plugin = Plugin()
                                 plugin.setParams(pluginParams)
                                 plugins.append(plugin)
                             }
@@ -123,7 +122,7 @@ class GithubClient: NSObject {
                     
                     onSucceed(plugins)
                 } else {
-                    onFailed(request, response, responseData, nil)
+                    onFailed(response.request!, response.response, response.data, nil)
                 }
         }
     }
@@ -133,24 +132,22 @@ class GithubClient: NSObject {
         Alamofire
             .request(Method.GET, createRepoDetailUrl(plugin.url), parameters: ["access_token": token])
             .validate(statusCode: 200..<400)
-            .responseJSON {request, response, responseData, error in
-                
-                if let aError = error {
-                    onFailed(request, response, responseData, aError)
+            .responseJSON { response in
+                if let aError = response.result.error {
+                    onFailed(response.request!, response.response, response.data, aError)
                     return
                 }
                 
-                if let aResponseData: AnyObject = responseData {
+                if let aResponseData: AnyObject = response.data {
                     let jsonData = JSON(aResponseData)
                     
                     if let pluginDetail = jsonData.object as? NSDictionary {
                         onSucceed(plugin, pluginDetail)
                     }
                 } else {
-                    onFailed(request, response, responseData, nil)
+                    onFailed(response.request!, response.response, response.data, nil)
                 }
         }
-        
     }
     
     // MARK: - Processing Flow
@@ -158,11 +155,11 @@ class GithubClient: NSObject {
     func reloadAllPlugins(onComplete:NSError?->Void) {
         
         if(isLoading) {
-            println("NOW LOADING!!")
+            print("NOW LOADING!!")
             return
         }
         
-        println("START LOADING!!")
+        print("START LOADING!!")
         SVProgressHUD.showWithStatus("Loading list", maskType: SVProgressHUDMaskType.Black)
         
         isLoading = true
@@ -172,7 +169,7 @@ class GithubClient: NSObject {
         
         let onSucceedRequestingPlugins = {[weak self] (plugins:[Plugin]) -> Void in
             
-            println("PLUGIN LIST LOAD COMPLETE!!")
+            print("PLUGIN LIST LOAD COMPLETE!!")
             
             SVProgressHUD.dismiss()
             SVProgressHUD.showProgress(0, status: "Loading data", maskType: SVProgressHUDMaskType.Black)
@@ -216,11 +213,14 @@ class GithubClient: NSObject {
                 SVProgressHUD.dismiss()
                 self?.isLoading = false
                 
-                // commit
-                RLMRealm.defaultRealm().commitWriteTransaction()
+                do {
+                    try RLMRealm.defaultRealm().commitWriteTransaction()
+                } catch {
+                    fatalError()
+                }
                 
-                println("successCount = \(successCount)")
-                println("plugins.count = \(plugins.count)")
+                print("successCount = \(successCount)")
+                print("plugins.count = \(plugins.count)")
                 
                 onComplete(nil)
             })
@@ -228,10 +228,10 @@ class GithubClient: NSObject {
         }
         
         let onFailed = {[weak self] (request:NSURLRequest, response:NSHTTPURLResponse?, responseData:AnyObject?, error:NSError?) -> Void in
-            println("request = \(request)")
-            println("response = \(response)")
-            println("responseData = \(responseData)")
-            println("error = \(error?.description)")
+            print("request = \(request)")
+            print("response = \(response)")
+            print("responseData = \(responseData)")
+            print("error = \(error?.description)")
             
             self?.isLoading = false
             SVProgressHUD.dismiss()
@@ -254,21 +254,21 @@ class GithubClient: NSObject {
         return Alamofire
             .request(Method.GET, apiUrl, parameters: ["access_token": token])
             .validate(statusCode: 204...404)
-            .responseString {request, response, responseData, error in
-                if let aError = error {
-                    onFailed(request, response, responseData, aError)
+            .responseString { response in
+                if let aError = response.result.error {
+                    onFailed(response.request!, response.response, response.data, aError)
                     return
                 }
                 
-                if(response?.statusCode==204){
+                if(response.response?.statusCode==204){
                     onSucceed(true)
                     return
                 }
-                if(response?.statusCode==404){
+                if(response.response?.statusCode==404){
                     onSucceed(false)
                     return
                 }
-                onFailed(request, response, responseData, nil)
+                onFailed(response.request!, response.response, response.data, nil)
         }
     }
     
@@ -285,9 +285,9 @@ class GithubClient: NSObject {
         Alamofire
             .request(method, apiUrl, parameters: nil)
             .validate(statusCode: 200..<400)
-            .responseString {request, response, responseData, error in
-                if let aError = error {
-                    onFailed(request, response, responseData, aError)
+            .responseString { response in
+                if let aError = response.result.error {
+                    onFailed(response.request!, response.response, response.data, aError)
                     return
                 }
                 

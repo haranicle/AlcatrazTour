@@ -1,0 +1,6 @@
+framework module M2DWebViewController {
+  umbrella header "M2DWebViewController-umbrella.h"
+
+  export *
+  module * { export * }
+}

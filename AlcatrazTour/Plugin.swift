@@ -52,14 +52,16 @@ class Plugin: RLMObject {
     }
     
     func setDetails(details:NSDictionary) {
-        if let d = details["owner"]?["login"] as? String {
-            owner = d
+        if let details_owner = details["owner"] as? NSDictionary {
+            if let d = details_owner["login"] as? String {
+                owner = d
+            }
+            if let d = details_owner["avatar_url"] as? String {
+                avaterUrl = d
+            }
         }
         if let d = details["name"] as? String {
             repositoryName = d
-        }
-        if let d = details["owner"]?["avatar_url"] as? String {
-            avaterUrl = d
         }
         if let d = details["stargazers_count"] as? Int {
             starGazersCount = d
@@ -80,7 +82,7 @@ class Plugin: RLMObject {
     }
     
     func stringAsDate(string:String) -> NSDate {
-        var formatter = NSDateFormatter()
+        let formatter = NSDateFormatter()
         formatter.dateFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"
         return formatter.dateFromString(string) ?? NSDate(timeIntervalSince1970: 0)
     }
@@ -91,7 +93,7 @@ class Plugin: RLMObject {
     
     // TODO: must be tested!!
     func formatDate(date:NSDate) -> String {
-        var formatter = NSDateFormatter()
+        let formatter = NSDateFormatter()
         formatter.dateFormat = "MM/dd/yy"
         return formatter.stringFromDate(date)
     }

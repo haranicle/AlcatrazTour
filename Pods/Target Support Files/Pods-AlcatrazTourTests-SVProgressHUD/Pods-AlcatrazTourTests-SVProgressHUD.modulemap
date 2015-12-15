@@ -1,6 +1,0 @@
-framework module SVProgressHUD {
-  umbrella header "Pods-AlcatrazTourTests-SVProgressHUD-umbrella.h"
-
-  export *
-  module * { export * }
-}

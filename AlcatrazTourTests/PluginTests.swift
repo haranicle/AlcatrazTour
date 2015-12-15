@@ -34,7 +34,7 @@ class PluginTests: XCTestCase {
     }
     
     func test_stringAsDate_worksFine() {
-        var plugin = Plugin()
+        let plugin = Plugin()
         XCTAssertEqual(1424887550, plugin.stringAsDate("2015-02-26T03:05:50Z").timeIntervalSince1970)
         XCTAssertEqual(0, plugin.stringAsDate("1970-01-01T09:00:00Z").timeIntervalSince1970)
         XCTAssertEqual(NSDate(timeIntervalSince1970: 0), plugin.stringAsDate("aaaaaaa"))

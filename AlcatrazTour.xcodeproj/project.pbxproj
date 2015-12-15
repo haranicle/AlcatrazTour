@@ -13,8 +13,8 @@
 		5FC1920F1AB47BBD00D0BD9A /* PluginTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5FC1920D1AB47BBD00D0BD9A /* PluginTableViewCell.xib */; };
 		5FCF96901B3E675000A1C63A /* SettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FCF968F1B3E675000A1C63A /* SettingsTableViewController.swift */; };
 		5FE2E4711AB5A2B5005DE41F /* PluginDetailWebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FE2E4701AB5A2B5005DE41F /* PluginDetailWebViewController.swift */; };
-		E7D12409782D7E5CE93986BE /* Pods_AlcatrazTourTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B77CF89FE308A62DBDF25C5E /* Pods_AlcatrazTourTests.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
-		EAE8118B6DD8E9D17662928B /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C8B2213C770F9DE318596BD9 /* Pods.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		E7D12409782D7E5CE93986BE /* Pods_AlcatrazTourTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B77CF89FE308A62DBDF25C5E /* Pods_AlcatrazTourTests.framework */; };
+		EAE8118B6DD8E9D17662928B /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C8B2213C770F9DE318596BD9 /* Pods.framework */; };
 		F2785D081B3D16970074C591 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = F2785D071B3D16970074C591 /* Settings.bundle */; };
 		F60FC5471A9F084D00AAAC9B /* PluginTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F60FC5461A9F084D00AAAC9B /* PluginTests.swift */; };
 		F62E96271A9AF6F600063445 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F62E96261A9AF6F600063445 /* AppDelegate.swift */; };
@@ -272,6 +272,8 @@
 		F62E96191A9AF6F600063445 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftMigration = 0720;
+				LastSwiftUpdateCheck = 0720;
 				LastUpgradeCheck = 0610;
 				ORGANIZATIONNAME = haranicle;
 				TargetAttributes = {

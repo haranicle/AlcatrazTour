@@ -16,30 +16,22 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
+#import "RLMObjectSchema_Private.hpp"
+
 #import "RLMArray.h"
 #import "RLMListBase.h"
-#import "RLMObjectSchema_Private.hpp"
 #import "RLMObject_Private.h"
 #import "RLMProperty_Private.h"
+#import "RLMRealm_Dynamic.h"
+#import "RLMRealm_Private.hpp"
 #import "RLMSchema_Private.h"
 #import "RLMSwiftSupport.h"
 #import "RLMUtil.hpp"
 
-#import <tightdb/table.hpp>
+#import "object_store.hpp"
+#import <realm/group.hpp>
 
-@interface RLMObject (Swift)
-+ (NSArray *)getGenericListPropertyNames:(id)obj;
-@end
-
-@implementation RLMObject (Swift)
-// We need to implement this method in Swift, but we don't want the obj-c and
-// Swift in the same target to avoid polluting the RealmSwift namespace with
-// obj-c stuff. As such, this method is overridden in RealmSwift.Object to
-// supply the real implementation at runtime without a compile-time dependency.
-+ (NSArray *)getGenericListPropertyNames:(__unused id)obj {
-    return nil;
-}
-@end
+using namespace realm;
 
 // private properties
 @interface RLMObjectSchema ()
@@ -49,7 +41,7 @@
 
 @implementation RLMObjectSchema {
     // table accessor optimization
-    tightdb::TableRef _table;
+    realm::TableRef _table;
 }
 
 - (instancetype)initWithClassName:(NSString *)objectClassName objectClass:(Class)objectClass properties:(NSArray *)properties {
@@ -95,14 +87,14 @@
     }
     schema.className = className;
     schema.objectClass = objectClass;
-    schema.accessorClass = RLMObject.class;
+    schema.accessorClass = RLMDynamicObject.class;
     schema.isSwiftClass = isSwift;
-    
+
     // create array of RLMProperties, inserting properties of superclasses first
     Class cls = objectClass;
     Class superClass = class_getSuperclass(cls);
     NSArray *props = @[];
-    while (superClass != RLMObjectBase.class) {
+    while (superClass && superClass != RLMObjectBase.class) {
         props = [[RLMObjectSchema propertiesForClass:cls isSwift:isSwift] arrayByAddingObjectsFromArray:props];
         cls = superClass;
         superClass = class_getSuperclass(superClass);
@@ -110,29 +102,44 @@
     schema.properties = props;
 
     // verify that we didn't add any properties twice due to inheritance
-    assert(props.count == [NSSet setWithArray:[props valueForKey:@"name"]].count);
+    if (props.count != [NSSet setWithArray:[props valueForKey:@"name"]].count) {
+        NSCountedSet *countedPropertyNames = [NSCountedSet setWithArray:[props valueForKey:@"name"]];
+        NSSet *duplicatePropertyNames = [countedPropertyNames filteredSetUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id object, NSDictionary *) {
+            return [countedPropertyNames countForObject:object] > 1;
+        }]];
+
+        if (duplicatePropertyNames.count == 1) {
+            @throw RLMException(@"Property '%@' is declared multiple times in the class hierarchy of '%@'", duplicatePropertyNames.allObjects.firstObject, className);
+        } else {
+            @throw RLMException(@"Object '%@' has properties that are declared multiple times in its class hierarchy: '%@'", className, [duplicatePropertyNames.allObjects componentsJoinedByString:@"', '"]);
+        }
+    }
 
     if (NSString *primaryKey = [objectClass primaryKey]) {
         for (RLMProperty *prop in schema.properties) {
             if ([primaryKey isEqualToString:prop.name]) {
-                 // FIXME - enable for ints when we have core suppport
-                if (prop.type == RLMPropertyTypeString) {
-                    prop.attributes |= RLMPropertyAttributeIndexed;
-                }
+                prop.indexed = YES;
                 schema.primaryKeyProperty = prop;
                 break;
             }
         }
 
         if (!schema.primaryKeyProperty) {
-            NSString *message = [NSString stringWithFormat:@"Primary key property '%@' does not exist on object '%@'",
-                                 primaryKey, className];
-            @throw [NSException exceptionWithName:@"RLMException" reason:message userInfo:nil];
+            @throw RLMException(@"Primary key property '%@' does not exist on object '%@'", primaryKey, className);
         }
         if (schema.primaryKeyProperty.type != RLMPropertyTypeInt && schema.primaryKeyProperty.type != RLMPropertyTypeString) {
-            @throw [NSException exceptionWithName:@"RLMException"
-                                           reason:@"Only 'string' and 'int' properties can be designated the primary key"
-                                         userInfo:nil];
+            @throw RLMException(@"Only 'string' and 'int' properties can be designated the primary key");
+        }
+    }
+
+    for (RLMProperty *prop in schema.properties) {
+        RLMPropertyType type = prop.type;
+        if (prop.optional && !RLMPropertyTypeIsNullable(type)) {
+            NSString *error = [NSString stringWithFormat:@"Only 'string', 'binary', and 'object' properties can be made optional, and property '%@' is of type '%@'.", prop.name, RLMTypeToString(type)];
+            if (prop.type == RLMPropertyTypeAny && isSwift) {
+                error = [error stringByAppendingString:@"\nIf this is a 'String?' property, it must be declared as 'NSString?' instead."];
+            }
+            @throw RLMException(@"%@", error);
         }
     }
 
@@ -140,7 +147,8 @@
 }
 
 + (NSArray *)propertiesForClass:(Class)objectClass isSwift:(bool)isSwiftClass {
-    NSArray *ignoredProperties = [objectClass ignoredProperties];
+    Class objectUtil = RLMObjectUtilClass(isSwiftClass);
+    NSArray *ignoredProperties = [objectUtil ignoredPropertiesForClass:objectClass];
 
     // For Swift classes we need an instance of the object when parsing properties
     id swiftObjectInstance = isSwiftClass ? [[objectClass alloc] init] : nil;
@@ -148,22 +156,22 @@
     unsigned int count;
     objc_property_t *props = class_copyPropertyList(objectClass, &count);
     NSMutableArray *propArray = [NSMutableArray arrayWithCapacity:count];
+    NSSet *indexed = [[NSSet alloc] initWithArray:[objectUtil indexedPropertiesForClass:objectClass]];
     for (unsigned int i = 0; i < count; i++) {
         NSString *propertyName = @(property_getName(props[i]));
         if ([ignoredProperties containsObject:propertyName]) {
             continue;
         }
 
-        RLMPropertyAttributes atts = [objectClass attributesForProperty:propertyName];
         RLMProperty *prop = nil;
         if (isSwiftClass) {
             prop = [[RLMProperty alloc] initSwiftPropertyWithName:propertyName
-                                                       attributes:atts
+                                                          indexed:[indexed containsObject:propertyName]
                                                          property:props[i]
                                                          instance:swiftObjectInstance];
         }
         else {
-            prop = [[RLMProperty alloc] initWithName:propertyName attributes:atts property:props[i]];
+            prop = [[RLMProperty alloc] initWithName:propertyName indexed:[indexed containsObject:propertyName] property:props[i]];
         }
 
         if (prop) {
@@ -176,69 +184,67 @@
         // List<> properties don't show up as objective-C properties due to
         // being generic, so use Swift reflection to get a list of them, and
         // then access their ivars directly
-        for (NSString *propName in [objectClass getGenericListPropertyNames:swiftObjectInstance]) {
+        for (NSString *propName in [objectUtil getGenericListPropertyNames:swiftObjectInstance]) {
             Ivar ivar = class_getInstanceVariable(objectClass, propName.UTF8String);
             id value = object_getIvar(swiftObjectInstance, ivar);
             NSString *className = [value _rlmArray].objectClassName;
+            NSUInteger existing = [propArray indexOfObjectPassingTest:^BOOL(RLMProperty *obj, __unused NSUInteger idx, __unused BOOL *stop) {
+                return [obj.name isEqualToString:propName];
+            }];
+            if (existing != NSNotFound) {
+                [propArray removeObjectAtIndex:existing];
+            }
             [propArray addObject:[[RLMProperty alloc] initSwiftListPropertyWithName:propName
                                                                                ivar:ivar
                                                                     objectClassName:className]];
         }
     }
 
+    if (NSDictionary *optionalProperties = [objectUtil getOptionalProperties:swiftObjectInstance]) {
+        for (RLMProperty *property in propArray) {
+            property.optional = false;
+        }
+        [optionalProperties enumerateKeysAndObjectsUsingBlock:^(NSString *propertyName, NSNumber *propertyType, __unused BOOL *stop) {
+            if ([ignoredProperties containsObject:propertyName]) {
+                return;
+            }
+            NSUInteger existing = [propArray indexOfObjectPassingTest:^BOOL(RLMProperty *obj, __unused NSUInteger idx, __unused BOOL *stop) {
+                return [obj.name isEqualToString:propertyName];
+            }];
+            RLMProperty *property;
+            if (existing != NSNotFound) {
+                property = propArray[existing];
+                property.optional = true;
+            }
+            if (auto type = RLMCoerceToNil(propertyType)) {
+                if (existing == NSNotFound) {
+                    property = [[RLMProperty alloc] initSwiftOptionalPropertyWithName:propertyName ivar:class_getInstanceVariable(objectClass, propertyName.UTF8String) propertyType:RLMPropertyType(type.intValue)];
+                    [propArray addObject:property];
+                }
+                else {
+                    property.type = RLMPropertyType(type.intValue);
+                }
+            }
+        }];
+    }
+    if (NSArray *requiredProperties = [objectUtil requiredPropertiesForClass:objectClass]) {
+        for (RLMProperty *property in propArray) {
+            bool required = [requiredProperties containsObject:property.name];
+            if (required && property.type == RLMPropertyTypeObject) {
+                @throw RLMException(@"Object properties cannot be made required, "
+                                    "but '+[%@ requiredProperties]' included '%@'", objectClass, property.name);
+            }
+            property.optional &= !required;
+        }
+    }
+
+    for (RLMProperty *property in propArray) {
+        if (!property.optional && property.type == RLMPropertyTypeObject) { // remove if/when core supports required link columns
+            @throw RLMException(@"The `%@.%@` property must be marked as being optional.", [objectClass className], property.name);
+        }
+    }
+
     return propArray;
-}
-
-
-// generate a schema from a table - specify the custom class name for the dynamic
-// class and the name to be used in the schema - used for migrations and dynamic interface
-+(instancetype)schemaFromTableForClassName:(NSString *)className realm:(RLMRealm *)realm {
-    tightdb::TableRef table = RLMTableForObjectClass(realm, className);
-    if (!table) {
-        return nil;
-    }
-    
-    // create array of RLMProperties
-    size_t count = table->get_column_count();
-    NSMutableArray *propArray = [NSMutableArray arrayWithCapacity:count];
-    for (size_t col = 0; col < count; col++) {
-        // create new property
-        NSString *name = RLMStringDataToNSString(table->get_column_name(col).data());
-        RLMProperty *prop = [[RLMProperty alloc] initWithName:name
-                                                         type:RLMPropertyType(table->get_column_type(col))
-                                              objectClassName:nil
-                                                   attributes:(RLMPropertyAttributes)0];
-        prop.column = col;
-        if (prop.type == RLMPropertyTypeObject || prop.type == RLMPropertyTypeArray) {
-            // set link type for objects and arrays
-            tightdb::TableRef linkTable = table->get_link_target(col);
-            prop.objectClassName = RLMClassForTableName(@(linkTable->get_name().data()));
-        }
-
-        [propArray addObject:prop];
-    }
-
-    // create schema object and set properties
-    RLMObjectSchema *schema = [RLMObjectSchema new];
-    schema.properties = propArray;
-    schema.className = className;
-
-    // get primary key from realm metadata
-    NSString *primaryKey = RLMRealmPrimaryKeyForObjectClass(realm, className);
-    if (primaryKey) {
-        schema.primaryKeyProperty = schema[primaryKey];
-        if (!schema.primaryKeyProperty) {
-            NSString *reason = [NSString stringWithFormat:@"No property matching primary key '%@'", primaryKey];
-            @throw [NSException exceptionWithName:@"RLMException" reason:reason userInfo:nil];
-        }
-    }
-
-    // for dynamic schema use vanilla RLMObject accessor classes
-    schema.objectClass = RLMObject.class;
-    schema.accessorClass = RLMObject.class;
-    schema.standaloneClass = RLMObject.class;
-
-    return schema;
 }
 
 - (id)copyWithZone:(NSZone *)zone {
@@ -252,7 +258,8 @@
 
     // call property setter to reset map and primary key
     schema.properties = [[NSArray allocWithZone:zone] initWithArray:_properties copyItems:YES];
-    // _table not copied as it's tightdb::Group-specific
+
+    // _table not copied as it's realm::Group-specific
     return schema;
 }
 
@@ -270,7 +277,7 @@
     schema->_propertiesByName = _propertiesByName;
     schema->_primaryKeyProperty = _primaryKeyProperty;
 
-    // _table not copied as it's tightdb::Group-specific
+    // _table not copied as it's realm::Group-specific
     return schema;
 }
 
@@ -286,6 +293,7 @@
         if (p1.type != p2.type ||
             p1.column != p2.column ||
             p1.isPrimary != p2.isPrimary ||
+            p1.optional != p2.optional ||
             ![p1.name isEqualToString:p2.name] ||
             !(p1.objectClassName == p2.objectClassName || [p1.objectClassName isEqualToString:p2.objectClassName])) {
             return NO;
@@ -294,15 +302,77 @@
     return YES;
 }
 
-- (tightdb::Table *)table {
+- (NSString *)description {
+    NSMutableString *propertiesString = [NSMutableString string];
+    for (RLMProperty *property in self.properties) {
+        [propertiesString appendFormat:@"\t%@\n", [property.description stringByReplacingOccurrencesOfString:@"\n" withString:@"\n\t"]];
+    }
+    return [NSString stringWithFormat:@"%@ {\n%@}", self.className, propertiesString];
+}
+
+- (realm::Table *)table {
     if (!_table) {
-        _table = RLMTableForObjectClass(_realm, _className);
+        _table = ObjectStore::table_for_object_type(_realm.group, _className.UTF8String);
     }
     return _table.get();
 }
 
-- (void)setTable:(tightdb::Table *)table {
+- (void)setTable:(realm::Table *)table {
     _table.reset(table);
 }
 
+- (realm::ObjectSchema)objectStoreCopy {
+    ObjectSchema objectSchema;
+    objectSchema.name = _className.UTF8String;
+    objectSchema.primary_key = _primaryKeyProperty ? _primaryKeyProperty.name.UTF8String : "";
+    for (RLMProperty *prop in _properties) {
+        Property p;
+        p.name = prop.name.UTF8String;
+        p.type = (PropertyType)prop.type;
+        p.object_type = prop.objectClassName ? prop.objectClassName.UTF8String : "";
+        p.is_indexed = prop.indexed;
+        p.is_primary = (prop == _primaryKeyProperty);
+        p.is_nullable = prop.optional;
+        objectSchema.properties.push_back(std::move(p));
+    }
+    return objectSchema;
+}
+
++ (instancetype)objectSchemaForObjectStoreSchema:(realm::ObjectSchema &)objectSchema {
+    RLMObjectSchema *schema = [RLMObjectSchema new];
+    schema.className = @(objectSchema.name.c_str());
+
+    // create array of RLMProperties
+    NSMutableArray *propArray = [NSMutableArray arrayWithCapacity:objectSchema.properties.size()];
+    for (Property &prop : objectSchema.properties) {
+        RLMProperty *property = [[RLMProperty alloc] initWithName:@(prop.name.c_str())
+                                                             type:(RLMPropertyType)prop.type
+                                                  objectClassName:prop.object_type.length() ? @(prop.object_type.c_str()) : nil
+                                                          indexed:prop.is_indexed
+                                                         optional:prop.is_nullable];
+        property.isPrimary = (prop.name == objectSchema.primary_key);
+        [propArray addObject:property];
+    }
+    schema.properties = propArray;
+    
+    // get primary key from realm metadata
+    if (objectSchema.primary_key.length()) {
+        NSString *primaryKeyString = [NSString stringWithUTF8String:objectSchema.primary_key.c_str()];
+        schema.primaryKeyProperty = schema[primaryKeyString];
+        if (!schema.primaryKeyProperty) {
+            @throw RLMException(@"No property matching primary key '%@'", primaryKeyString);
+        }
+    }
+
+    // for dynamic schema use vanilla RLMDynamicObject accessor classes
+    schema.objectClass = RLMObject.class;
+    schema.accessorClass = RLMDynamicObject.class;
+    schema.standaloneClass = RLMObject.class;
+    
+    return schema;
+}
+
+
 @end
+
+
